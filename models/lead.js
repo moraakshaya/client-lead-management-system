@@ -9,6 +9,7 @@ const leadSchema = new mongoose.Schema({
     source: String, // The source from which the lead was acquired (e.g., website, referral, etc.)
     status: {
         type: String, // The status of the lead (e.g., new, contacted, qualified, etc.)
+        enum: ["New", "Contacted", "Qualified", "Won", "Lost"],
         default: 'New' // Default value for the status field is 'new'
     },
     notes: String // Additional notes about the lead
