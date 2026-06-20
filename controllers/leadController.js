@@ -71,6 +71,7 @@ exports.getAllLeads = async (req, res) => {
 // Controller function to retrieve a single lead by its ID
 exports.getLeadById = async (req, res) => {
     try {
+        //  console.log("ID:", req.params.id);
         const lead = await Lead.findById(req.params.id); // Retrieve a lead from the database using the findById() method of
         res.status(201).json(lead); // Send a response with status code 201 (Created) and the lead in JSON format
     } catch (err) {

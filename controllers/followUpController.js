@@ -7,7 +7,7 @@ exports.createFollowUp = async (req,res) => {
         res.status(201).json(newFollowUp);
     } catch (err) {
         res.status(500).json({
-            message: error.message,
+            message: err.message,
         });
     }
 };
@@ -19,7 +19,7 @@ exports.getAllFollowUps = async (req,res) => {
         res.status(201).json(followUps);
     } catch(err) {
         res.status(500).json({
-            message: error.message,
+            message: err.message,
         });
     }
 };
@@ -33,7 +33,7 @@ exports.getFollowUpByLead = async (req,res) => {
         res.status(201).json(followUps);
     } catch(err) {
         res.status(500).json({
-            message: error.message,
+            message: err.message,
         });
     }
 };
@@ -51,7 +51,7 @@ exports.updateFollowUp = async (req,res) => {
         res.status(201).json(followUp);
     } catch(err) {
         res.status(500).json({
-            message: error.message,
+            message: err.message,
         });
     }
 };
@@ -65,7 +65,7 @@ exports.deleteFollowUp = async (req,res) => {
         });
     } catch(err) {
         res.status(500).json({
-            message: error.message,
+            message: err.message,
         });
     }
 };
