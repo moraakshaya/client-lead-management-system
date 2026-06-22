@@ -1,13 +1,22 @@
 const Lead = require('../models/lead'); // Importing the Lead model to interact with the Lead collection in the MongoDB database
-
+const Activity = require('../models/activity');
 
 // Controller function to create a new lead
 exports.createLead = async (req, res) => {
     try {
         const newLead = await Lead.create(req.body); // Create a new instance of the Lead model using the data from the request body
+        // Create Activity Log
+        await Activity.create({
+            action: "Lead Created",
+            description: `${newLead.leadName} created`,
+            leadId: newLead._id,
+        });
+
         res.status(201).json(newLead); // Send a response with status code 201 (Created) and the newly created lead in JSON format
     } catch (err) {
-        res.status(500).json(err); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
+        res.status(500).json({
+            message: err.message,
+        }); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
     }
 };
 
@@ -23,19 +32,19 @@ exports.getAllLeads = async (req, res) => {
         if (search) {
             query.$or = [
                 {
-                    leadName : {
+                    leadName: {
                         $regex: search, //$regex means Search for matching text.
                         $options: "i",   //Means Case Insensitive Search, ignore uppercase or lowercase
                     },
                 },
                 {
-                    email : {
+                    email: {
                         $regex: search,
                         $options: "i",
                     },
                 },
                 {
-                    phone : {
+                    phone: {
                         $regex: search,
                         $options: "i",
                     },
@@ -87,6 +96,16 @@ exports.updateLead = async (req, res) => {
             req.body,
             { new: true }
         ); // Update a lead in the database using the findByIdAndUpdate() method of the Lead model, passing the lead ID and the updated data from the request body
+
+        // Create Activity when status changes
+        if (req.body.status) {
+            await Activity.create({
+                action: "Status Updated",
+                description: `Lead moved to ${req.body.status}`,
+                leadId: updatedLead._id,
+            });
+        }
+
         res.json(updatedLead); // Send a response with the updated lead in JSON format
     } catch (err) {
         res.status(500).json(err); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format

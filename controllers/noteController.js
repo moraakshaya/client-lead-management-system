@@ -1,9 +1,16 @@
 const Notes = require('../models/note');
+const Activity = require('../models/activity');
 
 //Create Note
 exports.createNote = async (req, res) => {
     try {
         const newNote = await Notes.create(req.body);
+        //Note Added Activity Log
+        await Activity.create({
+            action: "Note Added",
+            description: `Notes : ${newNote.notes}`,
+            leadId: newNote.leadId,
+        });
         res.status(201).json(newNote);
     } catch (err) {
         res.status(500).json({
@@ -13,35 +20,35 @@ exports.createNote = async (req, res) => {
 };
 
 //Get All Notes
-exports.getAllNotes = async(req,res) => {
+exports.getAllNotes = async (req, res) => {
     try {
         const notes = await Notes.find()
-        .populate("leadId");
+            .populate("leadId");
         res.status(201).json(notes);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
-            message:err.message,
+            message: err.message,
         });
     }
 };
 
 //Get Notes By Lead 
-exports.getNotesById = async (req,res) => {
+exports.getNotesById = async (req, res) => {
     try {
         const notes = await Notes.find({
             leadId: req.params.leadId,
         }).sort({ createdAt: -1 });
-        
+
         res.status(201).json(notes);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
-            message:err.message,
+            message: err.message,
         });
     }
 };
 
 //Update Note
-exports.updateNotes = async (req,res) => {
+exports.updateNotes = async (req, res) => {
     try {
         const notes = await Notes.findByIdAndUpdate(
             req.params.id,
@@ -51,23 +58,23 @@ exports.updateNotes = async (req,res) => {
             }
         );
         res.status(201).json(notes);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
-            message:err.message,
+            message: err.message,
         });
     }
 };
 
 //Delete Notes
-exports.deleteNotes = async (req,res) => {
+exports.deleteNotes = async (req, res) => {
     try {
         const notes = await Notes.findByIdAndDelete(req.params.id);
-         res.status(201).json({
+        res.status(201).json({
             message: "Follow-Up Deleted Successfully",
         });
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
-            message:err.message,
+            message: err.message,
         });
     }
 }

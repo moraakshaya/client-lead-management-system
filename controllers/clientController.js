@@ -1,5 +1,6 @@
 const Client = require('../models/client'); // Importing the Client model to interact with the Client collection in the MongoDB database
 const Lead = require('../models/lead');
+const Activity = require('../models/activity');
 
 // Controller function to create a new client
 exports.createClient = async (req, res) => {
@@ -109,6 +110,15 @@ exports.convertLeadToClient = async (req, res) => {
 
         lead.status = "Won";
         await lead.save();
+
+        //Lead Converted Activity Log
+
+        await Activity.create({
+            action: "Lead Converted",
+            description: `${lead.leadName} converted to client`,
+            leadId: lead._id,
+            clientId: client._id,
+        });
 
         res.status(201).json({
             message: "Lead converted successfully",

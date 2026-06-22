@@ -1,9 +1,17 @@
+const followUp = require('../models/followUp');
 const FollowUp = require('../models/followUp');
+const Activity = require('../models/activity');
 
 //Create Follow Up
-exports.createFollowUp = async (req,res) => {
+exports.createFollowUp = async (req, res) => {
     try {
         const newFollowUp = await FollowUp.create(req.body);
+        //Follow-Up Added Activity Log
+        await Activity.create({
+            action: "Follow-Up Added",
+            description: newFollowUp.remarks,
+            leadId: newFollowUp.leadId,
+        });
         res.status(201).json(newFollowUp);
     } catch (err) {
         res.status(500).json({
@@ -13,11 +21,11 @@ exports.createFollowUp = async (req,res) => {
 };
 
 //Get All Follow Ups
-exports.getAllFollowUps = async (req,res) => {
+exports.getAllFollowUps = async (req, res) => {
     try {
         const followUps = await FollowUp.find();
         res.status(201).json(followUps);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
             message: err.message,
         });
@@ -25,13 +33,13 @@ exports.getAllFollowUps = async (req,res) => {
 };
 
 //Get Follow-Ups By Lead
-exports.getFollowUpByLead = async (req,res) => {
+exports.getFollowUpByLead = async (req, res) => {
     try {
         const followUps = await FollowUp.find({
             leadId: req.params.leadId,
         });
         res.status(201).json(followUps);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
             message: err.message,
         });
@@ -39,7 +47,7 @@ exports.getFollowUpByLead = async (req,res) => {
 };
 
 //Update Follow-Up
-exports.updateFollowUp = async (req,res) => {
+exports.updateFollowUp = async (req, res) => {
     try {
         const followUp = await FollowUp.findByIdAndUpdate(
             req.params.id,
@@ -49,7 +57,7 @@ exports.updateFollowUp = async (req,res) => {
             }
         );
         res.status(201).json(followUp);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
             message: err.message,
         });
@@ -57,13 +65,13 @@ exports.updateFollowUp = async (req,res) => {
 };
 
 //Delete Follow-Up
-exports.deleteFollowUp = async (req,res) => {
+exports.deleteFollowUp = async (req, res) => {
     try {
         const followUp = await FollowUp.findByIdAndDelete(req.params.id);
         res.status(201).json({
             message: "Follow-Up Deleted Successfully",
         });
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({
             message: err.message,
         });

@@ -7,6 +7,7 @@ const clientRoutes = require('./routes/clientRoutes');
 const followUpRoutes = require('./routes/followUpRoutes');
 const notesRoutes = require('./routes/noteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const activityRoutes = require('./routes/activityRoutes');
 
 
 
@@ -24,6 +25,7 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/followUps', followUpRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/activity', activityRoutes);
 
 
 
