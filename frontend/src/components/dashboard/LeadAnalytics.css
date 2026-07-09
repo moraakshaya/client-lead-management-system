@@ -1,0 +1,318 @@
+.analytics-section {
+  display: grid;
+  grid-template-columns: 7fr 3fr;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .analytics-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analytics-card {
+  width: 100%;
+  padding: 32px;
+  /* Uses stat-glass-card from StatsCards.css for base styling */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.analytics-title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.custom-dropdown-container {
+  position: relative;
+  z-index: 100;
+}
+
+.analytics-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  font-family: "Inter", "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  min-width: 140px;
+  /* 3D button effect */
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.05),
+    inset 0 1px 1px rgba(255,255,255,0.8);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.analytics-filter-btn:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 16px rgba(0,0,0,0.08),
+    inset 0 1px 1px rgba(255,255,255,0.8);
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Deep 3D Shadow for the menu */
+  box-shadow: 
+    0 15px 35px rgba(0,0,0,0.1),
+    0 5px 15px rgba(0,0,0,0.05),
+    inset 0 1px 1px rgba(255,255,255,1);
+  animation: dropdown-fade-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform-origin: top right;
+}
+
+@keyframes dropdown-fade-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+[data-theme="dark"] .custom-dropdown-menu {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 15px 35px rgba(0,0,0,0.4),
+    inset 0 1px 1px rgba(255,255,255,0.05);
+}
+
+[data-theme="dark"] .analytics-filter-btn {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.2),
+    inset 0 1px 1px rgba(255,255,255,0.05);
+}
+
+[data-theme="dark"] .analytics-filter-btn:hover {
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.dropdown-item.selected {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.analytics-chart-container {
+  width: 100%;
+  z-index: 2;
+}
+
+.analytics-tabs {
+  display: flex;
+  gap: 12px;
+  z-index: 2;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-tab {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+[data-theme="dark"] .metric-tab {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.metric-tab:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .metric-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.metric-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.chart-grid {
+  opacity: 0.1;
+}
+
+[data-theme="dark"] .chart-grid {
+  opacity: 0.05;
+}
+
+.analytics-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 2;
+}
+
+[data-theme="dark"] .analytics-metrics-grid {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-label {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.metric-value {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+/* Lead Sources Styling */
+.sources-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+  z-index: 2;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.source-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.source-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.source-name {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.source-percentage {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.source-progress-bg {
+  width: 100%;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  /* Inner shadow for 3D depth */
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .source-progress-bg {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.source-progress-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Make the fill look 3D and shiny */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}

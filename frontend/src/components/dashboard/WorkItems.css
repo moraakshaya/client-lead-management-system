@@ -1,0 +1,121 @@
+.work-items-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .work-items-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.work-card {
+  width: 100%;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.work-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.work-card-title {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.view-all-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-family: "Inter", "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.view-all-btn:hover {
+  background: rgba(var(--primary-rgb), 0.1);
+  background: var(--surface);
+}
+
+.work-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 2;
+}
+
+.work-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+[data-theme="dark"] .work-list-item {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.work-list-item:hover {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] .work-list-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-primary-text {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.item-secondary-text {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.item-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.priority-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
