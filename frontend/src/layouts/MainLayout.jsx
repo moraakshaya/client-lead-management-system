@@ -5,11 +5,11 @@ import Navbar from '../components/Navbar/navbar';
 
 export default function MainLayout() {
   return (
-    <div style={{ display: 'flex', height: '100vh', background: 'var(--background)' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100%', maxWidth: '100%', overflow: 'hidden', background: 'var(--background)' }}>
       <Sidebar />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Navbar />
-        <div style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+        <div style={{ flex: 1, padding: '32px', overflowY: 'auto', overflowX: 'hidden' }}>
           <Outlet />
         </div>
       </main>

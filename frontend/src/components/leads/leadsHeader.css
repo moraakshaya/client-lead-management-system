@@ -1,0 +1,67 @@
+.leads-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.leads-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.leads-title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.leads-subtitle {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.leads-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.leads-header-right button {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-export, .btn-import {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-export:hover, .btn-import:hover {
+  background-color: var(--secondary-light);
+}
+
+.btn-add-lead {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-add-lead:hover {
+  background-color: var(--primary-hover);
+}
