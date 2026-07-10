@@ -1,9 +1,9 @@
 import React from 'react';
 import { FaTimes, FaExclamationTriangle } from 'react-icons/fa';
-import '../clients/editClientModal.css';
+import './editClientModal.css';
 
-export default function DeleteLeadModal({ isOpen, onClose, lead }) {
-  if (!isOpen || !lead) return null;
+export default function DeleteClientModal({ isOpen, onClose, client }) {
+  if (!isOpen || !client) return null;
 
   const handleDelete = () => {
     // Perform delete action
@@ -15,7 +15,7 @@ export default function DeleteLeadModal({ isOpen, onClose, lead }) {
       <div className="modal-container edit-modal-container" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 style={{ color: '#ef4444' }}>
-            <FaExclamationTriangle style={{ marginRight: '10px' }}/> Delete Lead
+            <FaExclamationTriangle style={{ marginRight: '10px' }}/> Delete Client
           </h2>
           <button className="close-btn" onClick={onClose}><FaTimes /></button>
         </div>
@@ -39,19 +39,19 @@ export default function DeleteLeadModal({ isOpen, onClose, lead }) {
             </div>
 
             <p style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '32px', textAlign: 'center' }}>
-              Are you sure you want to delete this lead?
+              Are you sure you want to delete this client?
             </p>
 
             <div style={{ width: '100%', marginBottom: '24px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '16px', fontSize: '15px' }}>
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Lead Name :</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{lead.customer || lead.client || '-'}</span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Client Name :</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{client.client || client.customer || '-'}</span>
                 
                 <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Company :</span>
-                <span style={{ color: 'var(--text-primary)' }}>{lead.company || '-'}</span>
+                <span style={{ color: 'var(--text-primary)' }}>{client.company || '-'}</span>
 
                 <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Email :</span>
-                <span style={{ color: 'var(--text-primary)' }}>{lead.email || '-'}</span>
+                <span style={{ color: 'var(--text-primary)' }}>{client.email || '-'}</span>
               </div>
             </div>
 
@@ -66,7 +66,7 @@ export default function DeleteLeadModal({ isOpen, onClose, lead }) {
 
         <div className="modal-footer edit-modal-footer" style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
           <button className="btn-cancel" onClick={onClose}>Cancel</button>
-          <button className="btn-save" onClick={handleDelete} style={{ backgroundColor: '#ef4444', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.2)' }}>Delete Lead</button>
+          <button className="btn-save" onClick={handleDelete} style={{ backgroundColor: '#ef4444', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.2)' }}>Delete Client</button>
         </div>
       </div>
     </div>

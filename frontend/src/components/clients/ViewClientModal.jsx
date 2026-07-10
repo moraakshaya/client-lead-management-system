@@ -1,15 +1,26 @@
 import React from 'react';
 import { FaTimes, FaUser, FaStickyNote, FaCalendarAlt, FaChartLine } from 'react-icons/fa';
-import '../clients/viewClientModal.css';
+import './viewClientModal.css';
 
-export default function ViewLeadModal({ isOpen, onClose, lead }) {
-  if (!isOpen || !lead) return null;
+export default function ViewClientModal({ isOpen, onClose, client }) {
+  if (!isOpen) return null;
+
+  // Fallback to placeholder if client is empty
+  const clientData = client || {
+    client: 'John Doe',
+    company: 'ABC Technologies',
+    email: 'john@example.com',
+    phone: '+91 9876543210',
+    status: 'Active',
+    manager: 'Rahul',
+    since: '15 Jul 2026'
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2><FaUser style={{ marginRight: '10px' }}/> Lead Details</h2>
+          <h2><FaUser style={{ marginRight: '10px' }}/> Client Details</h2>
           <button className="close-btn" onClick={onClose}><FaTimes /></button>
         </div>
 
@@ -19,71 +30,71 @@ export default function ViewLeadModal({ isOpen, onClose, lead }) {
             <h3 className="section-title"><span className="icon-wrapper"><FaUser /></span> Basic Information</h3>
             <div className="info-grid">
               <div className="info-item">
-                <span className="info-label">Lead Name</span>
-                <span className="info-value">{lead.customer || '-'}</span>
+                <span className="info-label">Client Name</span>
+                <span className="info-value">{clientData.client}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Company</span>
-                <span className="info-value">{lead.company || '-'}</span>
+                <span className="info-value">{clientData.company}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Email</span>
-                <span className="info-value">{lead.email || '-'}</span>
+                <span className="info-value">{clientData.email || 'john@example.com'}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Phone</span>
-                <span className="info-value">{lead.phone || '-'}</span>
+                <span className="info-value">{clientData.phone || '+91 9876543210'}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Status</span>
                 <span className="info-value">
-                  <span className={`status-badge ${lead.status?.toLowerCase() === 'won' || lead.status?.toLowerCase() === 'new' ? 'status-active' : ''}`}>
-                    {lead.status || '-'}
+                  <span className={`status-badge ${clientData.status?.toLowerCase() === 'active' || clientData.status?.toLowerCase() === 'vip' ? 'status-active' : ''}`}>
+                    {clientData.status}
                   </span>
                 </span>
               </div>
               <div className="info-item">
-                <span className="info-label">Priority</span>
-                <span className="info-value">{lead.priority || '-'}</span>
-              </div>
-              <div className="info-item">
-                <span className="info-label">Source</span>
-                <span className="info-value">{lead.source || '-'}</span>
-              </div>
-              <div className="info-item">
                 <span className="info-label">Assigned To</span>
-                <span className="info-value">{lead.assignedTo || '-'}</span>
+                <span className="info-value">{clientData.manager}</span>
               </div>
-              <div className="info-item" style={{ gridColumn: '1 / -1' }}>
-                <span className="info-label">Created Date</span>
-                <span className="info-value">{lead.createdDate || '-'}</span>
+              <div className="info-item">
+                <span className="info-label">Client Since</span>
+                <span className="info-value">{clientData.since}</span>
               </div>
             </div>
           </div>
+
+          <hr className="section-divider" />
 
           {/* Recent Notes */}
           <div className="modal-section">
             <h3 className="section-title"><span className="icon-wrapper"><FaStickyNote /></span> Recent Notes</h3>
             <ul className="notes-list">
-              <li>{lead.notes || "No recent notes found."}</li>
+              <li>Interested in Premium Plan</li>
+              <li>Requested Demo</li>
             </ul>
           </div>
+
+          <hr className="section-divider" />
 
           {/* Upcoming Follow-up */}
           <div className="modal-section">
             <h3 className="section-title"><span className="icon-wrapper"><FaCalendarAlt /></span> Upcoming Follow-up</h3>
             <div className="followup-box">
-              <div className="followup-date">PENDING</div>
-              <div className="followup-desc">No follow-up scheduled yet</div>
+              <div className="followup-date">25 Jul 2026</div>
+              <div className="followup-desc">Product Demo</div>
             </div>
           </div>
+
+          <hr className="section-divider" />
 
           {/* Recent Activity */}
           <div className="modal-section">
             <h3 className="section-title"><span className="icon-wrapper"><FaChartLine /></span> Recent Activity</h3>
             <ul className="activity-list">
-              <li><span className="check-icon">✓</span> Lead Captured from {lead.source || "System"}</li>
-              <li><span className="check-icon">✓</span> Assigned to {lead.assignedTo || "User"}</li>
+              <li><span className="check-icon">✓</span> Client Created</li>
+              <li><span className="check-icon">✓</span> Note Added</li>
+              <li><span className="check-icon">✓</span> Follow-up Scheduled</li>
             </ul>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaEdit, FaEye, FaTrashAlt, FaEllipsisH } from 'react-icons/fa';
+import { FaEdit, FaEye, FaTrashAlt, FaEllipsisV, FaStickyNote, FaCalendarAlt, FaSync } from 'react-icons/fa';
 import './leadsTable.css';
 
 const mockLeads = [
@@ -85,7 +85,7 @@ const getStatusClass = (status) => {
   }
 };
 
-export default function LeadsTable({ onEditLead, onViewLead, onDeleteLead }) {
+export default function LeadsTable({ onEditLead, onViewLead, onDeleteLead, onAddNote, onSchedule, onConvert }) {
   return (
     <div className="table-container">
       <div className="table-wrapper">
@@ -133,10 +133,14 @@ export default function LeadsTable({ onEditLead, onViewLead, onDeleteLead }) {
                 <td className="created-date">{lead.createdDate}</td>
                 <td>
                   <div className="table-actions-dropdown">
-                    <button className="action-menu-btn"><FaEllipsisH /></button>
+                    <button className="action-menu-btn"><FaEllipsisV /></button>
                     <div className="dropdown-menu">
                       <button className="dropdown-item view-item" onClick={() => onViewLead && onViewLead(lead)}><FaEye /> View</button>
                       <button className="dropdown-item edit-item" onClick={() => onEditLead && onEditLead(lead)}><FaEdit /> Edit</button>
+                      <button className="dropdown-item" onClick={() => onAddNote && onAddNote(lead)}><FaStickyNote /> Add Note</button>
+                      <button className="dropdown-item" onClick={() => onSchedule && onSchedule(lead)}><FaCalendarAlt /> Schedule Follow-up</button>
+                      <button className="dropdown-item" style={{ color: 'var(--primary)' }} onClick={() => onConvert && onConvert(lead)}><FaSync /> Convert to Client</button>
+                      <div className="dropdown-divider" style={{ borderTop: '1px solid var(--border)', margin: '4px 0' }}></div>
                       <button className="dropdown-item delete-item" onClick={() => onDeleteLead && onDeleteLead(lead)}><FaTrashAlt /> Delete</button>
                     </div>
                   </div>

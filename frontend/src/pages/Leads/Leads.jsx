@@ -7,12 +7,18 @@ import AddLeadModal from "../../components/leads/AddLeadModal";
 import EditLeadDrawer from "../../components/leads/EditLeadDrawer";
 import ViewLeadModal from "../../components/leads/ViewLeadModal";
 import DeleteLeadModal from "../../components/leads/DeleteLeadModal";
+import AddNoteModal from "../../components/clients/AddNoteModal";
+import ScheduleFollowupModal from "../../components/clients/ScheduleFollowupModal";
+import ConvertToClientModal from "../../components/leads/ConvertToClientModal";
 
 export function Leads() {
     const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
     const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+    const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
 
     const handleEditLead = (lead) => {
@@ -30,6 +36,21 @@ export function Leads() {
         setIsDeleteModalOpen(true);
     };
 
+    const handleAddNote = (lead) => {
+        setSelectedLead(lead);
+        setIsAddNoteModalOpen(true);
+    };
+
+    const handleSchedule = (lead) => {
+        setSelectedLead(lead);
+        setIsScheduleModalOpen(true);
+    };
+
+    const handleConvert = (lead) => {
+        setSelectedLead(lead);
+        setIsConvertModalOpen(true);
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%', minWidth: 0, maxWidth: '100%' }}>
             <LeadsHeader onAddLead={() => setIsAddLeadModalOpen(true)} />
@@ -40,6 +61,9 @@ export function Leads() {
                     onEditLead={handleEditLead} 
                     onViewLead={handleViewLead}
                     onDeleteLead={handleDeleteLead}
+                    onAddNote={handleAddNote}
+                    onSchedule={handleSchedule}
+                    onConvert={handleConvert}
                 />
             </div>
 
@@ -64,6 +88,24 @@ export function Leads() {
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 lead={selectedLead}
+            />
+
+            <AddNoteModal 
+                isOpen={isAddNoteModalOpen} 
+                onClose={() => setIsAddNoteModalOpen(false)} 
+                client={selectedLead} 
+            />
+
+            <ScheduleFollowupModal 
+                isOpen={isScheduleModalOpen} 
+                onClose={() => setIsScheduleModalOpen(false)} 
+                client={selectedLead} 
+            />
+
+            <ConvertToClientModal 
+                isOpen={isConvertModalOpen} 
+                onClose={() => setIsConvertModalOpen(false)} 
+                lead={selectedLead} 
             />
         </div>
     )

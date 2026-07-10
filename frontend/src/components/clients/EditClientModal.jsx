@@ -1,73 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { FaTimes, FaEdit } from "react-icons/fa";
-import CustomDropdown from "./CustomDropdown";
-import "../clients/editClientModal.css";
+import React, { useState, useEffect } from 'react';
+import { FaTimes, FaEdit } from 'react-icons/fa';
+import CustomDropdown from '../leads/CustomDropdown';
+import './editClientModal.css';
 
-export default function EditLeadModal({ isOpen, onClose, lead }) {
+export default function EditClientModal({ isOpen, onClose, client }) {
   const [formData, setFormData] = useState({
-    customer: "",
-    company: "",
-    email: "",
-    phone: "",
-    status: "",
-    priority: "",
-    source: "",
-    assignedTo: "",
-    notes: ""
+    clientName: '',
+    company: '',
+    email: '',
+    phone: '',
+    status: 'Active',
+    assignedTo: 'Rahul',
+    description: ''
   });
 
   useEffect(() => {
-    if (lead) {
+    if (client) {
       setFormData({
-        customer: lead.customer || "",
-        company: lead.company || "",
-        email: lead.email || "",
-        phone: lead.phone || "",
-        status: lead.status || "",
-        priority: lead.priority || "",
-        source: lead.source || "",
-        assignedTo: lead.assignedTo || "",
-        notes: lead.notes || ""
+        clientName: client.client || '',
+        company: client.company || '',
+        email: client.email || 'john@example.com',
+        phone: client.phone || '+91 9876543210',
+        status: client.status || 'Active',
+        assignedTo: client.manager || 'Rahul',
+        description: ''
       });
     }
-  }, [lead]);
+  }, [client]);
+
+  if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Save changes logic here
+    // Save changes logic would go here
     onClose();
   };
-
-  if (!isOpen) return null;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container edit-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2><FaEdit style={{ marginRight: '10px' }}/> Edit Lead</h2>
-          <button className="close-btn" type="button" onClick={onClose}>
-            <FaTimes />
-          </button>
+          <h2><FaEdit style={{ marginRight: '10px' }}/> Edit Client</h2>
+          <button className="close-btn" type="button" onClick={onClose}><FaTimes /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="edit-form-content">
           <div className="modal-content">
             <div className="edit-form-grid">
-              
               <div className="form-group">
-                <label>Full Name</label>
+                <label>Client Name</label>
                 <input 
                   type="text" 
-                  name="customer" 
-                  value={formData.customer} 
-                  onChange={handleChange} 
+                  name="clientName" 
+                  value={formData.clientName} 
+                  onChange={handleChange}
                   className="form-input"
-                  placeholder="Enter full name"
+                  placeholder="Enter client name"
                 />
               </div>
 
@@ -77,9 +70,9 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
                   type="text" 
                   name="company" 
                   value={formData.company} 
-                  onChange={handleChange} 
+                  onChange={handleChange}
                   className="form-input"
-                  placeholder="Enter company"
+                  placeholder="Enter company name"
                 />
               </div>
 
@@ -89,7 +82,7 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
                   type="email" 
                   name="email" 
                   value={formData.email} 
-                  onChange={handleChange} 
+                  onChange={handleChange}
                   className="form-input"
                   placeholder="Enter email address"
                 />
@@ -98,10 +91,10 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
               <div className="form-group">
                 <label>Phone</label>
                 <input 
-                  type="tel" 
+                  type="text" 
                   name="phone" 
                   value={formData.phone} 
-                  onChange={handleChange} 
+                  onChange={handleChange}
                   className="form-input"
                   placeholder="Enter phone number"
                 />
@@ -111,29 +104,9 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
                 <label>Status</label>
                 <CustomDropdown 
                   name="status"
-                  value={formData.status} 
+                  value={formData.status}
+                  options={["Active", "VIP", "Inactive"]}
                   onChange={handleChange}
-                  options={["New", "Contacted", "Qualified", "Won", "Lost"]} 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Priority</label>
-                <CustomDropdown 
-                  name="priority"
-                  value={formData.priority} 
-                  onChange={handleChange}
-                  options={["High", "Medium", "Low"]} 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Source</label>
-                <CustomDropdown 
-                  name="source"
-                  value={formData.source} 
-                  onChange={handleChange}
-                  options={["Website", "Referral", "Event", "Social", "Cold Call"]} 
                 />
               </div>
 
@@ -141,24 +114,23 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
                 <label>Assigned To</label>
                 <CustomDropdown 
                   name="assignedTo"
-                  value={formData.assignedTo} 
+                  value={formData.assignedTo}
+                  options={["Rahul", "Priya", "Alex", "Sarah"]}
                   onChange={handleChange}
-                  options={["Alex J.", "Sarah S.", "Mike D.", "Rahul"]} 
                 />
               </div>
 
               <div className="form-group full-width">
-                <label>Notes</label>
+                <label>Description</label>
                 <textarea 
-                  name="notes" 
-                  value={formData.notes} 
-                  onChange={handleChange} 
+                  name="description" 
+                  value={formData.description} 
+                  onChange={handleChange}
                   className="form-textarea"
-                  rows="4"
-                  placeholder="Enter any additional notes..."
+                  placeholder="Enter any additional details or description..."
+                  rows={4}
                 ></textarea>
               </div>
-
             </div>
           </div>
 

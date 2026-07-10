@@ -1,0 +1,67 @@
+.clients-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.clients-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.clients-title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.clients-subtitle {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.clients-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clients-header-right button {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-export, .btn-import, .btn-refresh {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-export:hover, .btn-import:hover, .btn-refresh:hover {
+  background-color: var(--secondary-light);
+}
+
+.btn-add-client {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-add-client:hover {
+  background-color: var(--primary-hover);
+}

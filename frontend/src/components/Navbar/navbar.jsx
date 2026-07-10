@@ -43,7 +43,7 @@ export default function Navbar() {
           <button className="icon-btn" title="Notifications">
             <MdOutlineNotifications />
           </button>
-          <span className="badge">3</span>
+          <span className="nav-badge">3</span>
         </div>
 
         <button className="btn-primary new-lead-btn">
