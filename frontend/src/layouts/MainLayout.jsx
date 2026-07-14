@@ -9,7 +9,7 @@ export default function MainLayout() {
       <Sidebar />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Navbar />
-        <div style={{ flex: 1, padding: '32px', overflowY: 'auto', overflowX: 'hidden' }}>
+        <div id="main-scroll-container" style={{ flex: 1, padding: '32px', overflowY: 'auto', overflowX: 'hidden' }}>
           <Outlet />
         </div>
       </main>

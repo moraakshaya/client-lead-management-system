@@ -1,0 +1,220 @@
+.timeline-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  padding-bottom: 40px;
+}
+
+.timeline-date-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-date-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.date-badge {
+  background-color: var(--background);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: var(--shadow-sm);
+  margin-left: 20px;
+}
+
+.timeline-items-container {
+  display: flex;
+  flex-direction: column;
+  padding-left: 45px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-item:hover,
+.timeline-item:focus-within {
+  z-index: 50;
+}
+
+/* Marker Styles */
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.timeline-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: white;
+  z-index: 2;
+  box-shadow: 0 0 0 4px var(--background);
+  margin-bottom: 16px;
+}
+
+/* Type Colors */
+.type-create-lead { background-color: var(--success); }
+.type-update-lead { background-color: var(--warning); }
+.type-create-client { background-color: var(--primary); }
+.type-update-client { background-color: #8B5CF6; /* Purple */ }
+.type-schedule { background-color: #F97316; /* Orange */ }
+.type-complete { background-color: var(--success); }
+.type-note { background-color: #8B4513; /* Brown */ }
+.type-convert { background-color: #06B6D4; /* Cyan/Refresh */ }
+.type-delete { background-color: var(--danger); }
+.type-login { background-color: var(--text-secondary); }
+
+/* Continuous Vertical Line */
+.timeline-line {
+  position: absolute;
+  top: 32px; /* Starts exactly below the dot */
+  bottom: -16px; /* Extends to connect with the next item */
+  width: 2px;
+  background-color: var(--border);
+  z-index: 1;
+}
+
+/* Content Card */
+.timeline-content-card {
+  flex: 1;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  margin-bottom: 24px; /* Space between cards */
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+}
+
+.timeline-content-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--primary-light);
+}
+
+.timeline-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.timeline-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeline-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.timeline-title {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.timeline-module-badge {
+  background-color: var(--background);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.timeline-time {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.timeline-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timeline-entity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeline-entity {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.timeline-status-text {
+  font-family: "Inter", "Roboto", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.timeline-description {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .timeline-items-container {
+    padding-left: 20px;
+  }
+  
+  .timeline-content-card {
+    padding: 16px;
+  }
+  
+  .timeline-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Fix Dropdown Stacking & Width */
+.timeline-content-card .dropdown-menu {
+  min-width: max-content;
+  width: auto;
+}
+
+.timeline-content-card .dropdown-item {
+  white-space: nowrap;
+}

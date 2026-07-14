@@ -1,16 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from './components/ScrollToTop';
 
 import MainLayout from './layouts/MainLayout.jsx'
 import { Dashboard } from './pages/Dashboard/dashboard.jsx'
 import { Leads } from "./pages/Leads/Leads.jsx";
 import { Clients } from "./pages/Clients/Clients.jsx";
 import { FollowUps } from "./pages/FollowUps/FollowUps.jsx";
+import { Notes } from "./pages/Notes/Notes.jsx";
+import { ActivityTimeline } from "./pages/ActivityTimeline/ActivityTimeline.jsx";
 
 import './App.css'
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />} />
@@ -18,8 +22,8 @@ function App() {
           <Route path="/leads" element={<Leads />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/follow-ups" element={<FollowUps />} />
-          <Route path="/notes" element={<h1>Notes</h1>} />
-          <Route path="/activity-timeline" element={<h1>Activity Timeline</h1>} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/activity-timeline" element={<ActivityTimeline />} />
         </Route>
       </Routes>
     </BrowserRouter>
