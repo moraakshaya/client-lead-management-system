@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   MdSearch, 
   MdOutlineNotifications
 } from 'react-icons/md';
+import AddLeadModal from '../leads/AddLeadModal';
 import './navbar.css';
 
 const routeDetails = {
@@ -20,6 +21,7 @@ const routeDetails = {
 export default function Navbar() {
   const location = useLocation();
   const currentRoute = routeDetails[location.pathname] || { title: 'Dashboard' };
+  const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
 
   return (
     <header className="top-navbar">
@@ -46,7 +48,7 @@ export default function Navbar() {
           <span className="nav-badge">3</span>
         </div>
 
-        <button className="btn-primary new-lead-btn">
+        <button className="btn-primary new-lead-btn" onClick={() => setIsAddLeadModalOpen(true)}>
           <span className="plus-icon">+</span> New Lead
         </button>
 
@@ -59,6 +61,11 @@ export default function Navbar() {
           />
         </div>
       </div>
+
+      <AddLeadModal 
+        isOpen={isAddLeadModalOpen} 
+        onClose={() => setIsAddLeadModalOpen(false)} 
+      />
     </header>
   );
 }

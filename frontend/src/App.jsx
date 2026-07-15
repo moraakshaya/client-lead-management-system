@@ -8,6 +8,7 @@ import { Clients } from "./pages/Clients/Clients.jsx";
 import { FollowUps } from "./pages/FollowUps/FollowUps.jsx";
 import { Notes } from "./pages/Notes/Notes.jsx";
 import { ActivityTimeline } from "./pages/ActivityTimeline/ActivityTimeline.jsx";
+import { Settings } from "./pages/Settings/Settings.jsx";
 
 import './App.css'
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/follow-ups" element={<FollowUps />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/activity-timeline" element={<ActivityTimeline />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>
