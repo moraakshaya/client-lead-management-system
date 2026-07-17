@@ -3,7 +3,24 @@ import { FaSearch, FaUndo } from 'react-icons/fa';
 import './notesFilterBar.css';
 import CustomDropdown from '../leads/CustomDropdown';
 
-export default function NotesFilterBar() {
+export default function NotesFilterBar({ filters = {}, setFilters }) {
+  
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    if (setFilters) {
+      setFilters(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleReset = () => {
+    if (setFilters) {
+      setFilters({ type: '', status: '', search: '' });
+    }
+  };
+
   return (
     <div className="filter-bar-container">
       <div className="filter-bar-grid">
@@ -15,48 +32,50 @@ export default function NotesFilterBar() {
             <FaSearch className="search-icon" />
             <input 
               type="text" 
+              name="search"
+              value={filters?.search || ''}
+              onChange={handleFilterChange}
               className="filter-input filter-search-input" 
               placeholder="Search notes..." 
             />
           </div>
         </div>
 
-        {/* Category */}
-        <div className="filter-group">
-          <label className="filter-label">Category</label>
-          <CustomDropdown 
-            placeholder="All Categories"
-            options={["Meeting", "Call", "Email", "General"]}
-          />
-        </div>
-
         {/* Related To */}
         <div className="filter-group">
           <label className="filter-label">Related To</label>
           <CustomDropdown 
+            name="type"
+            value={filters?.type || ''}
+            onChange={handleFilterChange}
             placeholder="All Entities"
-            options={["Lead", "Client", "Project", "Other"]}
+            options={[
+              { value: '', label: 'All Entities' },
+              { value: 'Lead', label: 'Lead' },
+              { value: 'Client', label: 'Client' }
+            ]}
           />
         </div>
 
-        {/* Created By */}
+        {/* Status filter */}
         <div className="filter-group">
-          <label className="filter-label">Created By</label>
+          <label className="filter-label">Status</label>
           <CustomDropdown 
-            placeholder="All Users"
-            options={["Alex Johnson", "Sarah Smith", "Mike Davis"]}
+            name="status"
+            value={filters?.status || ''}
+            onChange={handleFilterChange}
+            placeholder="All Statuses"
+            options={[
+              { value: '', label: 'All Statuses' },
+              { value: 'Pinned', label: 'Pinned' },
+              { value: 'Active', label: 'Active' }
+            ]}
           />
-        </div>
-
-        {/* Date */}
-        <div className="filter-group">
-          <label className="filter-label">Date</label>
-          <input type="date" className="filter-input" />
         </div>
 
         {/* Reset Button */}
         <div className="filter-group filter-actions">
-          <button className="btn-reset">
+          <button className="btn-reset" onClick={handleReset}>
             <FaUndo /> Reset
           </button>
         </div>

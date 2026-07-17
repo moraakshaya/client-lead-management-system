@@ -56,6 +56,11 @@ export default function LeadAnalytics({ chartData }) {
     color: sourceColors[item._id] || sourceColors['Other']
   })) || [];
 
+  const totalLeads = data.reduce((acc, curr) => acc + curr.leads, 0);
+  const pendingLeads = data.reduce((acc, curr) => acc + curr.pending, 0);
+  const convertedLeads = data.reduce((acc, curr) => acc + curr.converted, 0);
+  const lostLeads = data.reduce((acc, curr) => acc + curr.lost, 0);
+
   // Close dropdown if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -128,6 +133,7 @@ export default function LeadAnalytics({ chartData }) {
                 dy={10}
               />
               <YAxis
+                allowDecimals={false}
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: 'var(--text-secondary)', fontSize: 13, fontFamily: 'Inter, sans-serif' }}
@@ -171,19 +177,19 @@ export default function LeadAnalytics({ chartData }) {
         <div className="analytics-metrics-grid">
           <div className="metric-item">
             <span className="metric-label">Total Leads</span>
-            <span className="metric-value">1,190</span>
+            <span className="metric-value">{totalLeads}</span>
           </div>
           <div className="metric-item">
-            <span className="metric-label">New Leads</span>
-            <span className="metric-value">312</span>
+            <span className="metric-label">Pending</span>
+            <span className="metric-value">{pendingLeads}</span>
           </div>
           <div className="metric-item">
             <span className="metric-label">Converted</span>
-            <span className="metric-value">84</span>
+            <span className="metric-value">{convertedLeads}</span>
           </div>
           <div className="metric-item">
             <span className="metric-label">Lost</span>
-            <span className="metric-value">12</span>
+            <span className="metric-value">{lostLeads}</span>
           </div>
         </div>
       </div>

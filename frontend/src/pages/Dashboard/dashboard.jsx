@@ -29,7 +29,7 @@ export function Dashboard() {
                 setStats(statsRes.data);
                 setChartData(chartsRes.data);
                 setRecentWork(workRes.data);
-                setActivities(activitiesRes.data);
+                setActivities(activitiesRes.data.data || activitiesRes.data);
                 setError(null);
             } catch (err) {
                 console.error("Failed to load dashboard data:", err);

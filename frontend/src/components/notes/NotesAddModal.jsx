@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTimes, FaStickyNote } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import '../clients/editClientModal.css';
+import { createNote } from '../../services/noteService';
+import { getLeads } from '../../services/leadService';
 
 export default function NotesAddModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
     title: '',
-    relatedToEntity: 'Lead',
-    relatedToName: '',
-    category: 'Sales',
-    description: ''
+    relatedToModel: 'Lead',
+    leadId: '',
+    notes: '' // Renamed from description to match backend
   });
+  
+  const [loading, setLoading] = useState(false);
+  const [leadsList, setLeadsList] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchOptions();
+    }
+  }, [isOpen]);
+
+  const fetchOptions = async () => {
+    try {
+      const leadsRes = await getLeads({ limit: 100 });
+      const formattedLeads = leadsRes.data.leads.map(lead => ({
+        value: lead._id,
+        label: lead.companyName ? `${lead.leadName} (${lead.companyName})` : lead.leadName
+      }));
+      setLeadsList(formattedLeads);
+    } catch (error) {
+      console.error("Error fetching leads for dropdown:", error);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -19,11 +42,26 @@ export default function NotesAddModal({ isOpen, onClose }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Saving new note:", formData);
-    onClose();
-    setFormData({ title: '', relatedToEntity: 'Lead', relatedToName: '', category: 'Sales', description: '' });
+    if (!formData.leadId) {
+      alert("Please select a Lead.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await createNote(formData);
+      
+      // Clear form and close (onClose automatically refreshes the table in Notes.jsx)
+      setFormData({ title: '', relatedToModel: 'Lead', leadId: '', notes: '' });
+      onClose();
+    } catch (error) {
+      console.error("Error creating note:", error);
+      alert("Failed to save note.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,7 +69,7 @@ export default function NotesAddModal({ isOpen, onClose }) {
       <div className="modal-container edit-modal-container" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2><FaStickyNote style={{ marginRight: '10px' }}/> Add Note</h2>
-          <button className="close-btn" type="button" onClick={onClose}><FaTimes /></button>
+          <button className="close-btn" type="button" onClick={onClose} disabled={loading}><FaTimes /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="edit-form-content">
@@ -54,38 +92,29 @@ export default function NotesAddModal({ isOpen, onClose }) {
               <div className="form-group">
                 <label>Related To</label>
                 <CustomDropdown 
-                  name="relatedToEntity"
-                  value={formData.relatedToEntity} 
+                  name="relatedToModel"
+                  value={formData.relatedToModel} 
                   onChange={handleChange}
-                  options={["Lead", "Client", "Project", "Other"]} 
+                  options={["Lead"]} 
                 />
               </div>
 
               <div className="form-group">
-                <label>Select {formData.relatedToEntity}</label>
+                <label>Select {formData.relatedToModel}</label>
                 <CustomDropdown 
-                  name="relatedToName"
-                  value={formData.relatedToName} 
+                  name="leadId"
+                  value={formData.leadId} 
                   onChange={handleChange}
-                  options={["John Doe", "Acme Corp", "Sarah Smith"]} 
-                />
-              </div>
-
-              <div className="form-group full-width">
-                <label>Category</label>
-                <CustomDropdown 
-                  name="category"
-                  value={formData.category} 
-                  onChange={handleChange}
-                  options={["Sales", "Support", "General", "Meeting"]} 
+                  options={leadsList}
+                  placeholder={`Select a ${formData.relatedToModel}...`}
                 />
               </div>
 
               <div className="form-group full-width">
                 <label>Description</label>
                 <textarea 
-                  name="description" 
-                  value={formData.description} 
+                  name="notes" 
+                  value={formData.notes} 
                   onChange={handleChange}
                   className="form-textarea"
                   placeholder="Write your note here..."
@@ -98,8 +127,10 @@ export default function NotesAddModal({ isOpen, onClose }) {
           </div>
 
           <div className="modal-footer edit-modal-footer">
-            <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-save">Save Note</button>
+            <button type="button" className="btn-cancel" onClick={onClose} disabled={loading}>Cancel</button>
+            <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? "Saving..." : "Save Note"}
+            </button>
           </div>
         </form>
       </div>

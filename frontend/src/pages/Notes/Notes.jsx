@@ -23,11 +23,12 @@ export const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalNotes: 0 });
+  const [filters, setFilters] = useState({ type: '', status: '', search: '' });
 
-  // --- FETCH DATA ON MOUNT ---
+  // --- FETCH DATA ---
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [filters, pagination.currentPage]);
 
   const fetchData = async () => {
     try {
@@ -35,7 +36,7 @@ export const Notes = () => {
       // Fetch both stats and table data at the exact same time
       const [statsRes, notesRes] = await Promise.all([
         getNoteStats(),
-        getNotes({ page: 1, limit: 10 })
+        getNotes({ page: pagination.currentPage, limit: 10, ...filters })
       ]);
 
       setStats(statsRes.data);
@@ -55,12 +56,11 @@ export const Notes = () => {
     if (action === 'delete') setIsDeleteModalOpen(true);
     if (action === 'add') setIsAddModalOpen(true);
 
-    // NEW: Real Pin / Unpin Functionality
+    // Real Pin / Unpin Functionality
     if (action === 'pin') {
       try {
-        // Toggle the isPinned status in the backend database
         await updateNote(note._id, { isPinned: !note.isPinned });
-        fetchData(); // Instantly refresh the UI to show the new pinned badge
+        fetchData();
       } catch (error) {
         console.error("Error pinning note:", error);
       }
@@ -74,13 +74,11 @@ export const Notes = () => {
         onExport={() => console.log('Exporting Notes')}
       />
 
-      {/* We are now passing the real stats data down to the cards! */}
       <NotesStatsCards stats={stats} loading={loading} />
 
-      <NotesFilterBar />
+      <NotesFilterBar filters={filters} setFilters={setFilters} />
 
       <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
-        {/* We are now passing real table data down to the table! */}
         <NotesTable
           notes={notes}
           loading={loading}
@@ -89,7 +87,6 @@ export const Notes = () => {
         />
       </div>
 
-      {/* Modals */}
       <NotesViewModal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} note={selectedNote} />
       <NotesEditModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} note={selectedNote} />
       <NotesDeleteModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} note={selectedNote} />
@@ -97,9 +94,11 @@ export const Notes = () => {
         isOpen={isAddModalOpen}
         onClose={() => {
           setIsAddModalOpen(false);
-          fetchData(); // Automatically refresh data after a new note is added
+          fetchData();
         }}
       />
     </div>
   );
 };
+
+// Trigger HMR

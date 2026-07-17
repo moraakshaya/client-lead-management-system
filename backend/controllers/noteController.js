@@ -22,9 +22,16 @@ exports.createNote = async (req, res) => {
 // Get All Notes (with pagination, filtering, and populated lead data)
 exports.getAllNotes = async (req, res) => {
     try {
-        const { type, status, page = 1, limit = 10 } = req.query;
+        const { type, status, search, page = 1, limit = 10 } = req.query;
 
         let query = {};
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { notes: { $regex: search, $options: 'i' } }
+            ];
+        }
 
         // Apply filters if they exist in the URL request
         if (type) query.relatedToModel = type; // "Lead" or "Client"
