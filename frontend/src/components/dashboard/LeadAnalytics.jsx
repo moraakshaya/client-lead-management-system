@@ -1,27 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell
 } from 'recharts';
 import './LeadAnalytics.css';
-
-const data = [
-  { name: 'Jan', leads: 50, converted: 10, pending: 35, lost: 5 },
-  { name: 'Feb', leads: 80, converted: 20, pending: 50, lost: 10 },
-  { name: 'Mar', leads: 130, converted: 40, pending: 80, lost: 10 },
-  { name: 'Apr', leads: 160, converted: 60, pending: 85, lost: 15 },
-  { name: 'May', leads: 210, converted: 90, pending: 100, lost: 20 },
-  { name: 'Jun', leads: 250, converted: 120, pending: 110, lost: 20 },
-  { name: 'Jul', leads: 310, converted: 150, pending: 135, lost: 25 },
-];
 
 const metricConfigs = {
   all: { label: 'All Metrics', color: 'var(--text-primary)' },
@@ -31,21 +21,40 @@ const metricConfigs = {
   lost: { label: 'Lost', color: 'var(--danger)' }
 };
 
-const leadSources = [
-  { name: 'Website', percentage: 42, color: 'var(--primary)' },
-  { name: 'Instagram', percentage: 28, color: '#E1306C' },
-  { name: 'Facebook', percentage: 18, color: '#1877F2' },
-  { name: 'Referral', percentage: 8, color: 'var(--success)' },
-  { name: 'Walk-in', percentage: 4, color: 'var(--warning)' },
-];
-
 const filterOptions = ['This Week', 'This Month', 'Last 6 Months', 'This Year'];
 
-export default function LeadAnalytics() {
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const sourceColors = {
+  'Website': 'var(--primary)',
+  'Instagram': '#E1306C',
+  'Facebook': '#1877F2',
+  'Referral': 'var(--success)',
+  'Walk-in': 'var(--warning)',
+  'Other': 'var(--text-secondary)'
+};
+
+export default function LeadAnalytics({ chartData }) {
   const [filter, setFilter] = useState('This Year');
   const [activeMetric, setActiveMetric] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Map backend trend to recharts data
+  const data = chartData?.leadTrend?.map(item => ({
+    name: monthNames[item._id - 1] || item._id,
+    leads: item.leads,
+    converted: item.converted,
+    pending: item.pending,
+    lost: item.lost
+  })) || [];
+
+  const totalSources = chartData?.leadSources?.reduce((acc, curr) => acc + curr.count, 0) || 1;
+  const leadSourcesData = chartData?.leadSources?.map(item => ({
+    name: item._id || 'Unknown',
+    percentage: Math.round((item.count / totalSources) * 100),
+    color: sourceColors[item._id] || sourceColors['Other']
+  })) || [];
 
   // Close dropdown if clicked outside
   useEffect(() => {
@@ -66,21 +75,21 @@ export default function LeadAnalytics() {
       <div className="analytics-card stat-glass-card growth-analytics">
         <div className="analytics-header">
           <h2 className="analytics-title">Lead Analytics</h2>
-          
+
           <div className="custom-dropdown-container" ref={dropdownRef}>
-            <button 
-              className="analytics-filter-btn" 
+            <button
+              className="analytics-filter-btn"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               {filter}
               <span className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>▼</span>
             </button>
-            
+
             {isDropdownOpen && (
               <div className="custom-dropdown-menu">
                 {filterOptions.map(option => (
-                  <div 
-                    key={option} 
+                  <div
+                    key={option}
                     className={`dropdown-item ${filter === option ? 'selected' : ''}`}
                     onClick={() => {
                       setFilter(option);
@@ -111,48 +120,48 @@ export default function LeadAnalytics() {
           <ResponsiveContainer width="100%" height={320}>
             <LineChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="currentColor" className="chart-grid" />
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'var(--text-secondary)', fontSize: 13, fontFamily: 'Inter, sans-serif' }} 
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: 'var(--text-secondary)', fontSize: 13, fontFamily: 'Inter, sans-serif' }}
                 dy={10}
               />
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: 'var(--text-secondary)', fontSize: 13, fontFamily: 'Inter, sans-serif' }} 
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: 'var(--text-secondary)', fontSize: 13, fontFamily: 'Inter, sans-serif' }}
                 dx={-10}
               />
-              <Tooltip 
-                 contentStyle={{ 
-                   backgroundColor: 'var(--surface)', 
-                   border: '1px solid var(--border)', 
-                   borderRadius: '12px', 
-                   boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
-                   fontFamily: 'Inter, sans-serif'
-                 }}
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                  fontFamily: 'Inter, sans-serif'
+                }}
               />
               {activeMetric === 'all' ? (
                 Object.keys(metricConfigs).filter(k => k !== 'all').map(key => (
-                  <Line 
+                  <Line
                     key={key}
-                    type="monotone" 
-                    dataKey={key} 
-                    stroke={metricConfigs[key].color} 
-                    strokeWidth={3} 
-                    dot={{ r: 4, fill: 'var(--surface)', stroke: metricConfigs[key].color, strokeWidth: 2 }} 
-                    activeDot={{ r: 6, fill: metricConfigs[key].color, stroke: 'var(--surface)' }} 
+                    type="monotone"
+                    dataKey={key}
+                    stroke={metricConfigs[key].color}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: 'var(--surface)', stroke: metricConfigs[key].color, strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: metricConfigs[key].color, stroke: 'var(--surface)' }}
                   />
                 ))
               ) : (
-                <Line 
-                  type="monotone" 
-                  dataKey={activeMetric} 
-                  stroke={metricConfigs[activeMetric].color} 
-                  strokeWidth={4} 
-                  dot={{ r: 5, fill: 'var(--surface)', stroke: metricConfigs[activeMetric].color, strokeWidth: 2 }} 
-                  activeDot={{ r: 8, fill: metricConfigs[activeMetric].color, stroke: 'var(--surface)' }} 
+                <Line
+                  type="monotone"
+                  dataKey={activeMetric}
+                  stroke={metricConfigs[activeMetric].color}
+                  strokeWidth={4}
+                  dot={{ r: 5, fill: 'var(--surface)', stroke: metricConfigs[activeMetric].color, strokeWidth: 2 }}
+                  activeDot={{ r: 8, fill: metricConfigs[activeMetric].color, stroke: 'var(--surface)' }}
                 />
               )}
             </LineChart>
@@ -184,12 +193,12 @@ export default function LeadAnalytics() {
         <div className="analytics-header">
           <h2 className="analytics-title">Lead Sources</h2>
         </div>
-        
+
         <div className="sources-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: '100%' }}>
           <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie
-                data={leadSources}
+                data={leadSourcesData}
                 cx="50%"
                 cy="50%"
                 innerRadius={65}
@@ -199,36 +208,36 @@ export default function LeadAnalytics() {
                 stroke="none"
                 cornerRadius={6}
               >
-                {leadSources.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.color} 
-                    style={{ filter: `drop-shadow(0px 4px 8px ${entry.color}40)` }} 
+                {leadSourcesData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    style={{ filter: `drop-shadow(0px 4px 8px ${entry.color}40)` }}
                   />
                 ))}
               </Pie>
-              <Tooltip 
-                 contentStyle={{ 
-                   backgroundColor: 'var(--surface)', 
-                   border: '1px solid var(--border)', 
-                   borderRadius: '12px', 
-                   boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
-                   fontFamily: 'Inter, sans-serif',
-                   fontWeight: 600
-                 }}
-                 itemStyle={{ color: 'var(--text-primary)' }}
-                 formatter={(value, name) => [`${value}%`, name]}
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: 600
+                }}
+                itemStyle={{ color: 'var(--text-primary)' }}
+                formatter={(value, name) => [`${value}%`, name]}
               />
             </PieChart>
           </ResponsiveContainer>
-          
+
           <div className="sources-legend" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {leadSources.map((source, index) => (
+            {leadSourcesData.map((source, index) => (
               <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ 
-                    width: '12px', height: '12px', borderRadius: '50%', 
-                    backgroundColor: source.color, 
+                  <div style={{
+                    width: '12px', height: '12px', borderRadius: '50%',
+                    backgroundColor: source.color,
                     boxShadow: `0 2px 6px ${source.color}80`
                   }} />
                   <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600 }}>{source.name}</span>

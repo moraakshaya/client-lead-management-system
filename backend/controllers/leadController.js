@@ -23,32 +23,16 @@ exports.createLead = async (req, res) => {
 // Controller function to retrieve all leads
 exports.getAllLeads = async (req, res) => {
     try {
-
-        const { search, status, source, sort } = req.query;
+        const { search, status, source, sort, page = 1, limit = 10 } = req.query;
 
         let query = {};
 
-        //Search By Lead Name
+        //Search By Lead Name, Email, Phone
         if (search) {
             query.$or = [
-                {
-                    leadName: {
-                        $regex: search, //$regex means Search for matching text.
-                        $options: "i",   //Means Case Insensitive Search, ignore uppercase or lowercase
-                    },
-                },
-                {
-                    email: {
-                        $regex: search,
-                        $options: "i",
-                    },
-                },
-                {
-                    phone: {
-                        $regex: search,
-                        $options: "i",
-                    },
-                },
+                { leadName: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } },
+                { phone: { $regex: search, $options: "i" } },
             ];
         }
 
@@ -62,27 +46,45 @@ exports.getAllLeads = async (req, res) => {
             query.source = source;
         }
 
+        const pageNumber = parseInt(page);
+        const limitNumber = parseInt(limit);
+        const skip = (pageNumber - 1) * limitNumber;
+
         let leadsQuery = Lead.find(query);
 
         //Sort
         if (sort === "oldest") {
-            leadsQuery = leadsQuery.sort({
-                createdAt: 1
-            });
+            leadsQuery = leadsQuery.sort({ createdAt: 1 });
+        } else {
+            leadsQuery = leadsQuery.sort({ createdAt: -1 }); // Default newest
         }
-        const leads = await leadsQuery; // Retrieve all leads from the database using the find() method of the Lead model
-        res.status(201).json(leads); // Send a response with status code 201 (Created) and the list of leads in JSON format
+
+        // Pagination
+        leadsQuery = leadsQuery.skip(skip).limit(limitNumber);
+
+        const leads = await leadsQuery;
+        const totalLeads = await Lead.countDocuments(query);
+        const totalPages = Math.ceil(totalLeads / limitNumber);
+
+        res.status(200).json({
+            leads,
+            pagination: {
+                totalLeads,
+                totalPages,
+                currentPage: pageNumber,
+                limit: limitNumber
+            }
+        });
     } catch (err) {
-        res.status(500).json(err); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
+        res.status(500).json({ message: err.message });
     }
 };
 
 // Controller function to retrieve a single lead by its ID
 exports.getLeadById = async (req, res) => {
     try {
-        //  console.log("ID:", req.params.id);
         const lead = await Lead.findById(req.params.id); // Retrieve a lead from the database using the findById() method of
-        res.status(201).json(lead); // Send a response with status code 201 (Created) and the lead in JSON format
+        res.status(200).json(lead); // Send a response with status code 200 (OK) and the lead in JSON format
     } catch (err) {
         res.status(500).json(err); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
     }
@@ -122,5 +124,22 @@ exports.deleteLead = async (req, res) => {
     }
 };
 
+exports.getLeadStats = async (req, res) => {
+    try {
+        const totalLeads = await Lead.countDocuments();
+        const newLeads = await Lead.countDocuments({ status: "New" });
+        const qualifiedLeads = await Lead.countDocuments({ status: "Qualified" });
+        const convertedLeads = await Lead.countDocuments({ status: "Won" });
+        const lostLeads = await Lead.countDocuments({ status: "Lost" });
 
-
+        res.status(200).json({
+            totalLeads,
+            newLeads,
+            qualifiedLeads,
+            convertedLeads,
+            lostLeads
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};

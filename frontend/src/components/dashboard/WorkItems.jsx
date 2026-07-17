@@ -1,25 +1,13 @@
 import React from 'react';
 import './WorkItems.css';
 
-const recentLeads = [
-  { id: 1, name: 'Alice Smith', status: 'New', date: '2 hours ago', source: 'Website' },
-  { id: 2, name: 'Bob Jones', status: 'Contacted', date: '5 hours ago', source: 'Referral' },
-  { id: 3, name: 'Charlie Davis', status: 'Pending', date: '1 day ago', source: 'Instagram' },
-  { id: 4, name: 'Diana Prince', status: 'Converted', date: '2 days ago', source: 'Facebook' },
-];
-
-const followUps = [
-  { id: 1, task: 'Call regarding proposal', contact: 'Alice Smith', due: 'Today, 2:00 PM', priority: 'High' },
-  { id: 2, task: 'Email pricing sheet', contact: 'Bob Jones', due: 'Tomorrow, 10:00 AM', priority: 'Medium' },
-  { id: 3, task: 'Follow up on demo', contact: 'Charlie Davis', due: 'Jul 15, 2026', priority: 'Low' },
-];
-
 const getStatusColor = (status) => {
   switch(status) {
     case 'New': return 'var(--primary)';
     case 'Contacted': return 'var(--info, #3b82f6)';
     case 'Pending': return 'var(--warning)';
     case 'Converted': return 'var(--success)';
+    case 'Qualified': return 'var(--success)';
     default: return 'var(--text-secondary)';
   }
 };
@@ -33,7 +21,23 @@ const getPriorityColor = (priority) => {
   }
 };
 
-export default function WorkItems() {
+export default function WorkItems({ recentWork }) {
+  const recentLeads = recentWork?.recentLeads?.map((lead, i) => ({
+    id: lead._id || i,
+    name: lead.leadName || lead.companyName || 'Unknown Lead',
+    status: lead.status || 'New',
+    date: new Date(lead.createdAt).toLocaleDateString(),
+    source: lead.source || 'Direct'
+  })) || [];
+
+  const followUps = recentWork?.upcomingFollowUps?.map((task, i) => ({
+    id: task._id || i,
+    task: task.followUpType + ' follow-up',
+    contact: task.leadId?.leadName || task.leadId?.companyName || 'Unknown Contact',
+    due: new Date(task.followUpDate).toLocaleDateString(),
+    priority: 'Medium'
+  })) || [];
+
   return (
     <div className="work-items-section">
       {/* Recent Leads */}

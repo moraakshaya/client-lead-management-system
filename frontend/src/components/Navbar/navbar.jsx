@@ -32,8 +32,8 @@ export default function Navbar() {
 
       {/* 2nd & 3rd Section: Search, Notifications, Profile */}
       <div className="navbar-section utilities">
-        <div className="search-box">
-          <MdSearch className="search-icon" />
+        <div className="search-box" style={{ position: 'relative' }}>
+          <MdSearch className="nav-search-icon" style={{ position: 'static', margin: '0 8px 0 0', display: 'inline-block' }} />
           <input 
             type="text" 
             placeholder="Search anything..." 

@@ -22,6 +22,16 @@ const clientSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, // The ID of the lead associated with the client, referencing the Lead collection
         ref: 'Lead' // Establishing a reference to the Lead model, allowing for population of lead data when querying clients
     },
+    status: {
+        type: String,
+        enum: ['Active', 'Inactive'],
+        default: 'Active'
+    },
+    priority: {
+        type: String,
+        enum: ['Standard', 'VIP'],
+        default: 'Standard'
+    }
 },
  {
     timestamps: true // Automatically add createdAt and updatedAt fields to the schema

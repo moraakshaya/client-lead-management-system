@@ -15,10 +15,55 @@ exports.createClient = async (req, res) => {
 // Controller function to retrieve all clients
 exports.getAllClients = async (req, res) => {
     try {
-        const clients = await Client.find(); // Retrieve all clients from the database using the find() method of the Client model
-        res.status(201).json(clients); // Send a response with status code 201 (Created) and the list of clients in JSON format
+        const { search, status, priority, sort, page = 1, limit = 10 } = req.query;
+
+        let query = {};
+
+        if (search) {
+            query.$or = [
+                { clientName: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } },
+                { phone: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        if (status) {
+            query.status = status;
+        }
+
+        if (priority) {
+            query.priority = priority;
+        }
+
+        const pageNumber = parseInt(page);
+        const limitNumber = parseInt(limit);
+        const skip = (pageNumber - 1) * limitNumber;
+
+        let clientsQuery = Client.find(query);
+
+        if (sort === "oldest") {
+            clientsQuery = clientsQuery.sort({ createdAt: 1 });
+        } else {
+            clientsQuery = clientsQuery.sort({ createdAt: -1 }); // Default newest
+        }
+
+        clientsQuery = clientsQuery.skip(skip).limit(limitNumber);
+
+        const clients = await clientsQuery;
+        const totalClients = await Client.countDocuments(query);
+        const totalPages = Math.ceil(totalClients / limitNumber);
+
+        res.status(200).json({
+            clients,
+            pagination: {
+                totalClients,
+                totalPages,
+                currentPage: pageNumber,
+                limit: limitNumber
+            }
+        });
     } catch (err) {
-        res.status(500).json({ message: err.message }); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
+        res.status(500).json({ message: err.message });
     }
 };
 
@@ -132,3 +177,25 @@ exports.convertLeadToClient = async (req, res) => {
     }
 };
 
+exports.getClientStats = async (req, res) => {
+    try {
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+
+        const totalClients = await Client.countDocuments();
+        const activeClients = await Client.countDocuments({ status: "Active" });
+        const vipClients = await Client.countDocuments({ priority: "VIP" });
+        const newClients = await Client.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
+        const inactiveClients = await Client.countDocuments({ status: "Inactive" });
+
+        res.status(200).json({
+            totalClients,
+            activeClients,
+            vipClients,
+            newClients,
+            inactiveClients
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};

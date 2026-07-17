@@ -125,9 +125,7 @@ export default function Sidebar() {
             <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
               <MdPerson /> Profile
             </Link>
-            <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
-              <MdSettings /> Settings
-            </Link>
+
             <button className="dropdown-item logout-btn" onClick={() => setIsProfileOpen(false)}>
               <MdLogout /> Logout
             </button>

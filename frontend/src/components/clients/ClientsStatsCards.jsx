@@ -11,66 +11,70 @@ import {
 } from 'react-icons/fa';
 import '../dashboard/StatsCards.css';
 
-const statsData = [
-  {
-    title: 'Total Clients',
-    value: '842',
-    icon: <FaUsers />,
-    color: 'var(--primary)',
-    bg: 'var(--primary-light)',
-    trend: '+12%',
-    trendType: 'positive',
-    description: 'vs last month'
-  },
-  {
-    title: 'Active Clients',
-    value: '620',
-    icon: <FaUserCheck />,
-    color: 'var(--success)',
-    bg: 'var(--success-bg)',
-    trend: '+5%',
-    trendType: 'positive',
-    description: 'currently active'
-  },
-  {
-    title: 'VIP Clients',
-    value: '45',
-    icon: <FaStar />,
-    color: 'var(--warning)',
-    bg: 'var(--warning-bg)',
-    trend: '+2',
-    trendType: 'positive',
-    description: 'this month'
-  },
-  {
-    title: 'New This Month',
-    value: '28',
-    icon: <FaUserPlus />,
-    color: '#3B82F6',
-    bg: 'rgba(59, 130, 246, 0.15)',
-    trend: '+15%',
-    trendType: 'positive',
-    description: 'compared to avg'
-  },
-  {
-    title: 'Inactive',
-    value: '177',
-    icon: <FaUserTimes />,
-    color: 'var(--danger)',
-    bg: 'var(--danger-bg)',
-    trend: '-3%',
-    trendType: 'negative',
-    description: 'needs attention'
-  },
-];
+export default function ClientsStatsCards({ stats, loading }) {
+  const statsData = [
+    {
+      title: 'Total Clients',
+      value: stats?.totalClients || 0,
+      icon: <FaUsers />,
+      color: 'var(--primary)',
+      bg: 'var(--primary-light)',
+      trend: '+12%',
+      trendType: 'positive',
+      description: 'vs last month'
+    },
+    {
+      title: 'Active Clients',
+      value: stats?.activeClients || 0,
+      icon: <FaUserCheck />,
+      color: 'var(--success)',
+      bg: 'var(--success-bg)',
+      trend: '+5%',
+      trendType: 'positive',
+      description: 'currently active'
+    },
+    {
+      title: 'VIP Clients',
+      value: stats?.vipClients || 0,
+      icon: <FaStar />,
+      color: 'var(--warning)',
+      bg: 'var(--warning-bg)',
+      trend: '+2',
+      trendType: 'positive',
+      description: 'this month'
+    },
+    {
+      title: 'New This Month',
+      value: stats?.newClients || 0,
+      icon: <FaUserPlus />,
+      color: '#3B82F6',
+      bg: 'rgba(59, 130, 246, 0.15)',
+      trend: '+15%',
+      trendType: 'positive',
+      description: 'compared to avg'
+    },
+    {
+      title: 'Inactive',
+      value: stats?.inactiveClients || 0,
+      icon: <FaUserTimes />,
+      color: 'var(--danger)',
+      bg: 'var(--danger-bg)',
+      trend: '-3%',
+      trendType: 'negative',
+      description: 'needs attention'
+    },
+  ];
 
-const renderTrendIcon = (type) => {
-  if (type === 'positive') return <FaArrowUp />;
-  if (type === 'negative') return <FaArrowDown />;
-  return <FaMinus />;
-};
+  if (loading) {
+    return <div style={{ color: 'var(--text-secondary)', padding: '20px' }}>Loading stats...</div>;
+  }
 
-export default function ClientsStatsCards() {
+  const renderTrendIcon = (type) => {
+    if (type === 'positive') return <FaArrowUp />;
+    if (type === 'negative') return <FaArrowDown />;
+    return <FaMinus />;
+  };
+
   return (
     <div className="stats-container">
       <div className="glass-blob glass-blob-1"></div>

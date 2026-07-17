@@ -8,6 +8,7 @@ const followUpRoutes = require('./routes/followUpRoutes');
 const notesRoutes = require('./routes/noteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const activityRoutes = require('./routes/activityRoutes');
+const PORT = process.env.PORT || 5000;
 
 
 
@@ -35,7 +36,7 @@ mongoose.connect(process.env.MONGO_URL) // Connecting to the MongoDB database us
     .then(() => console.log('connected to MongoDB')) // Log a success message if the connection is successful
     .catch((err) => console.log(err)); // Log any errors that occur during the connection attempt
 
-app.listen(5000, () => { // Starting the server and listening on port 5000
-    console.log('server is running on port 5000'); // Log a message to the console indicating that the server is running
+app.listen(PORT, () => { // Starting the server and listening on port 5000
+    console.log(`server is running on port ${PORT}`); // Log a message to the console indicating that the server is running
 });
 

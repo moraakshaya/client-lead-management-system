@@ -12,13 +12,6 @@ import {
   HiChartBar
 } from 'react-icons/hi';
 
-const activities = [
-  { id: 1, type: 'Lead Created', title: 'New lead from Website form', user: 'System', time: '10 mins ago', icon: <HiUser />, color: 'var(--primary)' },
-  { id: 2, type: 'Client Converted', title: 'Alice Smith upgraded to Premium', user: 'Sarah K.', time: '2 hours ago', icon: <HiStar />, color: 'var(--success)' },
-  { id: 3, type: 'Follow-up Completed', title: 'Call with Bob Jones', user: 'Mike T.', time: '5 hours ago', icon: <HiCheckCircle />, color: '#3b82f6' },
-  { id: 4, type: 'Note Added', title: 'Left a voicemail regarding pricing', user: 'Mike T.', time: '1 day ago', icon: <HiDocumentText />, color: 'var(--warning)' },
-];
-
 const quickActions = [
   { id: 1, label: 'Add New Lead', icon: <HiUserAdd />, color: 'var(--primary)', desc: 'Manually input a new lead' },
   { id: 2, label: 'Create Follow-Up', icon: <HiCalendar />, color: 'var(--warning)', desc: 'Schedule a task or meeting' },
@@ -26,7 +19,17 @@ const quickActions = [
   { id: 4, label: 'View Reports', icon: <HiChartBar />, color: '#8b5cf6', desc: 'Detailed analytics and export' },
 ];
 
-export default function Operations() {
+export default function Operations({ activities }) {
+  const timelineActivities = activities?.map((activity, index) => ({
+    id: activity._id || index,
+    type: activity.action || 'Action',
+    title: activity.description || 'No description',
+    user: activity.leadId?.leadName || activity.ClientId?.clientName || 'System',
+    time: new Date(activity.createdAt).toLocaleDateString(),
+    icon: <HiDocumentText />, 
+    color: 'var(--primary)'
+  })) || [];
+
   return (
     <div className="operations-section">
       {/* Activity Timeline */}
@@ -37,10 +40,10 @@ export default function Operations() {
         </div>
         
         <div className="timeline-container">
-          {activities.map((activity, index) => (
+          {timelineActivities.map((activity, index) => (
             <div key={activity.id} className="timeline-item">
               {/* Vertical line connecting dots */}
-              {index !== activities.length - 1 && <div className="timeline-line"></div>}
+              {index !== timelineActivities.length - 1 && <div className="timeline-line"></div>}
               
               <div className="timeline-icon-wrapper" style={{ backgroundColor: `${activity.color}20`, border: `1px solid ${activity.color}50` }}>
                 <span className="timeline-icon">{activity.icon}</span>
