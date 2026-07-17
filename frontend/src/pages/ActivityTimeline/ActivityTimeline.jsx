@@ -1,160 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ActivityTimelineHeader from '../../components/activityTimeline/ActivityTimelineHeader';
 import ActivityTimelineStatsCards from '../../components/activityTimeline/ActivityTimelineStatsCards';
 import ActivityTimelineFilterBar from '../../components/activityTimeline/ActivityTimelineFilterBar';
 import ActivityTimelineList from '../../components/activityTimeline/ActivityTimelineList';
 import ActivityTimelineViewModal from '../../components/activityTimeline/ActivityTimelineViewModal';
+import { getActivities, getActivityStats } from '../../services/activityService';
 import './activityTimeline.css';
-import { 
-  FaUserPlus, 
-  FaUserEdit, 
-  FaUserCheck, 
-  FaUserCog, 
-  FaCalendarPlus, 
-  FaCalendarCheck, 
-  FaStickyNote, 
-  FaExchangeAlt, 
-  FaTrashAlt, 
-  FaSignInAlt
-} from 'react-icons/fa';
-
-const initialData = [
-  {
-    date: 'TODAY',
-    items: [
-      {
-        id: 1,
-        title: 'Lead Created',
-        entity: 'John Doe',
-        description: 'Created by Rahul',
-        module: 'Leads Module',
-        itemDate: '15 Jul 2026',
-        time: '10:25 AM',
-        status: 'Active',
-        icon: <FaUserPlus />,
-        type: 'create-lead'
-      },
-      {
-        id: 2,
-        title: 'Lead Updated',
-        entity: 'Jane Smith',
-        description: 'Updated phone number',
-        module: 'Leads Module',
-        itemDate: '15 Jul 2026',
-        time: '11:15 AM',
-        status: 'Updated',
-        icon: <FaUserEdit />,
-        type: 'update-lead'
-      },
-      {
-        id: 3,
-        title: 'Note Added',
-        entity: 'John Doe',
-        description: 'Added pricing discussion',
-        module: 'Notes Module',
-        itemDate: '15 Jul 2026',
-        time: '11:20 AM',
-        status: 'Added',
-        icon: <FaStickyNote />,
-        type: 'note'
-      },
-      {
-        id: 4,
-        title: 'Follow-up Scheduled',
-        entity: 'Demo Call',
-        description: 'Tomorrow at 2 PM',
-        module: 'Follow-ups Module',
-        itemDate: '15 Jul 2026',
-        time: '1:15 PM',
-        status: 'Scheduled',
-        icon: <FaCalendarPlus />,
-        type: 'schedule'
-      },
-      {
-        id: 5,
-        title: 'Lead Converted',
-        entity: 'John Doe',
-        description: 'Converted into Client',
-        module: 'Leads Module',
-        itemDate: '15 Jul 2026',
-        time: '4:00 PM',
-        status: 'Converted',
-        icon: <FaExchangeAlt />,
-        type: 'convert'
-      },
-      {
-        id: 6,
-        title: 'Client Created',
-        entity: 'Acme Corp',
-        description: 'Added as a new corporate client',
-        module: 'Clients Module',
-        itemDate: '15 Jul 2026',
-        time: '4:30 PM',
-        status: 'Active',
-        icon: <FaUserCheck />,
-        type: 'create-client'
-      }
-    ]
-  },
-  {
-    date: 'YESTERDAY',
-    items: [
-      {
-        id: 7,
-        title: 'Client Updated',
-        entity: 'Acme Corp',
-        description: 'Updated billing address',
-        module: 'Clients Module',
-        itemDate: '14 Jul 2026',
-        time: '3:30 PM',
-        status: 'Updated',
-        icon: <FaUserCog />,
-        type: 'update-client'
-      },
-      {
-        id: 8,
-        title: 'Follow-up Completed',
-        entity: 'Onboarding Call',
-        description: 'Completed onboarding with Acme Corp',
-        module: 'Follow-ups Module',
-        itemDate: '14 Jul 2026',
-        time: '5:00 PM',
-        status: 'Completed',
-        icon: <FaCalendarCheck />,
-        type: 'complete'
-      },
-      {
-        id: 9,
-        title: 'Record Deleted',
-        entity: 'Spam Lead',
-        description: 'Deleted spam submission',
-        module: 'Leads Module',
-        itemDate: '14 Jul 2026',
-        time: '6:15 PM',
-        status: 'Deleted',
-        icon: <FaTrashAlt />,
-        type: 'delete'
-      },
-      {
-        id: 10,
-        title: 'User Logged In',
-        entity: 'Rahul System',
-        description: 'System login from IP 192.168.1.1',
-        module: 'System Module',
-        itemDate: '14 Jul 2026',
-        time: '9:00 AM',
-        status: 'Success',
-        icon: <FaSignInAlt />,
-        type: 'login'
-      }
-    ]
-  }
-];
 
 export const ActivityTimeline = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
+
+  // --- FETCH DATA ON MOUNT ---
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // --- HELPER FUNCTION TO GROUP DATA ---
+  const groupActivitiesByDate = (activities) => {
+    const grouped = {};
+    const today = new Date().toDateString();
+
+    // Figure out exactly what yesterday was
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = yesterdayDate.toDateString();
+
+    // Loop through the flat array from the backend
+    activities.forEach(activity => {
+      const activityDateObj = new Date(activity.createdAt);
+      const activityDateStr = activityDateObj.toDateString();
+
+      let dateLabel = '';
+      if (activityDateStr === today) {
+        dateLabel = 'TODAY';
+      } else if (activityDateStr === yesterday) {
+        dateLabel = 'YESTERDAY';
+      } else {
+        // e.g. "15 JUL 2026"
+        dateLabel = activityDateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
+      }
+
+      // Create the group if it doesn't exist yet
+      if (!grouped[dateLabel]) {
+        grouped[dateLabel] = [];
+      }
+
+      const time = activityDateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+      // Find the correct name
+      const entity = activity.leadId ? (activity.leadId.leadName || activity.leadId.companyName)
+        : activity.ClientId ? (activity.ClientId.clientName || activity.ClientId.companyName)
+          : 'System';
+
+      // Push the formatted data into the correct date group
+      grouped[dateLabel].push({
+        ...activity,
+        title: activity.action,
+        time,
+        entity,
+        itemDate: dateLabel
+      });
+    });
+
+    // Convert the object into the Array format that the Timeline List component expects
+    return Object.keys(grouped).map(date => ({
+      date,
+      items: grouped[date]
+    }));
+  };
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const [statsRes, activitiesRes] = await Promise.all([
+        getActivityStats(),
+        getActivities({ page: 1, limit: 50 }) // Fetch up to 50 activities to fill the timeline
+      ]);
+
+      setStats(statsRes.data);
+
+      // Pass the raw data through our grouping function before saving it to state!
+      const groupedData = groupActivitiesByDate(activitiesRes.data.data);
+      setData(groupedData);
+
+    } catch (error) {
+      console.error('Error fetching timeline data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAction = (action, item) => {
     if (action === 'view') {
@@ -166,27 +106,36 @@ export const ActivityTimeline = () => {
   };
 
   const handleRefresh = () => {
-    console.log('Refreshing Timeline...');
-    // We can simulate refresh by resetting data
-    setData(initialData);
+    fetchData(); // Use the actual API fetch instead of fake data
   };
 
   return (
     <div className="timeline-container">
-      <ActivityTimelineHeader 
-        onExport={() => console.log('Exporting Logs')} 
-        onRefresh={handleRefresh} 
+      <ActivityTimelineHeader
+        onExport={() => console.log('Exporting Logs')}
+        onRefresh={handleRefresh}
       />
-      <ActivityTimelineStatsCards />
+
+      {/* Pass the real stats down to the cards */}
+      <ActivityTimelineStatsCards stats={stats} loading={loading} />
+
       <ActivityTimelineFilterBar />
+
       <div style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
-        <ActivityTimelineList data={data} onAction={handleAction} onRefresh={handleRefresh} />
+        {loading ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <h2>Loading timeline...</h2>
+          </div>
+        ) : (
+          // Pass the grouped data down to the timeline list
+          <ActivityTimelineList data={data} onAction={handleAction} onRefresh={handleRefresh} />
+        )}
       </div>
 
-      <ActivityTimelineViewModal 
-        isOpen={isViewModalOpen} 
-        onClose={() => setIsViewModalOpen(false)} 
-        activity={selectedActivity} 
+      <ActivityTimelineViewModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        activity={selectedActivity}
       />
     </div>
   );
