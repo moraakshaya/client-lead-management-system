@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { createFollowUp, getAllFollowUps, getFollowUpByLead, getFollowUpByLead, updateFollowUp, deleteFollowUp, getFollowUpStats } = require('../controllers/followUpController');
+const { createFollowUp, getAllFollowUps, getFollowUpByLead, updateFollowUp, deleteFollowUp, getFollowUpStats } = require('../controllers/followUpController');
 
 //Define Routes
 router.post('/', createFollowUp);

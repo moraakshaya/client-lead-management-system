@@ -19,18 +19,47 @@ exports.createNote = async (req, res) => {
     }
 };
 
-//Get All Notes
+// Get All Notes (with pagination, filtering, and populated lead data)
 exports.getAllNotes = async (req, res) => {
     try {
-        const notes = await Notes.find()
-            .populate("leadId");
-        res.status(201).json(notes);
+        const { type, status, page = 1, limit = 10 } = req.query;
+
+        let query = {};
+
+        // Apply filters if they exist in the URL request
+        if (type) query.relatedToModel = type; // "Lead" or "Client"
+        if (status === "Pinned") query.isPinned = true;
+        if (status === "Active") query.isPinned = false;
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const limitNumber = parseInt(limit);
+
+        // Fetch notes, fetch the associated lead/client name, and sort by newest first
+        const notes = await Notes.find(query)
+            .populate('leadId', 'leadName companyName') // Fetches the actual name!
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limitNumber);
+
+        const totalNotes = await Notes.countDocuments(query);
+        const totalPages = Math.ceil(totalNotes / limitNumber);
+
+        res.status(200).json({
+            data: notes,
+            pagination: {
+                totalNotes,
+                totalPages,
+                currentPage: parseInt(page),
+                limit: limitNumber
+            }
+        });
     } catch (err) {
         res.status(500).json({
             message: err.message,
         });
     }
 };
+
 
 //Get Notes By Lead 
 exports.getNotesById = async (req, res) => {
@@ -78,3 +107,28 @@ exports.deleteNotes = async (req, res) => {
         });
     }
 }
+
+
+// Get Note Stats
+exports.getNoteStats = async (req, res) => {
+    try {
+        // Fetch all 4 metrics at the exact same time
+        const [totalNotes, leadNotes, clientNotes, pinnedNotes] = await Promise.all([
+            Notes.countDocuments(),
+            Notes.countDocuments({ relatedToModel: "Lead" }),
+            Notes.countDocuments({ relatedToModel: "Client" }),
+            Notes.countDocuments({ isPinned: true })
+        ]);
+
+        res.status(200).json({
+            totalNotes,
+            leadNotes,
+            clientNotes,
+            pinnedNotes
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: err.message,
+        });
+    }
+};
