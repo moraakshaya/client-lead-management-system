@@ -174,17 +174,16 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-group">
               <label>Assign To</label>
-              <select
+              <CustomDropdown
                 name="assignedUser"
                 value={formData.assignedUser}
                 onChange={handleChange}
-                className="filter-input"
-              >
-                <option value="">Unassigned</option>
-                {users.map(user => (
-                  <option key={user._id} value={user._id}>{user.name}</option>
-                ))}
-              </select>
+                placeholder="Unassigned"
+                options={[
+                  { value: "", label: "Unassigned" },
+                  ...users.map(u => ({ value: u._id, label: u.name }))
+                ]}
+              />
             </div>
 
             <div className="form-group full-width">
