@@ -134,7 +134,12 @@ export default function LeadsTable({
               </tr>
             ) : leads.length === 0 ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '2rem' }}>No leads found</td>
+                <td colSpan="9" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎯</div>
+                  <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>No Leads Found</h2>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Capture a new lead to start growing your business.</p>
+                  <button style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '500' }} onClick={() => document.querySelector('.btn-add-lead')?.click()}>+ Add Lead</button>
+                </td>
               </tr>
             ) : (
               leads.map((lead) => (

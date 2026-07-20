@@ -2,11 +2,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
-  background-color: var(--surface);
-  border-bottom: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  margin-bottom: 24px;
 }
 
 .leads-header-left {

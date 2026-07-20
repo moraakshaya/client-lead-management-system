@@ -20,11 +20,11 @@ export default function ViewLeadModal({ isOpen, onClose, lead }) {
             <div className="info-grid">
               <div className="info-item">
                 <span className="info-label">Lead Name</span>
-                <span className="info-value">{lead.customer || '-'}</span>
+                <span className="info-value">{lead.leadName || '-'}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Company</span>
-                <span className="info-value">{lead.company || '-'}</span>
+                <span className="info-value">{lead.companyName || '-'}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Email</span>
@@ -52,11 +52,11 @@ export default function ViewLeadModal({ isOpen, onClose, lead }) {
               </div>
               <div className="info-item">
                 <span className="info-label">Assigned To</span>
-                <span className="info-value">{lead.assignedTo || '-'}</span>
+                <span className="info-value">{lead.assignedUser?.name || lead.assignedUser || '-'}</span>
               </div>
               <div className="info-item" style={{ gridColumn: '1 / -1' }}>
                 <span className="info-label">Created Date</span>
-                <span className="info-value">{lead.createdDate || '-'}</span>
+                <span className="info-value">{lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }) : '-'}</span>
               </div>
             </div>
           </div>

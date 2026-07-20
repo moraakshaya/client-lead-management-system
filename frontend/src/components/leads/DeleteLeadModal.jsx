@@ -1,32 +1,44 @@
-import React from 'react';
-import { FaTimes, FaExclamationTriangle } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaTimes, FaExclamationTriangle, FaTrashAlt } from 'react-icons/fa';
 import '../clients/editClientModal.css';
+import { deleteLead } from '../../services/leadService';
 
-export default function DeleteLeadModal({ isOpen, onClose, lead }) {
+export default function DeleteLeadModal({ isOpen, onClose, lead, onSuccess }) {
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen || !lead) return null;
 
-  const handleDelete = () => {
-    // Perform delete action
-    onClose();
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteLead(lead._id);
+      if (onSuccess) onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Error deleting lead:", error);
+      alert("Failed to delete lead");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container edit-modal-container" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2 style={{ color: '#ef4444' }}>
-            <FaExclamationTriangle style={{ marginRight: '10px' }}/> Delete Lead
+          <h2>
+            <FaTrashAlt style={{ marginRight: '10px', color: 'var(--danger)' }} />Delete Lead
           </h2>
-          <button className="close-btn" onClick={onClose}><FaTimes /></button>
+          <button className="close-btn" onClick={onClose} disabled={loading}><FaTimes /></button>
         </div>
 
-        <div className="modal-content" style={{ overflowY: 'auto', margin: 0 }}>
+        <div className="modal-content" style={{ overflowY: 'auto', margin: '10px 10px 10px 20px' }}>
           <div style={{ padding: '32px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            
-            <div style={{ 
-              width: '80px', 
-              height: '80px', 
-              borderRadius: '50%', 
+
+            <div style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
               background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
               display: 'flex',
               alignItems: 'center',
@@ -42,15 +54,15 @@ export default function DeleteLeadModal({ isOpen, onClose, lead }) {
               Are you sure you want to delete this lead?
             </p>
 
-            <div style={{ width: '100%', marginBottom: '24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '16px', fontSize: '15px' }}>
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Lead Name :</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{lead.customer || lead.client || '-'}</span>
-                
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Company :</span>
-                <span style={{ color: 'var(--text-primary)' }}>{lead.company || '-'}</span>
+            <div style={{ width: 'fit-content', margin: '0 auto 24px auto', textAlign: 'left' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: '12px', fontSize: '15px', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Lead Name :</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{lead.leadName || '-'}</span>
 
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Email :</span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Company :</span>
+                <span style={{ color: 'var(--text-primary)' }}>{lead.companyName || '-'}</span>
+
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Email :</span>
                 <span style={{ color: 'var(--text-primary)' }}>{lead.email || '-'}</span>
               </div>
             </div>
@@ -65,8 +77,10 @@ export default function DeleteLeadModal({ isOpen, onClose, lead }) {
         </div>
 
         <div className="modal-footer edit-modal-footer" style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-          <button className="btn-cancel" onClick={onClose}>Cancel</button>
-          <button className="btn-save" onClick={handleDelete} style={{ backgroundColor: '#ef4444', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.2)' }}>Delete Lead</button>
+          <button className="btn-cancel" onClick={onClose} disabled={loading}>Cancel</button>
+          <button className="btn-save" onClick={handleDelete} disabled={loading} style={{ backgroundColor: '#ef4444', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.2)' }}>
+            {loading ? 'Deleting...' : 'Delete Lead'}
+          </button>
         </div>
       </div>
     </div>

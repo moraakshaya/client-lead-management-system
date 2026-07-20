@@ -42,15 +42,15 @@ export default function DeleteClientModal({ isOpen, onClose, client }) {
               Are you sure you want to delete this client?
             </p>
 
-            <div style={{ width: '100%', marginBottom: '24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '16px', fontSize: '15px' }}>
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Client Name :</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{client.client || client.customer || '-'}</span>
+            <div style={{ width: 'fit-content', margin: '0 auto 24px auto', textAlign: 'left' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: '12px', fontSize: '15px', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Client Name :</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{client.customer || client.client || '-'}</span>
                 
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Company :</span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Company :</span>
                 <span style={{ color: 'var(--text-primary)' }}>{client.company || '-'}</span>
 
-                <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Email :</span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Email :</span>
                 <span style={{ color: 'var(--text-primary)' }}>{client.email || '-'}</span>
               </div>
             </div>
