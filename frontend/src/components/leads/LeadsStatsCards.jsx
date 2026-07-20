@@ -71,7 +71,7 @@ export default function LeadsStatsCards({ stats, loading }) {
     },
   ];
 
-  if (loading) {
+  if (loading && !stats) {
     return <div style={{ color: 'var(--text-secondary)', padding: '20px' }}>Loading stats...</div>;
   }
 

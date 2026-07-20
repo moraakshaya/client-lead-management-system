@@ -10,6 +10,11 @@ export const getLeadStats = () => {
     return api.get('/leads/stats');
 };
 
+// Get dynamic filter options
+export const getLeadFilterOptions = () => {
+    return api.get('/leads/filter-options');
+};
+
 // Get a single lead
 export const getLeadById = (id) => {
     return api.get(`/leads/${id}`);

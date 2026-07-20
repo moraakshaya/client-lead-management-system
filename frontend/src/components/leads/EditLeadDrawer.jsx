@@ -2,31 +2,40 @@ import React, { useEffect, useState } from "react";
 import { FaTimes, FaEdit } from "react-icons/fa";
 import CustomDropdown from "./CustomDropdown";
 import "../clients/editClientModal.css";
+import { getUsers } from "../../services/userService";
+import { updateLead } from "../../services/leadService";
 
-export default function EditLeadModal({ isOpen, onClose, lead }) {
+export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
   const [formData, setFormData] = useState({
-    customer: "",
-    company: "",
+    leadName: "",
+    companyName: "",
     email: "",
     phone: "",
     status: "",
     priority: "",
     source: "",
-    assignedTo: "",
+    assignedUser: "",
     notes: ""
   });
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      getUsers().then(res => setUsers(res.data)).catch(err => console.error(err));
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (lead) {
       setFormData({
-        customer: lead.customer || "",
-        company: lead.company || "",
+        leadName: lead.leadName || "",
+        companyName: lead.companyName || "",
         email: lead.email || "",
         phone: lead.phone || "",
         status: lead.status || "",
         priority: lead.priority || "",
         source: lead.source || "",
-        assignedTo: lead.assignedTo || "",
+        assignedUser: lead.assignedUser?._id || lead.assignedUser || "",
         notes: lead.notes || ""
       });
     }
@@ -37,10 +46,20 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save changes logic here
-    onClose();
+    try {
+      const dataToSave = { ...formData };
+      if (!dataToSave.assignedUser) {
+        dataToSave.assignedUser = null;
+      }
+      await updateLead(lead._id, dataToSave);
+      if (onSuccess) onSuccess();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update lead");
+    }
   };
 
   if (!isOpen) return null;
@@ -63,8 +82,8 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
                 <label>Full Name</label>
                 <input 
                   type="text" 
-                  name="customer" 
-                  value={formData.customer} 
+                  name="leadName" 
+                  value={formData.leadName} 
                   onChange={handleChange} 
                   className="form-input"
                   placeholder="Enter full name"
@@ -75,8 +94,8 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
                 <label>Company</label>
                 <input 
                   type="text" 
-                  name="company" 
-                  value={formData.company} 
+                  name="companyName" 
+                  value={formData.companyName} 
                   onChange={handleChange} 
                   className="form-input"
                   placeholder="Enter company"
@@ -139,12 +158,17 @@ export default function EditLeadModal({ isOpen, onClose, lead }) {
 
               <div className="form-group">
                 <label>Assigned To</label>
-                <CustomDropdown 
-                  name="assignedTo"
-                  value={formData.assignedTo} 
+                <select 
+                  name="assignedUser"
+                  value={formData.assignedUser} 
                   onChange={handleChange}
-                  options={["Alex J.", "Sarah S.", "Mike D.", "Rahul"]} 
-                />
+                  className="form-input"
+                >
+                  <option value="">Unassigned</option>
+                  {users.map(u => (
+                    <option key={u._id} value={u._id}>{u.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group full-width">

@@ -12,6 +12,16 @@ const leadSchema = new mongoose.Schema({
         enum: ["New", "Contacted", "Qualified", "Won", "Lost"],
         default: 'New' // Default value for the status field is 'new'
     },
+    priority: {
+        type: String,
+        default: 'Medium'
+    },
+    assignedUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
+    },
+    budget: String,
     notes: String // Additional notes about the lead
 },
 { timestamps: true } // Automatically add createdAt and updatedAt fields to the schema

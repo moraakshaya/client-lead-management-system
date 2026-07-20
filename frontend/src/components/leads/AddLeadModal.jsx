@@ -3,6 +3,7 @@ import "./addLeadModal.css";
 import { MdClose } from "react-icons/md";
 import CustomDropdown from "./CustomDropdown";
 import { createLead } from "../../services/leadService";
+import { getUsers } from "../../services/userService";
 
 // We added the onSuccess prop so we can tell the table to refresh after saving
 export default function AddLeadModal({ isOpen, onClose, onSuccess }) {
@@ -16,9 +17,18 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }) {
     priority: "Medium",
     status: "New",
     budget: "",
-    description: ""
+    description: "",
+    assignedUser: ""
   });
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  // Fetch users when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      getUsers().then(res => setUsers(res.data)).catch(err => console.error("Error fetching users:", err));
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -37,12 +47,16 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }) {
     try {
       setLoading(true);
       // Send the data to the backend database!
-      await createLead(formData);
+      const dataToSave = { ...formData };
+      if (!dataToSave.assignedUser) {
+        delete dataToSave.assignedUser; // Prevent casting error for empty string
+      }
+      await createLead(dataToSave);
 
       // Clear the form for next time
       setFormData({
         leadName: "", companyName: "", email: "", phone: "",
-        source: "Website", priority: "Medium", status: "New", budget: "", description: ""
+        source: "Website", priority: "Medium", status: "New", budget: "", description: "", assignedUser: ""
       });
 
       onSuccess(); // Tells the main Leads page to download the new data
@@ -156,6 +170,21 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }) {
                 onChange={handleChange}
                 placeholder="Enter estimated budget"
               />
+            </div>
+
+            <div className="form-group">
+              <label>Assign To</label>
+              <select
+                name="assignedUser"
+                value={formData.assignedUser}
+                onChange={handleChange}
+                className="filter-input"
+              >
+                <option value="">Unassigned</option>
+                {users.map(user => (
+                  <option key={user._id} value={user._id}>{user.name}</option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group full-width">

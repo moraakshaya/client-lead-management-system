@@ -8,6 +8,7 @@ const followUpRoutes = require('./routes/followUpRoutes');
 const notesRoutes = require('./routes/noteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const activityRoutes = require('./routes/activityRoutes');
+const userRoutes = require('./routes/userRoutes');
 const PORT = process.env.PORT || 5000;
 
 
@@ -27,6 +28,7 @@ app.use('/api/followUps', followUpRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/users', userRoutes);
 
 
 

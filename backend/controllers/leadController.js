@@ -1,5 +1,6 @@
 const Lead = require('../models/lead'); // Importing the Lead model to interact with the Lead collection in the MongoDB database
 const Activity = require('../models/activity');
+const User = require('../models/user');
 
 // Controller function to create a new lead
 exports.createLead = async (req, res) => {
@@ -23,7 +24,7 @@ exports.createLead = async (req, res) => {
 // Controller function to retrieve all leads
 exports.getAllLeads = async (req, res) => {
     try {
-        const { search, status, source, sort, page = 1, limit = 10 } = req.query;
+        const { search, status, source, priority, assignedUser, sort, page = 1, limit = 10 } = req.query;
 
         let query = {};
 
@@ -36,14 +37,19 @@ exports.getAllLeads = async (req, res) => {
             ];
         }
 
-        //Filter By Status
-        if (status) {
-            query.status = status;
-        }
-
-        //Filter by Source
-        if (source) {
-            query.source = source;
+        //Filter By Exact Match
+        if (status) query.status = status;
+        if (source) query.source = source;
+        if (priority) query.priority = priority;
+        
+        if (assignedUser) {
+            const user = await User.findOne({ name: assignedUser });
+            if (user) {
+                query.assignedUser = user._id;
+            } else {
+                // If user not found by name, ensure no leads match
+                query.assignedUser = null; 
+            }
         }
 
         const pageNumber = parseInt(page);
@@ -60,7 +66,7 @@ exports.getAllLeads = async (req, res) => {
         }
 
         // Pagination
-        leadsQuery = leadsQuery.skip(skip).limit(limitNumber);
+        leadsQuery = leadsQuery.skip(skip).limit(limitNumber).populate('assignedUser', 'name email');
 
         const leads = await leadsQuery;
         const totalLeads = await Lead.countDocuments(query);
@@ -83,7 +89,7 @@ exports.getAllLeads = async (req, res) => {
 // Controller function to retrieve a single lead by its ID
 exports.getLeadById = async (req, res) => {
     try {
-        const lead = await Lead.findById(req.params.id); // Retrieve a lead from the database using the findById() method of
+        const lead = await Lead.findById(req.params.id).populate('assignedUser', 'name email'); // Retrieve a lead from the database using the findById() method of
         res.status(200).json(lead); // Send a response with status code 200 (OK) and the lead in JSON format
     } catch (err) {
         res.status(500).json(err); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
@@ -138,6 +144,27 @@ exports.getLeadStats = async (req, res) => {
             qualifiedLeads,
             convertedLeads,
             lostLeads
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.getFilterOptions = async (req, res) => {
+    try {
+        const statuses = await Lead.distinct("status");
+        const sources = await Lead.distinct("source");
+        const priorities = await Lead.distinct("priority");
+        
+        // Fetch all active users to show in the assigned user dropdown
+        const users = await User.find({}, 'name');
+        const assignedUsers = users.map(user => user.name);
+
+        res.status(200).json({
+            status: statuses.filter(Boolean),
+            source: sources.filter(Boolean),
+            priority: priorities.filter(Boolean),
+            assignedUser: assignedUsers.filter(Boolean),
         });
     } catch (err) {
         res.status(500).json({ message: err.message });

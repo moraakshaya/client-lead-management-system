@@ -10,7 +10,7 @@ import DeleteLeadModal from "../../components/leads/DeleteLeadModal";
 import AddNoteModal from "../../components/clients/AddNoteModal";
 import ScheduleFollowupModal from "../../components/clients/ScheduleFollowupModal";
 import ConvertToClientModal from "../../components/leads/ConvertToClientModal";
-import { getLeads, getLeadStats } from "../../services/leadService";
+import { getLeads, getLeadStats, getLeadFilterOptions } from "../../services/leadService";
 
 export function Leads() {
     const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
@@ -25,6 +25,7 @@ export function Leads() {
     // Data State
     const [leads, setLeads] = useState([]);
     const [stats, setStats] = useState(null);
+    const [filterOptions, setFilterOptions] = useState({ status: [], priority: [], source: [], assignedUser: [] });
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ currentPage: 1, limit: 10, totalPages: 1, totalLeads: 0 });
     const [filters, setFilters] = useState({});
@@ -32,14 +33,16 @@ export function Leads() {
     const fetchDashboardData = async (page = 1) => {
         try {
             setLoading(true);
-            const [leadsRes, statsRes] = await Promise.all([
+            const [leadsRes, statsRes, optionsRes] = await Promise.all([
                 getLeads({ page, limit: pagination.limit, ...filters }),
-                getLeadStats()
+                getLeadStats(),
+                getLeadFilterOptions()
             ]);
             
             setLeads(leadsRes.data.leads || []);
             setPagination(leadsRes.data.pagination || { currentPage: 1, limit: 10, totalPages: 1, totalLeads: 0 });
             setStats(statsRes.data || null);
+            setFilterOptions(optionsRes.data || { status: [], priority: [], source: [], assignedUser: [] });
         } catch (error) {
             console.error("Error fetching leads data:", error);
         } finally {
@@ -93,7 +96,11 @@ export function Leads() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%', minWidth: 0, maxWidth: '100%' }}>
             <LeadsHeader onAddLead={() => setIsAddLeadModalOpen(true)} />
             <LeadsStatsCards stats={stats} loading={loading} />
-            <LeadsFilterBar onFilterChange={(newFilters) => setFilters(newFilters)} />
+            <LeadsFilterBar 
+                filters={filters} 
+                setFilters={setFilters} 
+                filterOptions={filterOptions} 
+            />
             <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
                 {loading && leads.length === 0 ? (
                     <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>Loading leads...</div>
