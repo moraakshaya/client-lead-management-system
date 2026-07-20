@@ -105,8 +105,8 @@ export default function FollowUpsStatsCards({ stats, loading }) {
             <div className="stat-card-body">
               <span className="stat-label">{stat.title}</span>
               <span className="stat-value">
-                {/* Show "..." while downloading, and the number once it arrives */}
-                {loading ? '...' : stat.value}
+                {/* Show the stat value, keep it visible during searches */}
+                {stat.value}
               </span>
             </div>
 

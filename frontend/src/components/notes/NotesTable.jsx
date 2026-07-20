@@ -5,25 +5,6 @@ import "./notesTable.css";
 // We now accept notes, loading, and pagination as props!
 const NotesTable = ({ notes, loading, pagination, onAction }) => {
 
-  if (loading) {
-    return (
-      <div className="table-container" style={{ padding: '48px', textAlign: 'center' }}>
-        <h2 style={{ color: 'var(--text-secondary)' }}>Loading notes...</h2>
-      </div>
-    );
-  }
-
-  if (!notes || notes.length === 0) {
-    return (
-      <div className="empty-state-container" style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginTop: '20px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
-        <h3 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '18px' }}>No Notes Found</h3>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Create your first note to keep track of customer conversations.</p>
-        <button className="btn-primary" onClick={() => onAction && onAction('add')}>+ Add Note</button>
-      </div>
-    );
-  }
-
   return (
     <div className="table-container">
       <div className="table-wrapper">
@@ -40,7 +21,23 @@ const NotesTable = ({ notes, loading, pagination, onAction }) => {
             </tr>
           </thead>
           <tbody>
-            {notes.map((note) => {
+            {loading ? (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Searching...</span>
+                </td>
+              </tr>
+            ) : (!notes || notes.length === 0) ? (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
+                  <h3 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '18px' }}>No Notes Found</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Create your first note to keep track of customer conversations.</p>
+                  <button className="btn-primary" onClick={() => onAction && onAction('add')}>+ Add Note</button>
+                </td>
+              </tr>
+            ) : (
+              notes.map((note) => {
               // 1. We extract the Name from the populated leadId object!
               const relatedToName = note.leadId ? (note.leadId.leadName || note.leadId.companyName || 'Unknown') : 'Unknown';
 
@@ -87,7 +84,8 @@ const NotesTable = ({ notes, loading, pagination, onAction }) => {
                   </td>
                 </tr>
               )
-            })}
+              })
+            )}
           </tbody>
         </table>
       </div>

@@ -122,14 +122,7 @@ export const ActivityTimeline = () => {
       <ActivityTimelineFilterBar />
 
       <div style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
-        {loading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-            <h2>Loading timeline...</h2>
-          </div>
-        ) : (
-          // Pass the grouped data down to the timeline list
-          <ActivityTimelineList data={data} onAction={handleAction} onRefresh={handleRefresh} />
-        )}
+        <ActivityTimelineList data={data} loading={loading} onAction={handleAction} onRefresh={handleRefresh} />
       </div>
 
       <ActivityTimelineViewModal

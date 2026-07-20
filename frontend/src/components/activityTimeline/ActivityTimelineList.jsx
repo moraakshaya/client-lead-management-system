@@ -17,7 +17,15 @@ import {
 } from 'react-icons/fa';
 
 
-export default function ActivityTimelineList({ data, onAction, onRefresh }) {
+export default function ActivityTimelineList({ data, loading, onAction, onRefresh }) {
+  if (loading) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+        <h2>Searching...</h2>
+      </div>
+    );
+  }
+
   if (!data || data.length === 0) {
     return (
       <div className="empty-state-container" style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginTop: '20px' }}>

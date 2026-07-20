@@ -5,25 +5,6 @@ import "./followUpsTable.css";
 // We now accept followUps, loading, and pagination as props!
 const FollowUpsTable = ({ followUps, loading, pagination, onAction }) => {
 
-  if (loading) {
-    return (
-      <div className="table-container" style={{ padding: '48px', textAlign: 'center' }}>
-        <h2 style={{ color: 'var(--text-secondary)' }}>Loading follow-ups...</h2>
-      </div>
-    );
-  }
-
-  if (!followUps || followUps.length === 0) {
-    return (
-      <div className="table-container" style={{ padding: '48px', textAlign: 'center', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>📅</div>
-        <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>No Follow-ups Found</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Schedule a follow-up to stay connected with your customers.</p>
-        <button className="btn-primary" onClick={() => document.querySelector('.follow-ups-header .btn-primary').click()}>+ Schedule Follow-up</button>
-      </div>
-    );
-  }
-
   return (
     <div className="table-container">
       <div className="table-wrapper">
@@ -39,7 +20,23 @@ const FollowUpsTable = ({ followUps, loading, pagination, onAction }) => {
             </tr>
           </thead>
           <tbody>
-            {followUps.map((fu) => {
+            {loading ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Searching...</span>
+                </td>
+              </tr>
+            ) : (!followUps || followUps.length === 0) ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📅</div>
+                  <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>No Follow-ups Found</h2>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Schedule a follow-up to stay connected with your customers.</p>
+                  <button className="btn-primary" onClick={() => document.querySelector('.follow-ups-header .btn-primary')?.click()}>+ Schedule Follow-up</button>
+                </td>
+              </tr>
+            ) : (
+              followUps.map((fu) => {
               // 1. We extract the Name from the populated leadId object!
               const clientName = fu.leadId ? (fu.leadId.leadName || fu.leadId.companyName || 'Unknown Lead') : 'Unknown Lead';
 
@@ -74,7 +71,8 @@ const FollowUpsTable = ({ followUps, loading, pagination, onAction }) => {
                   </td>
                 </tr>
               )
-            })}
+              })
+            )}
           </tbody>
         </table>
       </div>

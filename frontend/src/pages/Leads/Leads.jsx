@@ -102,21 +102,18 @@ export function Leads() {
                 filterOptions={filterOptions} 
             />
             <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
-                {loading && leads.length === 0 ? (
-                    <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>Loading leads...</div>
-                ) : (
-                    <LeadsTable 
-                        leads={leads}
-                        pagination={pagination}
-                        onPageChange={handlePageChange}
-                        onEditLead={handleEditLead} 
-                        onViewLead={handleViewLead}
-                        onDeleteLead={handleDeleteLead}
-                        onAddNote={handleAddNote}
-                        onSchedule={handleSchedule}
-                        onConvert={handleConvert}
-                    />
-                )}
+                <LeadsTable 
+                    leads={leads}
+                    loading={loading}
+                    pagination={pagination}
+                    onPageChange={handlePageChange}
+                    onEditLead={handleEditLead} 
+                    onViewLead={handleViewLead}
+                    onDeleteLead={handleDeleteLead}
+                    onAddNote={handleAddNote}
+                    onSchedule={handleSchedule}
+                    onConvert={handleConvert}
+                />
             </div>
 
             <AddLeadModal 

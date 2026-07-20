@@ -87,6 +87,7 @@ const getStatusClass = (status) => {
 
 export default function LeadsTable({ 
   leads = [], 
+  loading = false,
   pagination, 
   onPageChange, 
   onEditLead, 
@@ -125,7 +126,13 @@ export default function LeadsTable({
             </tr>
           </thead>
           <tbody>
-            {leads.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: 'center', padding: '2rem' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Searching...</span>
+                </td>
+              </tr>
+            ) : leads.length === 0 ? (
               <tr>
                 <td colSpan="9" style={{ textAlign: 'center', padding: '2rem' }}>No leads found</td>
               </tr>
