@@ -3,7 +3,63 @@ import { FaEllipsisV, FaEye, FaEdit, FaThumbtack, FaTrashAlt } from "react-icons
 import "./notesTable.css";
 
 // We now accept notes, loading, and pagination as props!
-const NotesTable = ({ notes, loading, pagination, onAction }) => {
+const NotesTable = ({ notes, loading, pagination, filters, setFilters, onAction }) => {
+  // Determine empty state mode
+  const hasSearch = !!filters?.search;
+  const activeFiltersCount = Object.keys(filters || {}).filter(k => k !== 'search' && filters[k]).length;
+  const hasFilters = activeFiltersCount > 0;
+
+  const renderEmptyState = () => {
+    if (hasSearch && hasFilters) {
+      return (
+        <td colSpan="7" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.8 }}>🔍</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            No matching results found
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px', maxWidth: '400px', margin: '0 auto 24px auto' }}>
+            No notes match your current search for <strong>"{filters.search}"</strong> and {activeFiltersCount} applied filter{activeFiltersCount > 1 ? 's' : ''}.
+          </p>
+          <button style={{ backgroundColor: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', transition: 'all 0.2s' }} onClick={() => setFilters({})}>Reset All Filters & Search</button>
+        </td>
+      );
+    } else if (hasSearch) {
+      return (
+        <td colSpan="7" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.8 }}>🔍</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            Note "{filters.search}" not found
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px' }}>
+            We couldn't find any notes matching that title.
+          </p>
+          <button style={{ backgroundColor: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border)', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '500', transition: 'all 0.2s' }} onClick={() => setFilters(prev => { const f = {...prev}; delete f.search; return f; })}>Clear Search</button>
+        </td>
+      );
+    } else if (hasFilters) {
+      return (
+        <td colSpan="7" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.8 }}>🗂️</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            No notes match the selected filters
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px' }}>
+            Try adjusting or removing some filters to see your notes.
+          </p>
+          <button style={{ backgroundColor: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', transition: 'all 0.2s' }} onClick={() => setFilters({})}>Reset Filters</button>
+        </td>
+      );
+    } else {
+      return (
+        <td colSpan="7" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}>📝</div>
+          <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '12px' }}>No Notes Yet</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '16px' }}>Create your first note to keep track of customer conversations.</p>
+          <button style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '12px 32px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onClick={() => onAction && onAction('add')}>+ Add Note</button>
+        </td>
+      );
+    }
+  };
 
   return (
     <div className="table-container">
@@ -29,12 +85,7 @@ const NotesTable = ({ notes, loading, pagination, onAction }) => {
               </tr>
             ) : (!notes || notes.length === 0) ? (
               <tr>
-                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
-                  <h3 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '18px' }}>No Notes Found</h3>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Create your first note to keep track of customer conversations.</p>
-                  <button className="btn-primary" onClick={() => onAction && onAction('add')}>+ Add Note</button>
-                </td>
+                {renderEmptyState()}
               </tr>
             ) : (
               notes.map((note) => {

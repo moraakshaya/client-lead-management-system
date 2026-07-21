@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { FaTimes, FaStickyNote } from 'react-icons/fa';
 import './editClientModal.css';
+import { createNote } from '../../services/noteService';
+import { toast } from 'react-toastify';
 
-export default function AddNoteModal({ isOpen, onClose, client }) {
+export default function AddNoteModal({ isOpen, onClose, client, modelType, onSuccess }) {
   const [formData, setFormData] = useState({
     title: '',
     note: ''
   });
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen || !client) return null;
 
@@ -15,11 +18,28 @@ export default function AddNoteModal({ isOpen, onClose, client }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save note logic here
-    onClose();
-    setFormData({ title: '', note: '' });
+    try {
+      setLoading(true);
+      await createNote({
+        leadId: client._id,
+        title: formData.title,
+        notes: formData.note,
+        relatedToModel: modelType || 'Lead'
+      });
+      setFormData({ title: '', note: '' });
+      toast.success("Note saved successfully!");
+      if (onSuccess) {
+        onSuccess();
+      }
+      onClose();
+    } catch (error) {
+      console.error("Error saving note:", error);
+      toast.error("Failed to save note");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,9 +55,9 @@ export default function AddNoteModal({ isOpen, onClose, client }) {
             <div className="edit-form-grid" style={{ display: 'flex', flexDirection: 'column', padding: '32px 40px' }}>
               
               <div className="form-group full-width">
-                <label>Client</label>
+                <label>{modelType || 'Client'}</label>
                 <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-                  {client.client || client.customer}
+                  {client.leadName || client.client || client.customer || 'Unknown'}
                 </div>
               </div>
 
@@ -71,8 +91,10 @@ export default function AddNoteModal({ isOpen, onClose, client }) {
           </div>
 
           <div className="modal-footer edit-modal-footer">
-            <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-save">Save Note</button>
+            <button type="button" className="btn-cancel" onClick={onClose} disabled={loading}>Cancel</button>
+            <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? "Saving..." : "Save Note"}
+            </button>
           </div>
         </form>
       </div>

@@ -106,6 +106,8 @@ export function Leads() {
                     leads={leads}
                     loading={loading}
                     pagination={pagination}
+                    filters={filters}
+                    setFilters={setFilters}
                     onPageChange={handlePageChange}
                     onEditLead={handleEditLead} 
                     onViewLead={handleViewLead}
@@ -145,7 +147,8 @@ export function Leads() {
             <AddNoteModal 
                 isOpen={isAddNoteModalOpen} 
                 onClose={() => setIsAddNoteModalOpen(false)} 
-                client={selectedLead} 
+                client={selectedLead}
+                modelType="Lead"
                 onSuccess={handleRefresh}
             />
 

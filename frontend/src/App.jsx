@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from './components/ScrollToTop';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import MainLayout from './layouts/MainLayout.jsx'
 import { Dashboard } from './pages/Dashboard/dashboard.jsx'
@@ -16,6 +18,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />} />

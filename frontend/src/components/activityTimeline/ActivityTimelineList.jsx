@@ -53,7 +53,6 @@ export default function ActivityTimelineList({ data, loading, onAction, onRefres
                 {/* Marker (Dot & Line) */}
                 <div className="timeline-marker">
                   <div className={`timeline-dot type-${item.type}`}>
-                    {item.icon}
                   </div>
                   {/* Don't render line for the very last item in the entire list */}
                   {!(groupIndex === data.length - 1 && itemIndex === group.items.length - 1) && (

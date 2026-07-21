@@ -2,12 +2,12 @@ import api from '../api/axios';
 
 // Get paginated activities
 export const getActivities = (params) => {
-    return api.get('/activities', { params });
+    return api.get('/activity', { params });
 };
 
 // Get activity statistics
 export const getActivityStats = () => {
-    return api.get('/activities/stats');
+    return api.get('/activity/stats');
 };
 
 // Get activities for a specific lead

@@ -32,7 +32,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
         clientName: '', company: '', email: '', phone: '',
         status: 'Active', assignedTo: 'Rahul', description: ''
       });
-      onSuccess();
+      if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
       console.error("Error creating client:", error);

@@ -88,20 +88,19 @@ export function Clients() {
             <ClientsStatsCards stats={stats} loading={loading} />
             <ClientsFilterBar onFilterChange={(newFilters) => setFilters(newFilters)} />
             <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
-                {loading && clients.length === 0 ? (
-                    <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>Loading clients...</div>
-                ) : (
-                    <ClientsTable 
-                        clients={clients}
-                        pagination={pagination}
-                        onPageChange={handlePageChange}
-                        onViewClient={handleViewClient} 
-                        onEditClient={handleEditClient} 
-                        onAddNote={handleAddNote} 
-                        onSchedule={handleSchedule} 
-                        onDeleteClient={handleDelete} 
-                    />
-                )}
+                <ClientsTable 
+                    clients={clients}
+                    loading={loading}
+                    pagination={pagination}
+                    filters={filters}
+                    setFilters={setFilters}
+                    onPageChange={handlePageChange}
+                    onEditClient={handleEditClient} 
+                    onViewClient={handleViewClient}
+                    onDeleteClient={handleDelete}
+                    onAddNote={handleAddNote}
+                    onSchedule={handleSchedule}
+                />
             </div>
 
             <ViewClientModal 
@@ -120,7 +119,8 @@ export function Clients() {
             <AddNoteModal 
                 isOpen={isAddNoteModalOpen} 
                 onClose={() => setIsAddNoteModalOpen(false)} 
-                client={selectedClient} 
+                client={selectedClient}
+                modelType="Client"
                 onSuccess={handleRefresh}
             />
 

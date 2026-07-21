@@ -95,17 +95,100 @@ export default function LeadsTable({
   onDeleteLead, 
   onAddNote, 
   onSchedule, 
-  onConvert 
+  onConvert,
+  filters,
+  setFilters
 }) {
   const getInitials = (name) => {
     if (!name) return 'U';
     return name.charAt(0).toUpperCase();
   };
 
+  const getStatusClass = (status) => {
+    switch(status?.toLowerCase()) {
+      case 'new': return 'status-new';
+      case 'contacted': return 'status-contacted';
+      case 'qualified': return 'status-qualified';
+      case 'won': return 'status-won';
+      case 'lost': return 'status-lost';
+      default: return '';
+    }
+  };
+
+  const getPriorityClass = (priority) => {
+    switch(priority?.toLowerCase()) {
+      case 'high': return 'priority-high';
+      case 'medium': return 'priority-medium';
+      case 'low': return 'priority-low';
+      default: return '';
+    }
+  };
+
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const options = { year: 'numeric', month: 'short', day: '2-digit' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  // Determine empty state mode
+  const hasSearch = !!filters?.search;
+  const activeFiltersCount = Object.keys(filters || {}).filter(k => k !== 'search' && filters[k]).length;
+  const hasFilters = activeFiltersCount > 0;
+
+  const renderEmptyState = () => {
+    if (hasSearch && hasFilters) {
+      return (
+        <td colSpan="11" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.8 }}>🔍</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            No matching results found
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px', maxWidth: '400px', margin: '0 auto 24px auto' }}>
+            No leads match your current search for <strong>"{filters.search}"</strong> and {activeFiltersCount} applied filter{activeFiltersCount > 1 ? 's' : ''}.
+          </p>
+          <button style={{ backgroundColor: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', transition: 'all 0.2s' }} onClick={() => setFilters({})}>Reset All Filters & Search</button>
+        </td>
+      );
+    } else if (hasSearch) {
+      return (
+        <td colSpan="11" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.8 }}>🔍</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            Lead "{filters.search}" not found
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px' }}>
+            We couldn't find any leads matching that name, email, or phone.
+          </p>
+          <button style={{ backgroundColor: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border)', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '500', transition: 'all 0.2s' }} onClick={() => setFilters(prev => { const f = {...prev}; delete f.search; return f; })}>Clear Search</button>
+        </td>
+      );
+    } else if (hasFilters) {
+      return (
+        <td colSpan="11" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', opacity: 0.8 }}>🗂️</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '12px' }}>
+            No leads match the selected filters
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '15px' }}>
+            Try adjusting or removing some filters to see your leads.
+          </p>
+          <button style={{ backgroundColor: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '600', transition: 'all 0.2s' }} onClick={() => setFilters({})}>Reset Filters</button>
+        </td>
+      );
+    } else {
+      return (
+        <td colSpan="11" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+          <div style={{ fontSize: '56px', marginBottom: '20px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}>🎯</div>
+          <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '12px' }}>No Leads Yet</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '16px' }}>Start by adding your first lead to grow your business.</p>
+          <button style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '12px 32px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onClick={() => document.querySelector('.btn-add-lead')?.click()}>+ Add Lead</button>
+        </td>
+      );
+    }
   };
 
   return (
@@ -120,6 +203,8 @@ export default function LeadsTable({
               <th>Phone</th>
               <th>Email</th>
               <th>Source</th>
+              <th>Priority</th>
+              <th>Assigned To</th>
               <th>Status</th>
               <th>Created Date</th>
               <th className="actions-header">Actions</th>
@@ -128,18 +213,13 @@ export default function LeadsTable({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '2rem' }}>
+                <td colSpan="11" style={{ textAlign: 'center', padding: '2rem' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Searching...</span>
                 </td>
               </tr>
             ) : leads.length === 0 ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎯</div>
-                  <h2 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>No Leads Found</h2>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Capture a new lead to start growing your business.</p>
-                  <button style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '15px', fontWeight: '500' }} onClick={() => document.querySelector('.btn-add-lead')?.click()}>+ Add Lead</button>
-                </td>
+                {renderEmptyState()}
               </tr>
             ) : (
               leads.map((lead) => (
@@ -150,6 +230,32 @@ export default function LeadsTable({
                   <td>{lead.phone}</td>
                   <td>{lead.email}</td>
                   <td>{lead.source}</td>
+                  <td>
+                    <span className={`badge ${getPriorityClass(lead.priority)}`}>
+                      {lead.priority}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {lead.assignedUser ? (
+                        <>
+                          <div style={{ 
+                            width: '28px', height: '28px', borderRadius: '50%', 
+                            backgroundColor: 'var(--primary-light)', color: 'var(--primary)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            fontSize: '12px', fontWeight: 'bold' 
+                          }}>
+                            {getInitials(lead.assignedUser.name || lead.assignedUser)}
+                          </div>
+                          <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
+                            {lead.assignedUser.name || lead.assignedUser}
+                          </span>
+                        </>
+                      ) : (
+                        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Unassigned</span>
+                      )}
+                    </div>
+                  </td>
                   <td>
                     <span className={`badge ${getStatusClass(lead.status)}`}>
                       {lead.status}

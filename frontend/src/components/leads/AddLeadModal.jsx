@@ -59,7 +59,7 @@ export default function AddLeadModal({ isOpen, onClose, onSuccess }) {
         source: "Website", priority: "Medium", status: "New", budget: "", description: "", assignedUser: ""
       });
 
-      onSuccess(); // Tells the main Leads page to download the new data
+      if (onSuccess) onSuccess(); // Tells the main Leads page to download the new data
       onClose();   // Closes the popup window
     } catch (error) {
       console.error("Error creating lead:", error);

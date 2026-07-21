@@ -83,12 +83,14 @@ export const Notes = () => {
           notes={notes}
           loading={loading}
           pagination={pagination}
+          filters={filters}
+          setFilters={setFilters}
           onAction={handleAction}
         />
       </div>
 
       <NotesViewModal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} note={selectedNote} />
-      <NotesEditModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} note={selectedNote} />
+      <NotesEditModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} note={selectedNote} onSuccess={fetchData} />
       <NotesDeleteModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} note={selectedNote} onSuccess={fetchData} />
       <NotesAddModal
         isOpen={isAddModalOpen}
