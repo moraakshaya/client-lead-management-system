@@ -1,25 +1,40 @@
 import React, { useState } from 'react';
 import { FaTimes, FaSync, FaCheckCircle, FaHandshake, FaCheck } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { convertLeadToClient } from '../../services/leadService';
+import { toast } from 'react-toastify';
 import '../clients/editClientModal.css';
 
-export default function ConvertToClientModal({ isOpen, onClose, lead }) {
+export default function ConvertToClientModal({ isOpen, onClose, lead, onSuccess }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
+  const navigate = useNavigate();
 
   if (!isOpen || !lead) return null;
 
-  const handleConvert = () => {
-    setIsConverting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsConverting(false);
+  const handleConvert = async () => {
+    try {
+      setIsConverting(true);
+      await convertLeadToClient(lead._id);
       setIsSuccess(true);
-    }, 800);
+      if (onSuccess) onSuccess();
+      toast.success('Lead converted to client successfully!');
+    } catch (error) {
+      console.error('Error converting lead:', error);
+      toast.error('Failed to convert lead to client.');
+    } finally {
+      setIsConverting(false);
+    }
   };
 
   const handleClose = () => {
     setIsSuccess(false);
     onClose();
+  };
+
+  const handleGoToClients = () => {
+    handleClose();
+    navigate('/clients');
   };
 
   return (
@@ -60,10 +75,10 @@ export default function ConvertToClientModal({ isOpen, onClose, lead }) {
                 <div style={{ width: '100%', borderTop: '1px solid var(--border)', paddingTop: '20px', marginBottom: '20px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr', gap: '12px', fontSize: '15px' }}>
                     <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Lead Name :</span>
-                    <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{lead.customer || lead.client || '-'}</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{lead.leadName || '-'}</span>
 
                     <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Company :</span>
-                    <span style={{ color: 'var(--text-primary)' }}>{lead.company || '-'}</span>
+                    <span style={{ color: 'var(--text-primary)' }}>{lead.companyName || '-'}</span>
 
                     <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Email :</span>
                     <span style={{ color: 'var(--text-primary)' }}>{lead.email || '-'}</span>
@@ -120,12 +135,12 @@ export default function ConvertToClientModal({ isOpen, onClose, lead }) {
             </h2>
 
             <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '40px', textAlign: 'center' }}>
-              <strong>{lead.customer || lead.client}</strong> is now a Client.
+              <strong>{lead.leadName}</strong> is now a Client.
             </p>
 
             <div style={{ display: 'flex', gap: '16px' }}>
               <button className="btn-cancel" onClick={handleClose}>Close</button>
-              <button className="btn-save" onClick={handleClose} style={{ backgroundColor: 'var(--primary)' }}>Go to Clients</button>
+              <button className="btn-save" onClick={handleGoToClients} style={{ backgroundColor: 'var(--primary)' }}>Go to Clients</button>
             </div>
           </div>
         )}

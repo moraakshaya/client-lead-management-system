@@ -22,15 +22,43 @@ exports.getAllActivities = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20; // Load 20 activities at a time
         const skip = (page - 1) * limit;
+        const { search, type, user, module, date } = req.query;
 
-        const activities = await Activity.find()
+        let query = {};
+
+        // Search logic
+        if (search) {
+            query.$or = [
+                { action: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        // Dropdown filters
+        if (type) query.action = { $regex: type, $options: 'i' }; // e.g., 'Note', 'Create'
+        if (user) query.createdBy = user;
+        if (module) query.module = module;
+
+        // Date filter
+        if (date) {
+            const startOfDay = new Date(date);
+            const endOfDay = new Date(date);
+            endOfDay.setDate(endOfDay.getDate() + 1);
+
+            query.createdAt = {
+                $gte: startOfDay,
+                $lt: endOfDay
+            };
+        }
+
+        const activities = await Activity.find(query)
             .sort({ createdAt: -1 }) // Newest first
             .skip(skip)
             .limit(limit)
             .populate('leadId', 'leadName companyName')
             .populate('ClientId', 'clientName companyName');
 
-        const totalActivities = await Activity.countDocuments();
+        const totalActivities = await Activity.countDocuments(query);
         const totalPages = Math.ceil(totalActivities / limit);
 
         res.status(200).json({

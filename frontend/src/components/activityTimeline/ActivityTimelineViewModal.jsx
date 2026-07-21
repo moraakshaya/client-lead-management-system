@@ -9,13 +9,13 @@ export default function ActivityTimelineViewModal({ isOpen, onClose, activity })
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container edit-modal-container" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2><FaListUl style={{ marginRight: '10px' }}/> Activity Details</h2>
+          <h2><FaListUl style={{ marginRight: '10px' }} /> Activity Details</h2>
           <button className="close-btn" type="button" onClick={onClose}><FaTimes /></button>
         </div>
 
         <div className="modal-content" style={{ padding: '32px 40px' }}>
           <div className="view-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            
+
             <div className="view-item full-width" style={{ gridColumn: 'span 2' }}>
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Activity</label>
               <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', marginTop: '4px' }}>{activity.title}</div>
@@ -23,8 +23,7 @@ export default function ActivityTimelineViewModal({ isOpen, onClose, activity })
 
             <div className="view-item">
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Performed By</label>
-              {/* Activity entity usually stores user in our mock, or we can use a hardcoded fallback or 'System' */}
-              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{activity.performedBy || 'System User'}</div>
+              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{activity.createdBy || 'System User'}</div>
             </div>
 
             <div className="view-item">
@@ -58,7 +57,7 @@ export default function ActivityTimelineViewModal({ isOpen, onClose, activity })
         </div>
 
         <div className="modal-footer edit-modal-footer">
-          <button type="button" className="btn-secondary" onClick={onClose} style={{ padding: '10px 24px', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', background: 'var(--surface)' }}>Close</button>
+          <button type="button" className="btn-cancel" onClick={onClose}>Close</button>
         </div>
       </div>
     </div>

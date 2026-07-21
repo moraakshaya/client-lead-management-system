@@ -43,7 +43,7 @@ export default function Operations({ activities }) {
           {timelineActivities.map((activity, index) => (
             <div key={activity.id} className="timeline-item">
               {/* Vertical line connecting dots */}
-              {index !== timelineActivities.length - 1 && <div className="timeline-line"></div>}
+              {index !== timelineActivities.length - 1 && <div className="ops-timeline-line"></div>}
               
               <div className="timeline-icon-wrapper" style={{ backgroundColor: `${activity.color}20`, border: `1px solid ${activity.color}50` }}>
                 <span className="timeline-icon">{activity.icon}</span>
