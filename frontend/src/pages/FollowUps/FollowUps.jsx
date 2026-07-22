@@ -10,6 +10,7 @@ import FollowUpsAddNoteModal from '../../components/followUps/FollowUpsAddNoteMo
 import FollowUpsDeleteModal from '../../components/followUps/FollowUpsDeleteModal';
 import FollowUpsScheduleModal from '../../components/followUps/FollowUpsScheduleModal';
 import { getFollowUps, getFollowUpStats } from '../../services/followUpService';
+import { getLeadFilterOptions } from '../../services/leadService';
 import './followUps.css';
 
 export const FollowUps = () => {
@@ -27,24 +28,28 @@ export const FollowUps = () => {
   const [followUps, setFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1 });
+  const [filters, setFilters] = useState({});
+  const [filterOptions, setFilterOptions] = useState({ assignedUser: [] });
 
-  // --- FETCH DATA ON MOUNT ---
+  // --- FETCH DATA ON MOUNT AND ON FILTER CHANGE ---
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [filters, pagination.currentPage]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       // Fetch stats and table data at the exact same time for speed
-      const [statsRes, followUpsRes] = await Promise.all([
+      const [statsRes, followUpsRes, optionsRes] = await Promise.all([
         getFollowUpStats(),
-        getFollowUps({ page: 1, limit: 10 })
+        getFollowUps({ page: pagination.currentPage, limit: 10, ...filters }),
+        getLeadFilterOptions()
       ]);
 
       setStats(statsRes.data);
       setFollowUps(followUpsRes.data.data);
       setPagination(followUpsRes.data.pagination);
+      setFilterOptions(optionsRes.data || { assignedUser: [] });
     } catch (error) {
       console.error("Error fetching follow-up data:", error);
     } finally {
@@ -71,7 +76,7 @@ export const FollowUps = () => {
       {/* We are now passing the real stats data down to the cards! */}
       <FollowUpsStatsCards stats={stats} loading={loading} />
 
-      <FollowUpsFilterBar />
+      <FollowUpsFilterBar filters={filters} setFilters={setFilters} filterOptions={filterOptions} />
       <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
 
         {/* We are now passing real table data down to the table! */}
@@ -80,6 +85,8 @@ export const FollowUps = () => {
           loading={loading}
           pagination={pagination}
           onAction={handleAction}
+          filters={filters}
+          setFilters={setFilters}
         />
 
       </div>

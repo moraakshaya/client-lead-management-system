@@ -5,6 +5,10 @@ import '../clients/editClientModal.css';
 export default function FollowUpsViewModal({ isOpen, onClose, followUp }) {
   if (!isOpen || !followUp) return null;
 
+  const clientName = followUp.leadId ? (followUp.leadId.leadName || followUp.leadId.companyName || 'Unknown Lead') : 'Unknown Lead';
+  const assignedUser = followUp.leadId?.assignedUser?.name || 'Unassigned';
+  const dateObj = followUp.followUpDate ? new Date(followUp.followUpDate) : new Date();
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container edit-modal-container" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
@@ -18,32 +22,34 @@ export default function FollowUpsViewModal({ isOpen, onClose, followUp }) {
             
             <div className="view-item">
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Customer Name</label>
-              <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.clientLead || followUp.customer}</div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', marginTop: '4px' }}>{clientName}</div>
             </div>
 
             <div className="view-item">
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Call Type</label>
-              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.type}</div>
+              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.followUpType}</div>
             </div>
 
             <div className="view-item full-width" style={{ gridColumn: 'span 2' }}>
-              <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Subject</label>
-              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.subject || 'Follow-up Call'}</div>
+              <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Priority & Reminder</label>
+              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>
+                Priority: {followUp.priority || 'Medium'} | Reminder: {followUp.reminder || 'None'}
+              </div>
             </div>
 
             <div className="view-item">
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Scheduled Date</label>
-              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.date}</div>
+              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
             </div>
 
             <div className="view-item">
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Scheduled Time</label>
-              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.time}</div>
+              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
 
             <div className="view-item">
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Assigned To</label>
-              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{followUp.assigned}</div>
+              <div style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)', marginTop: '4px' }}>{assignedUser}</div>
             </div>
 
             <div className="view-item">
@@ -58,7 +64,7 @@ export default function FollowUpsViewModal({ isOpen, onClose, followUp }) {
             <div className="view-item full-width" style={{ gridColumn: 'span 2' }}>
               <label style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Description</label>
               <div style={{ fontSize: '15px', color: 'var(--text-primary)', marginTop: '4px', lineHeight: '1.5', background: 'var(--background)', padding: '16px', borderRadius: '8px' }}>
-                {followUp.description || 'No description provided.'}
+                {followUp.remarks || 'No remarks provided.'}
               </div>
             </div>
 

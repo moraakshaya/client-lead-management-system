@@ -21,10 +21,10 @@ import './sidebar.css';
 const navigationItems = [
   { label: 'Dashboard', icon: <MdHome />, path: '/dashboard' },
   { label: 'Leads', icon: <MdPeople />, path: '/leads' },
-  { label: 'Clients', icon: <MdBusinessCenter />, path: '/clients' },
   { label: 'Follow-Ups', icon: <MdCalendarToday />, path: '/follow-ups' },
   { label: 'Notes', icon: <MdArticle />, path: '/notes' },
   { label: 'Activity Timeline', icon: <MdHistory />, path: '/activity-timeline' },
+  { label: 'Clients', icon: <MdBusinessCenter />, path: '/clients' },
   { label: 'Settings', icon: <MdSettings />, path: '/settings' },
 ];
 

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { FaTimes, FaCalendarAlt } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
+import { createFollowUp } from '../../services/followUpService';
 import './editClientModal.css';
 
-export default function ScheduleFollowupModal({ isOpen, onClose, client }) {
+export default function ScheduleFollowupModal({ isOpen, onClose, client, onSuccess }) {
   const [formData, setFormData] = useState({
     date: '',
     time: '',
     type: 'Call',
+    priority: 'High',
     reminder: '30 Minutes Before',
     description: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   if (!isOpen || !client) return null;
 
@@ -19,11 +23,38 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save follow-up logic here
-    onClose();
-    setFormData({ date: '', time: '', type: 'Call', reminder: '30 Minutes Before', description: '' });
+    try {
+      setIsSaving(true);
+      const followUpDate = new Date(`${formData.date}T${formData.time}`);
+      
+      const payload = {
+        leadId: client._id,
+        followUpDate: followUpDate.toISOString(),
+        followUpType: formData.type,
+        remarks: formData.description,
+        priority: formData.priority,
+        reminder: formData.reminder,
+        status: "Pending"
+      };
+
+      await createFollowUp(payload);
+      
+      setIsSuccess(true);
+      if (onSuccess) onSuccess();
+
+      setTimeout(() => {
+        setIsSuccess(false);
+        setIsSaving(false);
+        setFormData({ date: '', time: '', type: 'Call', priority: 'High', reminder: '30 Minutes Before', description: '' });
+        onClose();
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to schedule follow-up");
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -34,81 +65,109 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client }) {
           <button className="close-btn" type="button" onClick={onClose}><FaTimes /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="edit-form-content">
-          <div className="modal-content" style={{ overflow: 'visible' }}>
-            <div className="edit-form-grid" style={{ padding: '32px 40px' }}>
-              
-              <div className="form-group full-width">
-                <label>Client</label>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-                  {client.client || client.customer}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Follow-up Date</label>
-                <input 
-                  type="date" 
-                  name="date" 
-                  value={formData.date} 
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Time</label>
-                <input 
-                  type="time" 
-                  name="time" 
-                  value={formData.time} 
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Type</label>
-                <CustomDropdown 
-                  name="type"
-                  value={formData.type} 
-                  onChange={handleChange}
-                  options={["Call", "Meeting", "Email", "Demo"]} 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Reminder</label>
-                <CustomDropdown 
-                  name="reminder"
-                  value={formData.reminder} 
-                  onChange={handleChange}
-                  options={["At time of event", "15 Minutes Before", "30 Minutes Before", "1 Hour Before", "1 Day Before"]} 
-                />
-              </div>
-
-              <div className="form-group full-width">
-                <label>Description</label>
-                <textarea 
-                  name="description" 
-                  value={formData.description} 
-                  onChange={handleChange}
-                  className="form-textarea"
-                  placeholder="Enter details about this follow-up..."
-                  rows={4}
-                ></textarea>
-              </div>
-
+        {isSuccess ? (
+          <div className="modal-content" style={{ padding: '64px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ marginBottom: '24px', animation: 'scaleIn 0.3s ease-out forwards' }}>
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="40" fill="#22C55E" fillOpacity="0.1" />
+                <path d="M53.3333 28.3333L32.9167 48.75L26.6667 42.5L23.3333 45.8333L32.9167 55.4167L56.6667 31.6667L53.3333 28.3333Z" fill="#22C55E" />
+              </svg>
             </div>
+            <h2 style={{ fontSize: '24px', color: 'var(--text-primary)', marginBottom: '12px', textAlign: 'center' }}>
+              Follow-up Scheduled!
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>It will now appear in your timeline.</p>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="edit-form-content">
+            <div className="modal-content" style={{ overflowY: 'auto' }}>
+              <div className="edit-form-grid" style={{ padding: '32px 40px', paddingBottom: '100px' }}>
+                
+                <div className="form-group full-width">
+                  <label>Client / Lead</label>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+                    {client.leadName || client.client || client.customer || 'Unknown'}
+                  </div>
+                </div>
 
-          <div className="modal-footer edit-modal-footer">
-            <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-save">Schedule Follow-up</button>
-          </div>
-        </form>
+                <div className="form-group">
+                  <label>Follow-up Date</label>
+                  <input 
+                    type="date" 
+                    name="date" 
+                    value={formData.date} 
+                    onChange={handleChange}
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Time</label>
+                  <input 
+                    type="time" 
+                    name="time" 
+                    value={formData.time} 
+                    onChange={handleChange}
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Type</label>
+                  <CustomDropdown 
+                    name="type"
+                    value={formData.type} 
+                    onChange={handleChange}
+                    options={["Call", "Meeting", "Email", "Demo"]} 
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Priority</label>
+                  <CustomDropdown 
+                    name="priority"
+                    value={formData.priority} 
+                    onChange={handleChange}
+                    options={["High", "Medium", "Low"]} 
+                  />
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Reminder</label>
+                  <CustomDropdown 
+                    name="reminder"
+                    value={formData.reminder} 
+                    onChange={handleChange}
+                    options={["At time of event", "15 Minutes Before", "30 Minutes Before", "1 Hour Before", "1 Day Before"]} 
+                  />
+                </div>
+
+                <div className="form-group full-width">
+                  <label>Description</label>
+                  <textarea 
+                    name="description" 
+                    value={formData.description} 
+                    onChange={handleChange}
+                    className="form-textarea"
+                    placeholder="Enter details about this follow-up..."
+                    rows={4}
+                    required
+                  ></textarea>
+                </div>
+
+              </div>
+            </div>
+
+            <div className="modal-footer edit-modal-footer">
+              <button type="button" className="btn-cancel" onClick={onClose} disabled={isSaving}>Cancel</button>
+              <button type="submit" className="btn-save" disabled={isSaving}>
+                {isSaving ? "Scheduling..." : "Schedule Follow-up"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

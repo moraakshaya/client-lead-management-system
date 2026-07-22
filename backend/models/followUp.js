@@ -33,6 +33,14 @@ const followUpSchema = new mongoose.Schema ({
             ],
         default: "Pending",
     },
+    priority: {
+        type: String,
+        enum: ["High", "Medium", "Low"],
+        default: "Medium"
+    },
+    reminder: {
+        type: String,
+    }
 },
 {timestamps: true,}
 );

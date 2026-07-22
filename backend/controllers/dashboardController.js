@@ -12,10 +12,13 @@ exports.getDashboardStats = async (req, res) => {
         const wonLeads = await lead.countDocuments({ status: "Won" });
         const lostLeads = await lead.countDocuments({ status: "Lost" });
 
+        const totalFollowUps = await followUp.countDocuments();
+
         res.status(200).json({
             totalLeads,
             totalClients,
             hotLeads,
+            totalFollowUps,
             pendingFollowUps,
             completedFollowUps,
             wonLeads,

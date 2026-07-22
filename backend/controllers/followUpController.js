@@ -24,20 +24,70 @@ exports.createFollowUp = async (req, res) => {
 // Get All Follow Ups (with pagination, filtering, and populated lead data)
 exports.getAllFollowUps = async (req, res) => {
     try {
-        const { status, type, page = 1, limit = 10 } = req.query;
+        const { status, type, search, assignedTo, dateRange, page = 1, limit = 10 } = req.query;
 
         let query = {};
+        
+        let leadQuery = {};
+        let needLeadQuery = false;
+
+        // Search By Lead Name, Company Name
+        if (search) {
+            leadQuery.$or = [
+                { leadName: { $regex: search, $options: "i" } },
+                { companyName: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } },
+            ];
+            needLeadQuery = true;
+        }
+
+        if (assignedTo && assignedTo !== 'All Users' && assignedTo !== 'All') {
+            const User = require('../models/user');
+            const user = await User.findOne({ name: assignedTo });
+            if (user) {
+                leadQuery.assignedUser = user._id;
+                needLeadQuery = true;
+            } else if (assignedTo === 'Unassigned') {
+                leadQuery.assignedUser = null;
+                needLeadQuery = true;
+            } else {
+                // force empty match
+                leadQuery._id = null;
+                needLeadQuery = true;
+            }
+        }
+
+        if (needLeadQuery) {
+            const Lead = require('../models/lead');
+            const leads = await Lead.find(leadQuery).select('_id');
+            const leadIds = leads.map(l => l._id);
+            query.leadId = { $in: leadIds };
+        }
 
         // Apply filters if they exist in the request
-        if (status) query.status = status;
-        if (type) query.followUpType = type;
+        if (status && status !== 'All Statuses' && status !== 'All') query.status = status;
+        if (type && type !== 'All Types' && type !== 'All') query.followUpType = type;
+        if (dateRange) {
+            const startOfDay = new Date(dateRange);
+            startOfDay.setUTCHours(0,0,0,0);
+            const endOfDay = new Date(dateRange);
+            endOfDay.setUTCHours(23,59,59,999);
+            query.followUpDate = { $gte: startOfDay, $lte: endOfDay };
+        }
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const limitNumber = parseInt(limit);
 
-        // Fetch follow-ups, fetch the associated lead's name, and sort by newest first
+        // Fetch follow-ups, fetch the associated lead's name and assignedUser, and sort by newest first
         const followUps = await FollowUp.find(query)
-            .populate('leadId', 'leadName companyName') // This fetches the lead's name instead of just the ID
+            .populate({
+                path: 'leadId',
+                select: 'leadName companyName source assignedUser',
+                populate: {
+                    path: 'assignedUser',
+                    select: 'name'
+                }
+            })
             .sort({ followUpDate: -1 }) // -1 sorts by descending (newest first)
             .skip(skip)
             .limit(limitNumber);
