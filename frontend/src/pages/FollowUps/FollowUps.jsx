@@ -11,6 +11,7 @@ import FollowUpsDeleteModal from '../../components/followUps/FollowUpsDeleteModa
 import FollowUpsScheduleModal from '../../components/followUps/FollowUpsScheduleModal';
 import { getFollowUps, getFollowUpStats } from '../../services/followUpService';
 import { getLeadFilterOptions } from '../../services/leadService';
+import { handleApiError } from '../../utils/errorHandler';
 import './followUps.css';
 
 export const FollowUps = () => {
@@ -51,7 +52,7 @@ export const FollowUps = () => {
       setPagination(followUpsRes.data.pagination);
       setFilterOptions(optionsRes.data || { assignedUser: [] });
     } catch (error) {
-      console.error("Error fetching follow-up data:", error);
+      handleApiError(error, 'fetchFollowUps');
     } finally {
       setLoading(false);
     }

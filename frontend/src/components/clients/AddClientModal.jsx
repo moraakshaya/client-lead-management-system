@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { FaTimes, FaUserPlus } from 'react-icons/fa';
+import { FaTimes, FaUserPlus, FaSpinner } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { createClient } from '../../services/clientService';
+import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 import './editClientModal.css';
 
 export default function AddClientModal({ isOpen, onClose, onSuccess }) {
@@ -16,16 +18,77 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
     description: ''
   });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setErrors({});
+      setTouched({});
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
+  const validateField = (name, value) => {
+    let error = "";
+    if (name === 'clientName' && !value.trim()) {
+      error = "Client name is required.";
+    }
+    if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      error = "Please enter a valid email address.";
+    }
+    if (name === 'phone') {
+      if (!value || value.trim() === '') {
+        error = "Phone number is required.";
+      } else if (/[^0-9]/.test(value)) {
+        error = "Phone number can contain only digits.";
+      } else if (value.length !== 10) {
+        error = "Phone number must contain exactly 10 digits.";
+      } else if (!/^[6-9]\d{9}$/.test(value)) {
+        error = "Please enter a valid Indian mobile number.";
+      }
+    }
+    return error;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'phone' && value.length > 10) {
+      return;
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (touched[name]) {
+      setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      const err = validateField(key, formData[key]);
+      if (err) newErrors[key] = err;
+    });
+
+    setErrors(newErrors);
+    
+    const allTouched = {};
+    Object.keys(formData).forEach(key => allTouched[key] = true);
+    setTouched(allTouched);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     try {
       setLoading(true);
       await createClient(formData);
@@ -33,11 +96,11 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
         clientName: '', company: '', email: '', phone: '',
         status: 'Active', priority: 'Standard', assignedTo: 'Rahul', description: ''
       });
+      toast.success("Client added successfully!");
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      console.error("Error creating client:", error);
-      alert("Failed to save client.");
+      handleApiError(error, 'createClient');
     } finally {
       setLoading(false);
     }
@@ -54,25 +117,28 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="edit-form-content">
           <div className="modal-content">
             <div className="edit-form-grid">
-              <div className="form-group">
+              <div className="form-group full-width">
                 <label>Client Name</label>
                 <input 
                   type="text" 
                   name="clientName" 
                   value={formData.clientName} 
-                  onChange={handleChange}
-                  className="form-input"
-                  placeholder="Enter client name"
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.clientName && errors.clientName ? 'input-error' : ''}`}
+                  placeholder="Enter full name"
                 />
+                {touched.clientName && errors.clientName && <span className="error-text">{errors.clientName}</span>}
               </div>
 
-              <div className="form-group">
+              <div className="form-group full-width">
                 <label>Company</label>
                 <input 
                   type="text" 
                   name="company" 
                   value={formData.company} 
-                  onChange={handleChange}
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
                   className="form-input"
                   placeholder="Enter company name"
                 />
@@ -84,22 +150,26 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
                   type="email" 
                   name="email" 
                   value={formData.email} 
-                  onChange={handleChange}
-                  className="form-input"
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.email && errors.email ? 'input-error' : ''}`}
                   placeholder="Enter email address"
                 />
+                {touched.email && errors.email && <span className="error-text">{errors.email}</span>}
               </div>
 
               <div className="form-group">
                 <label>Phone</label>
                 <input 
-                  type="text" 
+                  type="tel" 
                   name="phone" 
                   value={formData.phone} 
-                  onChange={handleChange}
-                  className="form-input"
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.phone && errors.phone ? 'input-error' : ''}`}
                   placeholder="Enter phone number"
                 />
+                {touched.phone && errors.phone && <span className="error-text">{errors.phone}</span>}
               </div>
 
               <div className="form-group">
@@ -148,7 +218,9 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
 
           <div className="modal-footer edit-modal-footer">
             <button type="button" className="btn-cancel" onClick={onClose} disabled={loading}>Cancel</button>
-            <button type="submit" className="btn-save" disabled={loading}>{loading ? 'Saving...' : 'Save Client'}</button>
+            <button type="submit" className="btn-save" disabled={loading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {loading ? <><FaSpinner className="fa-spin" style={{ marginRight: '8px' }} /> Saving...</> : 'Save Client'}
+            </button>
           </div>
         </form>
       </div>

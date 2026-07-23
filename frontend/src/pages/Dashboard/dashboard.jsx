@@ -6,6 +6,7 @@ import WorkItems from "../../components/dashboard/WorkItems";
 import Operations from "../../components/dashboard/Operations";
 import Performance from "../../components/dashboard/Performance";
 import { getDashboardStats, getChartData, getRecentWork, getRecentActivities } from "../../services/dashboardService";
+import { handleApiError } from "../../utils/errorHandler";
 
 export function Dashboard() {
     const [stats, setStats] = useState(null);
@@ -32,7 +33,7 @@ export function Dashboard() {
                 setActivities(activitiesRes.data.data || activitiesRes.data);
                 setError(null);
             } catch (err) {
-                console.error("Failed to load dashboard data:", err);
+                handleApiError(err, 'fetchDashboard');
                 setError("Unable to load dashboard data.");
             } finally {
                 setLoading(false);

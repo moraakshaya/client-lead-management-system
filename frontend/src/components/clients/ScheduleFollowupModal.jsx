@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { FaTimes, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { createFollowUp } from '../../services/followUpService';
+import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 import './editClientModal.css';
 
 export default function ScheduleFollowupModal({ isOpen, onClose, client, onSuccess }) {
@@ -28,6 +30,14 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.date || !formData.time) {
+      return toast.error("Date and Time are required.");
+    }
+    if (!formData.description.trim()) {
+      return toast.error("Description/Remarks are required.");
+    }
+
     try {
       setIsSaving(true);
       const followUpDate = new Date(`${formData.date}T${formData.time}`);
@@ -45,6 +55,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
       await createFollowUp(payload);
 
       setIsSuccess(true);
+      toast.success("Follow-up scheduled successfully!");
       if (onSuccess) onSuccess();
 
       setTimeout(() => {
@@ -52,10 +63,9 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
         setIsSaving(false);
         setFormData({ date: '', time: '', type: 'Call', priority: 'High', reminder: '30 Minutes Before', description: '' });
         onClose();
-      }, 1500);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to schedule follow-up");
+      }, 2000);
+    } catch (error) {
+      handleApiError(error, 'createFollowUp');
       setIsSaving(false);
     }
   };

@@ -6,6 +6,7 @@ import ActivityTimelineList from '../../components/activityTimeline/ActivityTime
 import ActivityTimelineViewModal from '../../components/activityTimeline/ActivityTimelineViewModal';
 import { getActivities, getActivityStats } from '../../services/activityService';
 import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 import './activityTimeline.css';
 
 export const ActivityTimeline = () => {
@@ -94,7 +95,7 @@ export const ActivityTimeline = () => {
       setData(groupedData);
 
     } catch (error) {
-      console.error('Error fetching timeline data:', error);
+      handleApiError(error, 'fetchActivities');
     } finally {
       setLoading(false);
     }

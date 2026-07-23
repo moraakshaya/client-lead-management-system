@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes, FaEdit } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { updateNote } from '../../services/noteService';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function NotesEditModal({ isOpen, onClose, note, onSuccess }) {
@@ -47,8 +48,7 @@ export default function NotesEditModal({ isOpen, onClose, note, onSuccess }) {
         onClose();
       }, 1500);
     } catch (err) {
-      console.error(err);
-      alert("Failed to update note");
+      handleApiError(err, 'updateNote');
       setIsSaving(false);
     }
   };

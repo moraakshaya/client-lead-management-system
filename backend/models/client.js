@@ -14,6 +14,13 @@ const clientSchema = new mongoose.Schema({
     },
     phone: {
         type: String, // The phone number of the client
+        required: [true, 'Phone number is required.'],
+        validate: {
+            validator: function(v) {
+                return /^[6-9]\d{9}$/.test(v);
+            },
+            message: 'Invalid phone number.'
+        }
     },
     address: {
         type: String, // The address of the client

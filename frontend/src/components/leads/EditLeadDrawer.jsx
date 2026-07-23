@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaTimes, FaEdit } from "react-icons/fa";
+import { FaTimes, FaEdit, FaSpinner } from "react-icons/fa";
 import CustomDropdown from "./CustomDropdown";
 import "../clients/editClientModal.css";
 import { getUsers } from "../../services/userService";
 import { updateLead } from "../../services/leadService";
+import { toast } from "react-toastify";
+import { handleApiError } from "../../utils/errorHandler";
 
 export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -20,6 +22,8 @@ export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
   const [users, setUsers] = useState([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   useEffect(() => {
     if (isOpen) {
@@ -41,16 +45,73 @@ export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
         notes: lead.notes || ""
       });
       setIsSuccess(false);
+      setErrors({});
+      setTouched({});
     }
   }, [lead, isOpen]);
 
+  const validateField = (name, value) => {
+    let error = "";
+    if (name === 'leadName' && !value.trim()) {
+      error = "Lead name is required.";
+    }
+    if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      error = "Please enter a valid email address.";
+    }
+    if (name === 'phone') {
+      if (!value || value.trim() === '') {
+        error = "Phone number is required.";
+      } else if (/[^0-9]/.test(value)) {
+        error = "Phone number can contain only digits.";
+      } else if (value.length !== 10) {
+        error = "Phone number must contain exactly 10 digits.";
+      } else if (!/^[6-9]\d{9}$/.test(value)) {
+        error = "Please enter a valid Indian mobile number.";
+      }
+    }
+    if (name === 'budget' && value && isNaN(Number(value.toString().replace(/,/g, '')))) {
+      error = "Budget must be numeric.";
+    }
+    return error;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'phone' && value.length > 10) {
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    if (touched[name]) {
+      setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      const err = validateField(key, formData[key]);
+      if (err) newErrors[key] = err;
+    });
+
+    setErrors(newErrors);
+    
+    const allTouched = {};
+    Object.keys(formData).forEach(key => allTouched[key] = true);
+    setTouched(allTouched);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     try {
       setIsSaving(true);
       const dataToSave = { ...formData };
@@ -60,18 +121,16 @@ export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
       await updateLead(lead._id, dataToSave);
       
       setIsSuccess(true);
+      toast.success("Lead updated successfully!");
       if (onSuccess) onSuccess();
       
-      // Close after 1.5s
       setTimeout(() => {
-        setIsSuccess(false);
-        setIsSaving(false);
         onClose();
-      }, 1500);
-      
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update lead");
+        setIsSuccess(false);
+      }, 2000);
+    } catch (error) {
+      handleApiError(error, 'updateLead');
+    } finally {
       setIsSaving(false);
     }
   };
@@ -105,54 +164,57 @@ export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
           <form onSubmit={handleSubmit} className="edit-form-content">
             <div className="modal-content">
               <div className="edit-form-grid">
-              
-              <div className="form-group">
-                <label>Full Name</label>
-                <input 
-                  type="text" 
-                  name="leadName" 
-                  value={formData.leadName} 
-                  onChange={handleChange} 
-                  className="form-input"
-                  placeholder="Enter full name"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Company</label>
-                <input 
-                  type="text" 
-                  name="companyName" 
-                  value={formData.companyName} 
-                  onChange={handleChange} 
-                  className="form-input"
-                  placeholder="Enter company"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Email</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  className="form-input"
-                  placeholder="Enter email address"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Phone</label>
-                <input 
-                  type="tel" 
-                  name="phone" 
-                  value={formData.phone} 
-                  onChange={handleChange} 
-                  className="form-input"
-                  placeholder="Enter phone number"
-                />
-              </div>
+                            <div className="form-group full-width">
+                  <label>Lead Name</label>
+                  <input
+                    type="text"
+                    name="leadName"
+                    value={formData.leadName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`form-input ${touched.leadName && errors.leadName ? 'input-error' : ''}`}
+                    placeholder="Enter lead name"
+                  />
+                  {touched.leadName && errors.leadName && <span className="error-text">{errors.leadName}</span>}
+                </div>
+                <div className="form-group full-width">
+                  <label>Company Name</label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="form-input"
+                    placeholder="Enter company name"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`form-input ${touched.email && errors.email ? 'input-error' : ''}`}
+                    placeholder="Enter email"
+                  />
+                  {touched.email && errors.email && <span className="error-text">{errors.email}</span>}
+                </div>
+                <div className="form-group">
+                  <label>Phone</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`form-input ${touched.phone && errors.phone ? 'input-error' : ''}`}
+                    placeholder="Enter phone"
+                  />
+                  {touched.phone && errors.phone && <span className="error-text">{errors.phone}</span>}
+                </div>
 
               <div className="form-group">
                 <label>Status</label>
@@ -215,8 +277,8 @@ export default function EditLeadModal({ isOpen, onClose, lead, onSuccess }) {
 
             <div className="modal-footer edit-modal-footer">
               <button type="button" className="btn-cancel" onClick={onClose} disabled={isSaving}>Cancel</button>
-              <button type="submit" className="btn-save" disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Save Changes'}
+              <button type="submit" className="btn-save" disabled={isSaving} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isSaving ? <><FaSpinner className="fa-spin" style={{ marginRight: '8px' }} /> Saving...</> : 'Save Changes'}
               </button>
             </div>
           </form>

@@ -5,7 +5,8 @@ import {
   FaEdit,
   FaStickyNote,
   FaCalendarAlt,
-  FaTrashAlt
+  FaTrashAlt,
+  FaSpinner
 } from 'react-icons/fa';
 import './clientsTable.css';
 
@@ -72,7 +73,8 @@ export default function ClientsTable({
   onAddNote, 
   onSchedule,
   filters,
-  setFilters
+  setFilters,
+  loading
 }) {
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -182,7 +184,14 @@ export default function ClientsTable({
             </tr>
           </thead>
           <tbody>
-            {clients.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                  <FaSpinner className="fa-spin" style={{ fontSize: '24px', color: 'var(--primary)', marginBottom: '12px' }} />
+                  <div style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Loading clients...</div>
+                </td>
+              </tr>
+            ) : clients.length === 0 ? (
               <tr>
                 {renderEmptyState()}
               </tr>

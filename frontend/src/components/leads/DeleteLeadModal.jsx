@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FaTimes, FaExclamationTriangle, FaTrashAlt } from 'react-icons/fa';
 import '../clients/editClientModal.css';
 import { deleteLead } from '../../services/leadService';
+import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 
 export default function DeleteLeadModal({ isOpen, onClose, lead, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -12,11 +14,11 @@ export default function DeleteLeadModal({ isOpen, onClose, lead, onSuccess }) {
     try {
       setLoading(true);
       await deleteLead(lead._id);
+      toast.success("Lead deleted successfully!");
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      console.error("Error deleting lead:", error);
-      alert("Failed to delete lead");
+      handleApiError(error, 'deleteLead');
     } finally {
       setLoading(false);
     }

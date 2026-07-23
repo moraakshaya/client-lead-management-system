@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaEdit, FaEye, FaTrashAlt, FaEllipsisV, FaStickyNote, FaCalendarAlt, FaSync } from 'react-icons/fa';
+import { FaEdit, FaEye, FaTrashAlt, FaEllipsisV, FaStickyNote, FaCalendarAlt, FaSync, FaSpinner } from 'react-icons/fa';
 import './leadsTable.css';
 
 const mockLeads = [
@@ -213,8 +213,9 @@ export default function LeadsTable({
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="11" style={{ textAlign: 'center', padding: '2rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Searching...</span>
+                <td colSpan="11" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+                  <FaSpinner className="fa-spin" style={{ fontSize: '24px', color: 'var(--primary)', marginBottom: '12px' }} />
+                  <div style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Loading leads...</div>
                 </td>
               </tr>
             ) : leads.length === 0 ? (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaTimes, FaCheckCircle } from 'react-icons/fa';
 import { updateFollowUp } from '../../services/followUpService';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function FollowUpsMarkCompletedModal({ isOpen, onClose, followUp, onSuccess }) {
@@ -23,8 +24,7 @@ export default function FollowUpsMarkCompletedModal({ isOpen, onClose, followUp,
         onClose();
       }, 1500);
     } catch (err) {
-      console.error(err);
-      alert("Failed to mark follow-up as completed");
+      handleApiError(err, 'updateFollowUp');
       setIsSaving(false);
     }
   };

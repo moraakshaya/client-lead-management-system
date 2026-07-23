@@ -3,6 +3,7 @@ import { FaTimes, FaSync, FaCheckCircle, FaHandshake, FaCheck } from 'react-icon
 import { useNavigate } from 'react-router-dom';
 import { convertLeadToClient } from '../../services/leadService';
 import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function ConvertToClientModal({ isOpen, onClose, lead, onSuccess }) {
@@ -20,8 +21,7 @@ export default function ConvertToClientModal({ isOpen, onClose, lead, onSuccess 
       if (onSuccess) onSuccess();
       toast.success('Lead converted to client successfully!');
     } catch (error) {
-      console.error('Error converting lead:', error);
-      toast.error('Failed to convert lead to client.');
+      handleApiError(error, 'convertLead');
     } finally {
       setIsConverting(false);
     }

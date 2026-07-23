@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaTimes, FaEdit, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { updateFollowUp } from '../../services/followUpService';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function FollowUpsEditModal({ isOpen, onClose, followUp, users = [], onSuccess }) {
@@ -76,8 +77,7 @@ export default function FollowUpsEditModal({ isOpen, onClose, followUp, users = 
         onClose();
       }, 1500);
     } catch (err) {
-      console.error(err);
-      alert("Failed to update follow-up");
+      handleApiError(err, 'updateFollowUp');
       setIsSaving(false);
     }
   };

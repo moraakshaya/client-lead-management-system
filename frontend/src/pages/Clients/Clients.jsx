@@ -10,7 +10,7 @@ import ScheduleFollowupModal from "../../components/clients/ScheduleFollowupModa
 import DeleteClientModal from "../../components/clients/DeleteClientModal";
 import AddClientModal from "../../components/clients/AddClientModal";
 import { getClients, getClientStats } from "../../services/clientService";
-
+import { handleApiError } from "../../utils/errorHandler";
 export function Clients() {
     const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -48,7 +48,7 @@ export function Clients() {
                 setStats(results[1].data || null);
             }
         } catch (error) {
-            console.error("Error fetching clients data:", error);
+            handleApiError(error, 'fetchClients');
         } finally {
             setTableLoading(false);
             if (fetchStats) setStatsLoading(false);

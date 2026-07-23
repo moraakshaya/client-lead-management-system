@@ -11,6 +11,7 @@ import AddNoteModal from "../../components/clients/AddNoteModal";
 import ScheduleFollowupModal from "../../components/clients/ScheduleFollowupModal";
 import ConvertToClientModal from "../../components/leads/ConvertToClientModal";
 import { getLeads, getLeadStats, getLeadFilterOptions } from "../../services/leadService";
+import { handleApiError } from "../../utils/errorHandler";
 
 export function Leads() {
     const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
@@ -44,7 +45,7 @@ export function Leads() {
             setStats(statsRes.data || null);
             setFilterOptions(optionsRes.data || { status: [], priority: [], source: [], assignedUser: [] });
         } catch (error) {
-            console.error("Error fetching leads data:", error);
+            handleApiError(error, 'fetchLeads');
         } finally {
             setLoading(false);
         }

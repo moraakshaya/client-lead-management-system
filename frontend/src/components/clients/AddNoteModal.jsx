@@ -3,6 +3,7 @@ import { FaTimes, FaStickyNote } from 'react-icons/fa';
 import './editClientModal.css';
 import { createNote } from '../../services/noteService';
 import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 
 export default function AddNoteModal({ isOpen, onClose, client, modelType, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -21,6 +22,14 @@ export default function AddNoteModal({ isOpen, onClose, client, modelType, onSuc
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.title.trim()) {
+      return toast.error("Note title is required.");
+    }
+    if (!formData.note.trim()) {
+      return toast.error("Note content cannot be empty.");
+    }
+
     try {
       setLoading(true);
       await createNote({
@@ -31,6 +40,7 @@ export default function AddNoteModal({ isOpen, onClose, client, modelType, onSuc
       });
       
       setIsSuccess(true);
+      toast.success("Note added successfully!");
       if (onSuccess) onSuccess();
 
       setTimeout(() => {
@@ -38,10 +48,9 @@ export default function AddNoteModal({ isOpen, onClose, client, modelType, onSuc
         setLoading(false);
         setFormData({ title: '', note: '' });
         onClose();
-      }, 1500);
+      }, 2000);
     } catch (error) {
-      console.error("Error saving note:", error);
-      alert("Failed to save note");
+      handleApiError(error, 'createNote');
       setLoading(false);
     }
   };

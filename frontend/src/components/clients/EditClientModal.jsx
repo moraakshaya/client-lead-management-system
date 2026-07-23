@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FaTimes, FaEdit } from 'react-icons/fa';
+import { FaTimes, FaEdit, FaSpinner } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { updateClient } from '../../services/clientService';
+import { toast } from 'react-toastify';
+import { handleApiError } from '../../utils/errorHandler';
 import './editClientModal.css';
 
 export default function EditClientModal({ isOpen, onClose, client, onSuccess }) {
@@ -16,6 +18,8 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
     priority: 'Standard',
     description: ''
   });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   useEffect(() => {
     if (client) {
@@ -29,32 +33,86 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
         description: client.description || ''
       });
       setIsSuccess(false);
+      setErrors({});
+      setTouched({});
     }
   }, [client, isOpen]);
 
   if (!isOpen) return null;
 
+  const validateField = (name, value) => {
+    let error = "";
+    if (name === 'clientName' && !value.trim()) {
+      error = "Client name is required.";
+    }
+    if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      error = "Please enter a valid email address.";
+    }
+    if (name === 'phone') {
+      if (!value || value.trim() === '') {
+        error = "Phone number is required.";
+      } else if (/[^0-9]/.test(value)) {
+        error = "Phone number can contain only digits.";
+      } else if (value.length !== 10) {
+        error = "Phone number must contain exactly 10 digits.";
+      } else if (!/^[6-9]\d{9}$/.test(value)) {
+        error = "Please enter a valid Indian mobile number.";
+      }
+    }
+    return error;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'phone' && value.length > 10) {
+      return;
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (touched[name]) {
+      setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      const err = validateField(key, formData[key]);
+      if (err) newErrors[key] = err;
+    });
+
+    setErrors(newErrors);
+    
+    const allTouched = {};
+    Object.keys(formData).forEach(key => allTouched[key] = true);
+    setTouched(allTouched);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
     try {
       setIsSaving(true);
       await updateClient(client._id, formData);
       setIsSuccess(true);
+      toast.success("Client updated successfully!");
       if (onSuccess) onSuccess();
       
       setTimeout(() => {
         setIsSuccess(false);
         setIsSaving(false);
         onClose();
-      }, 1500);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update client");
+      }, 2000);
+    } catch (error) {
+      handleApiError(error, 'updateClient');
       setIsSaving(false);
     }
   };
@@ -84,27 +142,30 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
           <form onSubmit={handleSubmit} className="edit-form-content">
             <div className="modal-content">
               <div className="edit-form-grid">
-              <div className="form-group">
+              <div className="form-group full-width">
                 <label>Client Name</label>
                 <input 
                   type="text" 
                   name="clientName" 
                   value={formData.clientName} 
-                  onChange={handleChange}
-                  className="form-input"
-                  placeholder="Enter client name"
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.clientName && errors.clientName ? 'input-error' : ''}`}
+                  placeholder="Enter full name"
                 />
+                {touched.clientName && errors.clientName && <span className="error-text">{errors.clientName}</span>}
               </div>
 
-              <div className="form-group">
+              <div className="form-group full-width">
                 <label>Company</label>
                 <input 
                   type="text" 
                   name="companyName" 
                   value={formData.companyName} 
-                  onChange={handleChange}
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
                   className="form-input"
-                  placeholder="Enter company name"
+                  placeholder="Enter company"
                 />
               </div>
 
@@ -114,22 +175,26 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
                   type="email" 
                   name="email" 
                   value={formData.email} 
-                  onChange={handleChange}
-                  className="form-input"
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.email && errors.email ? 'input-error' : ''}`}
                   placeholder="Enter email address"
                 />
+                {touched.email && errors.email && <span className="error-text">{errors.email}</span>}
               </div>
 
               <div className="form-group">
                 <label>Phone</label>
                 <input 
-                  type="text" 
+                  type="tel" 
                   name="phone" 
                   value={formData.phone} 
-                  onChange={handleChange}
-                  className="form-input"
+                  onChange={handleChange} 
+                  onBlur={handleBlur}
+                  className={`form-input ${touched.phone && errors.phone ? 'input-error' : ''}`}
                   placeholder="Enter phone number"
                 />
+                {touched.phone && errors.phone && <span className="error-text">{errors.phone}</span>}
               </div>
 
               <div className="form-group">
@@ -168,8 +233,8 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
 
           <div className="modal-footer edit-modal-footer">
             <button type="button" className="btn-cancel" onClick={onClose} disabled={isSaving}>Cancel</button>
-            <button type="submit" className="btn-save" disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save Changes'}
+            <button type="submit" className="btn-save" disabled={isSaving} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {isSaving ? <><FaSpinner className="fa-spin" style={{ marginRight: '8px' }} /> Saving...</> : 'Save Changes'}
             </button>
           </div>
         </form>

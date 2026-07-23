@@ -3,6 +3,7 @@ import { FaTimes, FaUser, FaStickyNote, FaCalendarAlt, FaChartLine } from 'react
 import './viewClientModal.css';
 import { getNotes } from '../../services/noteService';
 import { getFollowUps } from '../../services/followUpService';
+import { handleApiError } from '../../utils/errorHandler';
 
 export default function ViewClientModal({ isOpen, onClose, client }) {
   const [notes, setNotes] = useState([]);
@@ -22,7 +23,7 @@ export default function ViewClientModal({ isOpen, onClose, client }) {
           setNotes(notesRes.data?.notes || []);
           setFollowUps(followUpsRes.data?.followUps || []);
         } catch (error) {
-          console.error("Failed to fetch client details:", error);
+          handleApiError(error, 'fetchClientDetails');
         } finally {
           setLoading(false);
         }

@@ -4,6 +4,7 @@ import CustomDropdown from '../leads/CustomDropdown';
 import '../clients/editClientModal.css';
 import { createNote } from '../../services/noteService';
 import { getLeads } from '../../services/leadService';
+import { handleApiError } from '../../utils/errorHandler';
 
 export default function NotesAddModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -57,8 +58,7 @@ export default function NotesAddModal({ isOpen, onClose }) {
       setFormData({ title: '', relatedToModel: 'Lead', leadId: '', notes: '' });
       onClose();
     } catch (error) {
-      console.error("Error creating note:", error);
-      alert("Failed to save note.");
+      handleApiError(error, 'createNote');
     } finally {
       setLoading(false);
     }

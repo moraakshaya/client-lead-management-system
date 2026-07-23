@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaTimes, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
 import { deleteClient } from '../../services/clientService';
+import { handleApiError } from '../../utils/errorHandler';
 import './editClientModal.css';
 
 export default function DeleteClientModal({ isOpen, onClose, client, onSuccess }) {
@@ -22,8 +23,7 @@ export default function DeleteClientModal({ isOpen, onClose, client, onSuccess }
         onClose();
       }, 1500);
     } catch (error) {
-      console.error("Failed to delete client", error);
-      alert("Failed to delete client.");
+      handleApiError(error, 'deleteClient');
       setIsSaving(false);
     }
   };

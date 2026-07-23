@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaTimes, FaTrashAlt } from 'react-icons/fa';
 import '../clients/editClientModal.css';
 import { deleteNote } from '../../services/noteService';
+import { handleApiError } from '../../utils/errorHandler';
 
 export default function NotesDeleteModal({ isOpen, onClose, note, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -15,8 +16,7 @@ export default function NotesDeleteModal({ isOpen, onClose, note, onSuccess }) {
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
-      console.error("Error deleting note:", error);
-      alert("Failed to delete note");
+      handleApiError(error, 'deleteNote');
     } finally {
       setLoading(false);
     }

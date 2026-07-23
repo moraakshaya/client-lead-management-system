@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaTimes, FaTrashAlt } from 'react-icons/fa';
 import { deleteFollowUp } from '../../services/followUpService';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function FollowUpsDeleteModal({ isOpen, onClose, followUp, onSuccess }) {
@@ -15,8 +16,7 @@ export default function FollowUpsDeleteModal({ isOpen, onClose, followUp, onSucc
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
-      console.error("Failed to delete follow up:", err);
-      alert("Failed to delete follow-up.");
+      handleApiError(err, 'deleteFollowUp');
     } finally {
       setIsDeleting(false);
     }

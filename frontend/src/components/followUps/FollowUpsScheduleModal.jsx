@@ -3,6 +3,7 @@ import { FaTimes, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { getLeads } from '../../services/leadService';
 import { createFollowUp } from '../../services/followUpService';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function FollowUpsScheduleModal({ isOpen, onClose, onSuccess, users = [] }) {
@@ -70,8 +71,7 @@ export default function FollowUpsScheduleModal({ isOpen, onClose, onSuccess, use
         onClose();
       }, 1500);
     } catch (err) {
-      console.error(err);
-      alert("Failed to schedule follow-up");
+      handleApiError(err, 'createFollowUp');
       setIsSaving(false);
     }
   };

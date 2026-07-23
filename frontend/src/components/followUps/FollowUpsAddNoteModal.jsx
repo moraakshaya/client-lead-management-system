@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaTimes, FaStickyNote } from 'react-icons/fa';
 import { createNote } from '../../services/noteService';
+import { handleApiError } from '../../utils/errorHandler';
 import '../clients/editClientModal.css';
 
 export default function FollowUpsAddNoteModal({ isOpen, onClose, followUp, onSuccess }) {
@@ -41,8 +42,7 @@ export default function FollowUpsAddNoteModal({ isOpen, onClose, followUp, onSuc
         onClose();
       }, 1500);
     } catch (err) {
-      console.error(err);
-      alert("Failed to add note.");
+      handleApiError(err, 'createNote');
       setIsSaving(false);
     }
   };

@@ -5,7 +5,16 @@ const leadSchema = new mongoose.Schema({
     leadName: String, // The name of the lead
     companyName: String, // The name of the company associated with the lead
     email: String, // The email address of the lead
-    phone: String, // The phone number of the lead
+    phone: {
+        type: String,
+        required: [true, 'Phone number is required.'],
+        validate: {
+            validator: function(v) {
+                return /^[6-9]\d{9}$/.test(v);
+            },
+            message: 'Invalid phone number.'
+        }
+    }, // The phone number of the lead
     source: String, // The source from which the lead was acquired (e.g., website, referral, etc.)
     status: {
         type: String, // The status of the lead (e.g., new, contacted, qualified, etc.)

@@ -8,6 +8,7 @@ import NotesEditModal from '../../components/notes/NotesEditModal';
 import NotesDeleteModal from '../../components/notes/NotesDeleteModal';
 import NotesAddModal from '../../components/notes/NotesAddModal';
 import { getNotes, getNoteStats, updateNote } from '../../services/noteService';
+import { handleApiError } from '../../utils/errorHandler';
 import './notes.css';
 
 export const Notes = () => {
@@ -43,7 +44,7 @@ export const Notes = () => {
       setNotes(notesRes.data.data);
       setPagination(notesRes.data.pagination);
     } catch (error) {
-      console.error("Error fetching notes data:", error);
+      handleApiError(error, 'fetchNotes');
     } finally {
       setLoading(false);
     }
