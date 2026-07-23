@@ -11,6 +11,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
     email: '',
     phone: '',
     status: 'Active',
+    priority: 'Standard',
     assignedTo: 'Rahul',
     description: ''
   });
@@ -30,7 +31,7 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
       await createClient(formData);
       setFormData({
         clientName: '', company: '', email: '', phone: '',
-        status: 'Active', assignedTo: 'Rahul', description: ''
+        status: 'Active', priority: 'Standard', assignedTo: 'Rahul', description: ''
       });
       if (onSuccess) onSuccess();
       onClose();
@@ -106,7 +107,17 @@ export default function AddClientModal({ isOpen, onClose, onSuccess }) {
                 <CustomDropdown 
                   name="status"
                   value={formData.status}
-                  options={["Active", "VIP", "Inactive"]}
+                  options={["Active", "Inactive"]}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Priority</label>
+                <CustomDropdown 
+                  name="priority"
+                  value={formData.priority}
+                  options={["Standard", "VIP"]}
                   onChange={handleChange}
                 />
               </div>

@@ -13,19 +13,19 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
     email: '',
     phone: '',
     status: 'Active',
-    priority: 'Medium',
+    priority: 'Standard',
     description: ''
   });
 
   useEffect(() => {
     if (client) {
       setFormData({
-        clientName: client.clientName || '',
-        companyName: client.companyName || '',
+        clientName: client.clientName || client.name || '',
+        companyName: client.companyName || client.company || '',
         email: client.email || '',
         phone: client.phone || '',
         status: client.status || 'Active',
-        priority: client.priority || 'Medium',
+        priority: client.priority || 'Standard',
         description: client.description || ''
       });
       setIsSuccess(false);
@@ -137,7 +137,7 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
                 <CustomDropdown 
                   name="status"
                   value={formData.status}
-                  options={["Active", "Inactive", "Churned"]}
+                  options={["Active", "Inactive"]}
                   onChange={handleChange}
                 />
               </div>
@@ -147,7 +147,7 @@ export default function EditClientModal({ isOpen, onClose, client, onSuccess }) 
                 <CustomDropdown 
                   name="priority"
                   value={formData.priority}
-                  options={["High", "Medium", "Low"]}
+                  options={["Standard", "VIP"]}
                   onChange={handleChange}
                 />
               </div>

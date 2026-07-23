@@ -41,12 +41,41 @@ exports.getAllNotes = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const limitNumber = parseInt(limit);
 
-        // Fetch notes, fetch the associated lead/client name, and sort by newest first
-        const notes = await Notes.find(query)
-            .populate('leadId', 'leadName companyName') // Fetches the actual name!
+        // Fetch notes, sort by newest first
+        let notes = await Notes.find(query)
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limitNumber);
+            .limit(limitNumber)
+            .lean();
+
+        // Extract unique leadIds to populate manually
+        const leadIdsToFetch = notes.map(n => n.leadId).filter(Boolean);
+
+        // Fetch matching Leads and Clients
+        const Lead = require('../models/lead');
+        const Client = require('../models/client');
+
+        const [leads, clients] = await Promise.all([
+            Lead.find({ _id: { $in: leadIdsToFetch } }).select('leadName companyName').lean(),
+            Client.find({ _id: { $in: leadIdsToFetch } }).select('clientName companyName').lean()
+        ]);
+
+        const leadMap = {};
+        leads.forEach(l => leadMap[l._id.toString()] = l);
+        clients.forEach(c => {
+            leadMap[c._id.toString()] = {
+                _id: c._id,
+                leadName: c.clientName, // Map clientName to leadName for frontend
+                companyName: c.companyName,
+                isClient: true
+            };
+        });
+
+        // Attach populated objects back
+        notes = notes.map(n => ({
+            ...n,
+            leadId: n.leadId ? (leadMap[n.leadId.toString()] || null) : null
+        }));
 
         const totalNotes = await Notes.countDocuments(query);
         const totalPages = Math.ceil(totalNotes / limitNumber);

@@ -1,17 +1,17 @@
 import React from "react";
-import "./leadsHeader.css";
+import "../followUps/followUpsHeader.css";
 
 export default function LeadsHeader({ onAddLead }) {
   return (
-    <div className="leads-header-container">
-      <div className="leads-header-left">
-        <h1 className="leads-title">Leads</h1>
-        <p className="leads-subtitle">Manage and track all your sales leads</p>
+    <div className="follow-ups-header" style={{ marginBottom: '24px' }}>
+      <div className="header-titles">
+        <h1 className="page-title">Leads</h1>
+        <p className="text-muted">Manage and track all your sales leads</p>
       </div>
-      <div className="leads-header-right">
-        <button className="btn-export">Export</button>
-        <button className="btn-import">Import</button>
-        <button className="btn-add-lead" onClick={onAddLead}>+ Add Lead</button>
+      <div className="header-actions">
+        <button className="btn-secondary">Export</button>
+        <button className="btn-secondary">Import</button>
+        <button className="btn-primary" onClick={onAddLead}>+ Add Lead</button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaTimes, FaEye } from 'react-icons/fa';
 import '../clients/editClientModal.css';
+import '../clients/viewClientModal.css';
 
 export default function FollowUpsViewModal({ isOpen, onClose, followUp }) {
   if (!isOpen || !followUp) return null;
@@ -71,8 +72,8 @@ export default function FollowUpsViewModal({ isOpen, onClose, followUp }) {
           </div>
         </div>
 
-        <div className="modal-footer edit-modal-footer">
-          <button type="button" className="btn-secondary" onClick={onClose}>Close</button>
+        <div className="modal-footer">
+          <button className="btn-close" onClick={onClose}>Close</button>
         </div>
       </div>
     </div>

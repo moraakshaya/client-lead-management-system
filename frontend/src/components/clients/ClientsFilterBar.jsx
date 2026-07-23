@@ -3,7 +3,23 @@ import { FaSearch, FaUndo } from 'react-icons/fa';
 import './clientsFilterBar.css';
 import CustomDropdown from '../leads/CustomDropdown';
 
-export default function ClientsFilterBar() {
+export default function ClientsFilterBar({ filters = {}, setFilters }) {
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    if (setFilters) {
+      setFilters(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleReset = () => {
+    if (setFilters) {
+      setFilters({});
+    }
+  };
+
   return (
     <div className="filter-bar-container">
       <div className="filter-bar-grid">
@@ -15,36 +31,24 @@ export default function ClientsFilterBar() {
             <FaSearch className="search-icon" />
             <input 
               type="text" 
+              name="search"
+              value={filters.search || ''}
+              onChange={handleFilterChange}
               className="filter-input filter-search-input" 
               placeholder="Search clients..." 
             />
           </div>
         </div>
 
-        {/* Client Type */}
+        {/* Priority */}
         <div className="filter-group">
-          <label className="filter-label">Client Type</label>
+          <label className="filter-label">Priority</label>
           <CustomDropdown 
-            placeholder="All Types"
-            options={["Enterprise", "Small Business", "Individual"]}
-          />
-        </div>
-
-        {/* Industry */}
-        <div className="filter-group">
-          <label className="filter-label">Industry</label>
-          <CustomDropdown 
-            placeholder="All Industries"
-            options={["IT", "Finance", "Healthcare", "Retail", "Manufacturing"]}
-          />
-        </div>
-
-        {/* Assigned Manager */}
-        <div className="filter-group">
-          <label className="filter-label">Assigned Manager</label>
-          <CustomDropdown 
-            placeholder="All Managers"
-            options={["Rahul", "Priya", "Alex", "Sarah"]}
+            name="priority"
+            value={filters.priority || ''}
+            onChange={handleFilterChange}
+            placeholder="All Priorities"
+            options={["Standard", "VIP"]}
           />
         </div>
 
@@ -52,14 +56,17 @@ export default function ClientsFilterBar() {
         <div className="filter-group">
           <label className="filter-label">Status</label>
           <CustomDropdown 
+            name="status"
+            value={filters.status || ''}
+            onChange={handleFilterChange}
             placeholder="All Statuses"
-            options={["Active", "VIP", "Inactive"]}
+            options={["Active", "Inactive"]}
           />
         </div>
 
         {/* Reset Button */}
         <div className="filter-group filter-actions">
-          <button className="btn-reset">
+          <button className="btn-reset" onClick={handleReset}>
             <FaUndo /> Reset
           </button>
         </div>

@@ -1,19 +1,19 @@
 import React from "react";
 import { FaUndo } from "react-icons/fa";
-import "./clientsHeader.css";
+import "../followUps/followUpsHeader.css";
 
 export default function ClientsHeader({ onAddClient }) {
   return (
-    <div className="clients-header-container">
-      <div className="clients-header-left">
-        <h1 className="clients-title">Clients</h1>
-        <p className="clients-subtitle">Manage your customer relationships</p>
+    <div className="follow-ups-header" style={{ marginBottom: '24px' }}>
+      <div className="header-titles">
+        <h1 className="page-title">Clients</h1>
+        <p className="text-muted">Manage your customer relationships</p>
       </div>
-      <div className="clients-header-right">
-        <button className="btn-refresh"><FaUndo style={{ marginRight: '8px' }}/> Refresh</button>
-        <button className="btn-export">Export</button>
-        <button className="btn-import">Import</button>
-        <button className="btn-add-client" onClick={onAddClient}>+ Add Client</button>
+      <div className="header-actions">
+        <button className="btn-secondary"><FaUndo style={{ marginRight: '8px' }}/> Refresh</button>
+        <button className="btn-secondary">Export</button>
+        <button className="btn-secondary">Import</button>
+        <button className="btn-primary" onClick={onAddClient}>+ Add Client</button>
       </div>
     </div>
   );

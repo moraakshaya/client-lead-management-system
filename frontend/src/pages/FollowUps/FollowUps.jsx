@@ -92,16 +92,36 @@ export const FollowUps = () => {
       </div>
 
       <FollowUpsViewModal isOpen={isViewOpen} onClose={() => setIsViewOpen(false)} followUp={selectedFollowUp} />
-      <FollowUpsEditModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} followUp={selectedFollowUp} />
-      <FollowUpsMarkCompletedModal isOpen={isMarkCompletedOpen} onClose={() => setIsMarkCompletedOpen(false)} followUp={selectedFollowUp} />
-      <FollowUpsAddNoteModal isOpen={isAddNoteOpen} onClose={() => setIsAddNoteOpen(false)} followUp={selectedFollowUp} />
-      <FollowUpsDeleteModal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} followUp={selectedFollowUp} />
+      <FollowUpsEditModal 
+        isOpen={isEditOpen} 
+        onClose={() => setIsEditOpen(false)} 
+        followUp={selectedFollowUp} 
+        users={filterOptions.assignedUser} 
+        onSuccess={() => fetchData()}
+      />
+      <FollowUpsMarkCompletedModal 
+        isOpen={isMarkCompletedOpen} 
+        onClose={() => setIsMarkCompletedOpen(false)} 
+        followUp={selectedFollowUp} 
+        onSuccess={() => fetchData()}
+      />
+      <FollowUpsAddNoteModal 
+        isOpen={isAddNoteOpen} 
+        onClose={() => setIsAddNoteOpen(false)} 
+        followUp={selectedFollowUp} 
+        onSuccess={() => fetchData()}
+      />
+      <FollowUpsDeleteModal 
+        isOpen={isDeleteOpen} 
+        onClose={() => setIsDeleteOpen(false)} 
+        followUp={selectedFollowUp} 
+        onSuccess={() => fetchData()}
+      />
       <FollowUpsScheduleModal
         isOpen={isScheduleOpen}
-        onClose={() => {
-          setIsScheduleOpen(false);
-          fetchData(); // Automatically refresh data after a new follow-up is scheduled
-        }}
+        onClose={() => setIsScheduleOpen(false)}
+        onSuccess={() => fetchData()}
+        users={filterOptions.assignedUser}
       />
     </div>
   );

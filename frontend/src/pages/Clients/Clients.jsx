@@ -23,34 +23,46 @@ export function Clients() {
     // Data State
     const [clients, setClients] = useState([]);
     const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [tableLoading, setTableLoading] = useState(true);
+    const [statsLoading, setStatsLoading] = useState(true);
     const [pagination, setPagination] = useState({ currentPage: 1, limit: 10, totalPages: 1, totalClients: 0 });
     const [filters, setFilters] = useState({});
 
-    const fetchDashboardData = async (page = 1) => {
+    const fetchDashboardData = async (page = 1, fetchStats = false) => {
         try {
-            setLoading(true);
-            const [clientsRes, statsRes] = await Promise.all([
-                getClients({ page, limit: pagination.limit, ...filters }),
-                getClientStats()
-            ]);
+            setTableLoading(true);
+            if (fetchStats) setStatsLoading(true);
+            
+            const promises = [
+                getClients({ page, limit: pagination.limit, ...filters })
+            ];
+            if (fetchStats) promises.push(getClientStats());
+
+            const results = await Promise.all(promises);
+            const clientsRes = results[0];
             
             setClients(clientsRes.data.clients || []);
             setPagination(clientsRes.data.pagination || { currentPage: 1, limit: 10, totalPages: 1, totalClients: 0 });
-            setStats(statsRes.data || null);
+            
+            if (fetchStats) {
+                setStats(results[1].data || null);
+            }
         } catch (error) {
             console.error("Error fetching clients data:", error);
         } finally {
-            setLoading(false);
+            setTableLoading(false);
+            if (fetchStats) setStatsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchDashboardData(pagination.currentPage);
+        // Only fetch stats on initial mount, not on every filter change
+        const isInitial = !stats;
+        fetchDashboardData(pagination.currentPage, isInitial);
     }, [pagination.currentPage, filters]); // Re-fetch when page or filters change
 
     const handleRefresh = () => {
-        fetchDashboardData(pagination.currentPage);
+        fetchDashboardData(pagination.currentPage, true);
     };
 
     const handlePageChange = (newPage) => {
@@ -85,12 +97,12 @@ export function Clients() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%', minWidth: 0, maxWidth: '100%' }}>
             <ClientsHeader onAddClient={() => setIsAddClientModalOpen(true)} />
-            <ClientsStatsCards stats={stats} loading={loading} />
-            <ClientsFilterBar onFilterChange={(newFilters) => setFilters(newFilters)} />
+            <ClientsStatsCards stats={stats} loading={statsLoading} />
+            <ClientsFilterBar filters={filters} setFilters={setFilters} />
             <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
                 <ClientsTable 
                     clients={clients}
-                    loading={loading}
+                    loading={tableLoading}
                     pagination={pagination}
                     filters={filters}
                     setFilters={setFilters}

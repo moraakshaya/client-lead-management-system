@@ -78,19 +78,44 @@ exports.getAllFollowUps = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const limitNumber = parseInt(limit);
 
-        // Fetch follow-ups, fetch the associated lead's name and assignedUser, and sort by newest first
-        const followUps = await FollowUp.find(query)
-            .populate({
-                path: 'leadId',
-                select: 'leadName companyName source assignedUser',
-                populate: {
-                    path: 'assignedUser',
-                    select: 'name'
-                }
-            })
-            .sort({ followUpDate: -1 }) // -1 sorts by descending (newest first)
+        // Fetch follow-ups, sort by newest first
+        let followUps = await FollowUp.find(query)
+            .sort({ followUpDate: -1 })
             .skip(skip)
-            .limit(limitNumber);
+            .limit(limitNumber)
+            .lean();
+
+        // Extract all unique leadIds to populate manually
+        const leadIdsToFetch = followUps.map(f => f.leadId).filter(Boolean);
+
+        // Fetch matching Leads and Clients
+        const Lead = require('../models/lead');
+        const Client = require('../models/client');
+
+        const [leads, clients] = await Promise.all([
+            Lead.find({ _id: { $in: leadIdsToFetch } }).populate('assignedUser', 'name').lean(),
+            Client.find({ _id: { $in: leadIdsToFetch } }).lean()
+        ]);
+
+        // Map them by ID for quick lookup
+        const leadMap = {};
+        leads.forEach(l => leadMap[l._id.toString()] = l);
+        clients.forEach(c => {
+            // Map Client fields to match Lead structure expected by frontend
+            leadMap[c._id.toString()] = {
+                _id: c._id,
+                leadName: c.clientName, // Important: Frontend expects leadName
+                companyName: c.companyName,
+                assignedUser: null, // Clients don't have an assignedUser in this schema
+                isClient: true
+            };
+        });
+
+        // Attach populated objects back to follow-ups
+        followUps = followUps.map(f => ({
+            ...f,
+            leadId: f.leadId ? (leadMap[f.leadId.toString()] || null) : null
+        }));
 
         const totalFollowUps = await FollowUp.countDocuments(query);
         const totalPages = Math.ceil(totalFollowUps / limitNumber);

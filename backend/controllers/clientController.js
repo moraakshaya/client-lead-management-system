@@ -105,16 +105,29 @@ exports.updateClient = async (req, res) => {
 // Controller function to delete a client by its ID
 exports.deleteClient = async (req, res) => {
     try {
-        const client = await Client.findByIdAndDelete(req.params.id); // Delete a client from the database using the findByIdAndDelete() method of the Client model, passing the client ID
+        const client = await Client.findByIdAndDelete(req.params.id); 
 
-        if (!client) { // Check if the client was not found
+        if (!client) { 
             return res.status(404).json({
-                message: 'Client not found' // Send a response with status code 404 (Not Found) and a message indicating that the client was not found
+                message: 'Client not found' 
             });
         }
-        res.status(201).json({ message: 'Client deleted successfully' }); // Send a response with status code 201 (Created) and a success message
+
+        // --- CASCADING DELETES ---
+        // Delete all orphaned follow-ups, notes, and activities to keep dashboard stats accurate
+        const FollowUp = require('../models/followUp');
+        const Note = require('../models/note');
+        const Activity = require('../models/activity');
+
+        await Promise.all([
+            FollowUp.deleteMany({ leadId: client._id }),
+            Note.deleteMany({ leadId: client._id }),
+            Activity.deleteMany({ $or: [{ leadId: client._id }, { ClientId: client._id }] })
+        ]);
+
+        res.status(201).json({ message: 'Client and all associated data deleted successfully' }); 
     } catch (err) {
-        res.status(500).json({ message: err.message }); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
+        res.status(500).json({ message: err.message }); 
     }
 };
 

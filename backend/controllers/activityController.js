@@ -51,13 +51,41 @@ exports.getAllActivities = async (req, res) => {
             };
         }
 
-        const activities = await Activity.find(query)
+        let activities = await Activity.find(query)
             .sort({ createdAt: -1 }) // Newest first
             .skip(skip)
             .limit(limit)
-            .populate('leadId', 'leadName companyName')
-            .populate('ClientId', 'clientName companyName');
+            .populate('ClientId', 'clientName companyName')
+            .lean();
 
+        // Extract unique leadIds
+        const leadIdsToFetch = activities.map(a => a.leadId).filter(Boolean);
+
+        // Fetch matching Leads and Clients
+        const Lead = require('../models/lead');
+        const Client = require('../models/client');
+
+        const [leads, clients] = await Promise.all([
+            Lead.find({ _id: { $in: leadIdsToFetch } }).select('leadName companyName').lean(),
+            Client.find({ _id: { $in: leadIdsToFetch } }).select('clientName companyName').lean()
+        ]);
+
+        const leadMap = {};
+        leads.forEach(l => leadMap[l._id.toString()] = l);
+        clients.forEach(c => {
+            leadMap[c._id.toString()] = {
+                _id: c._id,
+                leadName: c.clientName, // Map clientName to leadName for frontend
+                companyName: c.companyName,
+                isClient: true
+            };
+        });
+
+        // Attach populated objects back
+        activities = activities.map(a => ({
+            ...a,
+            leadId: a.leadId ? (leadMap[a.leadId.toString()] || null) : null
+        }));
         const totalActivities = await Activity.countDocuments(query);
         const totalPages = Math.ceil(totalActivities / limit);
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FaTimes, FaCalendarAlt } from 'react-icons/fa';
+import React, { useState, useRef } from 'react';
+import { FaTimes, FaCalendarAlt, FaClock } from 'react-icons/fa';
 import CustomDropdown from '../leads/CustomDropdown';
 import { createFollowUp } from '../../services/followUpService';
 import './editClientModal.css';
@@ -15,6 +15,9 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  const dateInputRef = useRef(null);
+  const timeInputRef = useRef(null);
 
   if (!isOpen || !client) return null;
 
@@ -28,7 +31,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
     try {
       setIsSaving(true);
       const followUpDate = new Date(`${formData.date}T${formData.time}`);
-      
+
       const payload = {
         leadId: client._id,
         followUpDate: followUpDate.toISOString(),
@@ -40,7 +43,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
       };
 
       await createFollowUp(payload);
-      
+
       setIsSuccess(true);
       if (onSuccess) onSuccess();
 
@@ -61,7 +64,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-container edit-modal-container" style={{ maxWidth: '550px' }} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2><FaCalendarAlt style={{ marginRight: '10px' }}/> Schedule Follow-up</h2>
+          <h2><FaCalendarAlt style={{ marginRight: '10px' }} /> Schedule Follow-up</h2>
           <button className="close-btn" type="button" onClick={onClose}><FaTimes /></button>
         </div>
 
@@ -82,73 +85,103 @@ export default function ScheduleFollowupModal({ isOpen, onClose, client, onSucce
           <form onSubmit={handleSubmit} className="edit-form-content">
             <div className="modal-content" style={{ overflowY: 'auto' }}>
               <div className="edit-form-grid" style={{ padding: '32px 40px', paddingBottom: '100px' }}>
-                
+
                 <div className="form-group full-width">
                   <label>Client / Lead</label>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-                    {client.leadName || client.client || client.customer || 'Unknown'}
+                    {client.clientName || client.leadName || client.customer || client.client || 'Unknown'}
                   </div>
                 </div>
 
                 <div className="form-group">
                   <label>Follow-up Date</label>
-                  <input 
-                    type="date" 
-                    name="date" 
-                    value={formData.date} 
-                    onChange={handleChange}
-                    className="form-input"
-                    required
-                  />
+                  <div 
+                    onClick={() => {
+                      try {
+                        if (dateInputRef.current) dateInputRef.current.showPicker();
+                      } catch (e) {
+                        // Fallback for browsers that do not support showPicker
+                        if (dateInputRef.current) dateInputRef.current.focus();
+                      }
+                    }}
+                    style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                  >
+                    <FaCalendarAlt style={{ position: 'absolute', left: '12px', color: 'var(--text-secondary)' }} />
+                    <input
+                      type="date"
+                      name="date"
+                      ref={dateInputRef}
+                      value={formData.date}
+                      onChange={handleChange}
+                      className="form-input"
+                      style={{ paddingLeft: '36px', width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
                   <label>Time</label>
-                  <input 
-                    type="time" 
-                    name="time" 
-                    value={formData.time} 
-                    onChange={handleChange}
-                    className="form-input"
-                    required
-                  />
+                  <div 
+                    onClick={() => {
+                      try {
+                        if (timeInputRef.current) timeInputRef.current.showPicker();
+                      } catch (e) {
+                        // Fallback
+                        if (timeInputRef.current) timeInputRef.current.focus();
+                      }
+                    }}
+                    style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                  >
+                    <FaClock style={{ position: 'absolute', left: '12px', color: 'var(--text-secondary)' }} />
+                    <input
+                      type="time"
+                      name="time"
+                      ref={timeInputRef}
+                      value={formData.time}
+                      onChange={handleChange}
+                      className="form-input"
+                      style={{ paddingLeft: '36px', width: '100%', boxSizing: 'border-box', cursor: 'pointer' }}
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
                   <label>Type</label>
-                  <CustomDropdown 
+                  <CustomDropdown
                     name="type"
-                    value={formData.type} 
+                    value={formData.type}
                     onChange={handleChange}
-                    options={["Call", "Meeting", "Email", "Demo"]} 
+                    options={["Call", "Meeting", "Email", "Demo"]}
                   />
                 </div>
 
                 <div className="form-group">
                   <label>Priority</label>
-                  <CustomDropdown 
+                  <CustomDropdown
                     name="priority"
-                    value={formData.priority} 
+                    value={formData.priority}
                     onChange={handleChange}
-                    options={["High", "Medium", "Low"]} 
+                    options={["High", "Medium", "Low"]}
                   />
                 </div>
 
                 <div className="form-group full-width">
                   <label>Reminder</label>
-                  <CustomDropdown 
+                  <CustomDropdown
                     name="reminder"
-                    value={formData.reminder} 
+                    value={formData.reminder}
                     onChange={handleChange}
-                    options={["At time of event", "15 Minutes Before", "30 Minutes Before", "1 Hour Before", "1 Day Before"]} 
+                    options={["At time of event", "15 Minutes Before", "30 Minutes Before", "1 Hour Before", "1 Day Before"]}
                   />
                 </div>
 
                 <div className="form-group full-width">
                   <label>Description</label>
-                  <textarea 
-                    name="description" 
-                    value={formData.description} 
+                  <textarea
+                    name="description"
+                    value={formData.description}
                     onChange={handleChange}
                     className="form-textarea"
                     placeholder="Enter details about this follow-up..."
