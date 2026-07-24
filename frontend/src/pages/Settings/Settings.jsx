@@ -12,16 +12,6 @@ import AboutSettings from '../../components/settings/AboutSettings';
 
 export const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
-  const [showToast, setShowToast] = useState(false);
-
-  const handleSave = () => {
-    // Mock saving delay
-    setShowToast(false);
-    setTimeout(() => {
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000); // Auto hide after 3 seconds
-    }, 300);
-  };
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -49,9 +39,6 @@ export const Settings = () => {
           <h1>Settings</h1>
           <p>Manage your account, preferences and CRM configuration</p>
         </div>
-        <button className="settings-save-btn" onClick={handleSave}>
-          Save Changes
-        </button>
       </div>
 
       <div className="settings-layout">
@@ -61,18 +48,6 @@ export const Settings = () => {
           {renderActiveTab()}
         </div>
       </div>
-
-      {showToast && (
-        <div className="settings-toast">
-          <div className="settings-toast-content">
-            <h4>Settings Saved Successfully</h4>
-            <p>Your preferences have been updated.</p>
-          </div>
-          <button className="settings-toast-close" onClick={() => setShowToast(false)}>
-            <MdClose size={20} />
-          </button>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -11,8 +12,104 @@ exports.getAllUsers = async (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const newUser = await User.create(req.body);
+        const { password, ...rest } = req.body;
+        // Hash password if provided
+        let hashedPassword = '';
+        if (password) {
+            hashedPassword = await bcrypt.hash(password, 10);
+        } else {
+            hashedPassword = await bcrypt.hash('admin123', 10); // default for testing
+        }
+
+        const newUser = await User.create({
+            ...rest,
+            password: hashedPassword
+        });
         res.status(201).json(newUser);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+// --- SETTINGS ENDPOINTS ---
+
+exports.getProfile = async (req, res) => {
+    try {
+        // Fetch the first user as a mock for logged-in user until JWT is implemented
+        const user = await User.findOne().select('-password');
+        if (!user) {
+            return res.status(404).json({ message: "No user found." });
+        }
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.updateProfile = async (req, res) => {
+    try {
+        // Find the first user
+        const user = await User.findOne();
+        if (!user) {
+            return res.status(404).json({ message: "No user found." });
+        }
+
+        const { name, email, phone, company, bio } = req.body;
+
+        // If email changed, check for duplicates
+        if (email && email !== user.email) {
+            const existingEmail = await User.findOne({ email });
+            if (existingEmail) {
+                return res.status(400).json({ message: "Email already exists." });
+            }
+        }
+
+        // Handle avatar upload
+        let avatarPath = user.avatar;
+        if (req.file) {
+            avatarPath = `/uploads/${req.file.filename}`;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            user._id,
+            { name, email, phone, company, bio, avatar: avatarPath },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.updatePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        
+        const user = await User.findOne();
+        if (!user) {
+            return res.status(404).json({ message: "No user found." });
+        }
+
+        // Compare password (handle case where user record was created before password field existed)
+        if (!user.password) {
+            if (currentPassword !== 'admin123') {
+                return res.status(400).json({ message: "Incorrect current password." });
+            }
+        } else {
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: "Incorrect current password." });
+            }
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password updated successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

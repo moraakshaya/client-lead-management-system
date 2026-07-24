@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { getProfile } from '../../services/userService';
 import {
   MdHome,
   MdPeople,
@@ -32,8 +33,24 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [user, setUser] = useState({ name: 'Loading...', role: '...', avatar: null });
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch profile
+    const fetchProfile = async () => {
+      try {
+        const { data } = await getProfile();
+        setUser({
+          name: data.name || 'User',
+          role: data.role || 'Role',
+          avatar: data.avatar ? `http://localhost:5000${data.avatar}` : null
+        });
+      } catch (err) {
+        console.error("Failed to load user profile:", err);
+      }
+    };
+    fetchProfile();
     // Check initial theme from document
     const theme = document.documentElement.getAttribute('data-theme');
     if (theme === 'dark') setIsDarkMode(true);
@@ -43,6 +60,12 @@ export default function Sidebar() {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
+  };
+
+  const handleLogout = () => {
+    setIsProfileOpen(false);
+    alert("Logged out successfully! (Mock)");
+    navigate('/');
   };
 
   return (
@@ -103,14 +126,18 @@ export default function Sidebar() {
           onClick={() => setIsProfileOpen(!isProfileOpen)}
         >
           <div className="user-avatar-placeholder">
-            {/* Using an image placeholder, but fallback to icon if missing */}
-            <img src="/avatar-placeholder.png" alt="User" className="user-avatar" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
-            <MdPerson className="user-avatar-icon" style={{ display: 'none', fontSize: '24px', color: 'var(--text-secondary)' }} />
+            {user.avatar ? (
+              <img src={user.avatar} alt="User" className="user-avatar" />
+            ) : (
+              <div className="settings-avatar-circle" style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--primary-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold' }}>
+                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </div>
+            )}
           </div>
           {!isCollapsed && (
             <div className="user-info">
-              <span className="user-name">Akshaya</span>
-              <span className="user-role">Marketing Analyst</span>
+              <span className="user-name">{user.name}</span>
+              <span className="user-role">{user.role}</span>
             </div>
           )}
           {!isCollapsed && (
@@ -122,11 +149,11 @@ export default function Sidebar() {
 
         {isProfileOpen && !isCollapsed && (
           <div className="profile-dropdown">
-            <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
+            <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
               <MdPerson /> Profile
             </Link>
 
-            <button className="dropdown-item logout-btn" onClick={() => setIsProfileOpen(false)}>
+            <button className="dropdown-item logout-btn" onClick={handleLogout}>
               <MdLogout /> Logout
             </button>
           </div>

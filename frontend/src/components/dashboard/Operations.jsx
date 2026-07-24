@@ -24,7 +24,7 @@ export default function Operations({ activities }) {
     id: activity._id || index,
     type: activity.action || 'Action',
     title: activity.description || 'No description',
-    user: activity.leadId?.leadName || activity.ClientId?.clientName || 'System',
+    user: activity.createdBy || 'System',
     time: new Date(activity.createdAt).toLocaleDateString(),
     icon: <HiDocumentText />, 
     color: 'var(--primary)'

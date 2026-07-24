@@ -93,10 +93,17 @@ exports.updateClient = async (req, res) => {
         );
         if (!updatedClient) { // Check if the client was not found
             return res.status(404).json({
-                message: 'Client not found' // Send a response with status code 404 (Not Found) and a message indicating that the client was not found
+                message: 'Client not found' 
             });
         }
-        res.status(201).json(updatedClient); // Send a response with status code 201 (Created) and the updated client in JSON format
+        
+        await Activity.create({
+            action: "Client Updated",
+            description: `${updatedClient.clientName} updated`,
+            ClientId: updatedClient._id,
+        });
+
+        res.status(201).json(updatedClient); 
     } catch (err) {
         res.status(500).json({ message: err.message }); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format
     }
@@ -125,7 +132,12 @@ exports.deleteClient = async (req, res) => {
             Activity.deleteMany({ $or: [{ leadId: client._id }, { ClientId: client._id }] })
         ]);
 
-        res.status(201).json({ message: 'Client and all associated data deleted successfully' }); 
+        await Activity.create({
+            action: "Client Deleted",
+            description: `${client.clientName || 'A client'} was deleted`
+        });
+
+        res.status(201).json({ message: 'Client and all associated data deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message }); 
     }

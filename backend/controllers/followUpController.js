@@ -6,12 +6,19 @@ const Activity = require('../models/activity');
 exports.createFollowUp = async (req, res) => {
     try {
         const newFollowUp = await FollowUp.create(req.body);
-        //Follow-Up Added Activity Log
-        await Activity.create({
-            action: "Follow-Up Added",
-            description: newFollowUp.remarks,
-            leadId: newFollowUp.leadId,
-        });
+        
+        const activityPayload = {
+            action: "Follow-Up Scheduled",
+            description: newFollowUp.remarks || "A follow-up was scheduled",
+        };
+        
+        if (newFollowUp.relatedToModel === "Client") {
+            activityPayload.ClientId = newFollowUp.leadId;
+        } else {
+            activityPayload.leadId = newFollowUp.leadId;
+        }
+
+        await Activity.create(activityPayload);
         res.status(201).json(newFollowUp);
     } catch (err) {
         res.status(500).json({
@@ -162,6 +169,24 @@ exports.updateFollowUp = async (req, res) => {
                 new: true,
             }
         );
+
+        if (followUp) {
+            const isCompleted = req.body.status === 'Completed';
+            
+            const activityPayload = {
+                action: isCompleted ? "Follow-Up Completed" : "Follow-Up Updated",
+                description: isCompleted ? `Follow-up completed: ${followUp.remarks}` : `Follow-up updated`,
+            };
+            
+            if (followUp.relatedToModel === "Client") {
+                activityPayload.ClientId = followUp.leadId;
+            } else {
+                activityPayload.leadId = followUp.leadId;
+            }
+            
+            await Activity.create(activityPayload);
+        }
+
         res.status(201).json(followUp);
     } catch (err) {
         res.status(500).json({
@@ -174,6 +199,14 @@ exports.updateFollowUp = async (req, res) => {
 exports.deleteFollowUp = async (req, res) => {
     try {
         const followUp = await FollowUp.findByIdAndDelete(req.params.id);
+        
+        if (followUp) {
+            await Activity.create({
+                action: "Follow-Up Deleted",
+                description: `A follow-up was deleted`
+            });
+        }
+
         res.status(201).json({
             message: "Follow-Up Deleted Successfully",
         });

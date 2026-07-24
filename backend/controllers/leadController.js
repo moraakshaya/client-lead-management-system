@@ -112,6 +112,12 @@ exports.updateLead = async (req, res) => {
                 description: `Lead moved to ${req.body.status}`,
                 leadId: updatedLead._id,
             });
+        } else {
+            await Activity.create({
+                action: "Lead Updated",
+                description: `${updatedLead.leadName} updated`,
+                leadId: updatedLead._id,
+            });
         }
 
         res.json(updatedLead); // Send a response with the updated lead in JSON format
@@ -123,7 +129,16 @@ exports.updateLead = async (req, res) => {
 // Controller function to delete a lead by its ID
 exports.deleteLead = async (req, res) => {
     try {
-        const deleteLead = await Lead.findByIdAndDelete(req.params.id); // Delete a lead from the database using the findByIdAndDelete() method of the Lead model, passing the lead ID
+        const deleteLead = await Lead.findByIdAndDelete(req.params.id); 
+        
+        if (deleteLead) {
+            await Activity.create({
+                action: "Lead Deleted",
+                description: `${deleteLead.leadName || 'A lead'} was deleted`
+                // Intentionally omitting leadId so the log persists independently
+            });
+        }
+
         res.json({ message: 'Lead deleted successfully' }); // Send a response with a success message in JSON format
     } catch (err) {
         res.status(500).json(err); // If an error occurs, send a response with status code 500 (Internal Server Error) and the error message in JSON format

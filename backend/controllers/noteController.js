@@ -5,12 +5,20 @@ const Activity = require('../models/activity');
 exports.createNote = async (req, res) => {
     try {
         const newNote = await Notes.create(req.body);
-        //Note Added Activity Log
-        await Activity.create({
+        
+        const activityPayload = {
             action: "Note Added",
             description: `Notes : ${newNote.notes}`,
-            leadId: newNote.leadId,
-        });
+        };
+        
+        if (newNote.relatedToModel === "Client") {
+            activityPayload.ClientId = newNote.leadId;
+        } else {
+            activityPayload.leadId = newNote.leadId;
+        }
+
+        await Activity.create(activityPayload);
+
         res.status(201).json(newNote);
     } catch (err) {
         res.status(500).json({
@@ -122,6 +130,20 @@ exports.updateNotes = async (req, res) => {
                 new: true,
             }
         );
+        
+        if (notes) {
+            const activityPayload = {
+                action: "Note Updated",
+                description: `Notes updated : ${notes.notes}`,
+            };
+            if (notes.relatedToModel === "Client") {
+                activityPayload.ClientId = notes.leadId;
+            } else {
+                activityPayload.leadId = notes.leadId;
+            }
+            await Activity.create(activityPayload);
+        }
+
         res.status(201).json(notes);
     } catch (err) {
         res.status(500).json({
@@ -134,6 +156,14 @@ exports.updateNotes = async (req, res) => {
 exports.deleteNotes = async (req, res) => {
     try {
         const notes = await Notes.findByIdAndDelete(req.params.id);
+        
+        if (notes) {
+            await Activity.create({
+                action: "Note Deleted",
+                description: `A note was deleted`
+            });
+        }
+
         res.status(201).json({
             message: "Follow-Up Deleted Successfully",
         });

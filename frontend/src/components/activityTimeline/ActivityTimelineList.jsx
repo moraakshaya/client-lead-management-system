@@ -110,7 +110,7 @@ export default function ActivityTimelineList({ data, loading, onAction, onRefres
                   <div className="timeline-card-header">
                     <div className="timeline-header-left">
                       <h3 className="timeline-title">{item.title}</h3>
-                      <span className="timeline-module-badge">{item.module}</span>
+                      <span style={{ color: 'var(--text-secondary)', fontSize: '13px', marginLeft: '8px' }}>By {item.createdBy || 'System'}</span>
                     </div>
                     <div className="timeline-header-right">
                       <span className="timeline-time">{item.itemDate} &bull; {item.time}</span>

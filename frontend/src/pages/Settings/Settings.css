@@ -220,20 +220,31 @@
   border: 2px solid var(--primary, #8B5CF6);
 }
 
-.settings-avatar-btn {
-  background: var(--surface-secondary, #f3f4f6);
-  color: var(--text-primary, #374151);
-  border: 1px solid var(--border-color, #d1d5db);
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
+/* Hover Avatar Styles */
+.hover-avatar {
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
-.settings-avatar-btn:hover {
-  background: var(--hover-color, #e5e7eb);
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hover-avatar:hover .avatar-overlay {
+  opacity: 1;
 }
 
 /* Checkbox/Toggle Styles */
