@@ -11,6 +11,7 @@ import {
   Pie,
   Cell
 } from 'recharts';
+import { getChartData } from '../../services/dashboardService';
 import './LeadAnalytics.css';
 
 const metricConfigs = {
@@ -38,10 +39,40 @@ export default function LeadAnalytics({ chartData }) {
   const [filter, setFilter] = useState('This Year');
   const [activeMetric, setActiveMetric] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [localData, setLocalData] = useState(chartData);
+  const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Initialize or update local data when chartData prop changes (on first load)
+  useEffect(() => {
+    setLocalData(chartData);
+  }, [chartData]);
+
+  // Fetch new data when filter changes
+  useEffect(() => {
+    const fetchFilteredData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await getChartData(filter);
+        setLocalData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch filtered chart data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    // Skip initial fetch since chartData prop provides it, but we can just let it fetch if we want.
+    // To prevent double fetch on mount, we can check if it's the initial render, or just let it be.
+    if (filter !== 'This Year') {
+       fetchFilteredData();
+    } else {
+       // If it's This Year, use the prop to save a request (or refetch if they clicked it again)
+       fetchFilteredData();
+    }
+  }, [filter]);
+
   // Map backend trend to recharts data
-  const data = chartData?.leadTrend?.map(item => ({
+  const data = localData?.leadTrend?.map(item => ({
     name: monthNames[item._id - 1] || item._id,
     leads: item.leads,
     converted: item.converted,
@@ -49,8 +80,8 @@ export default function LeadAnalytics({ chartData }) {
     lost: item.lost
   })) || [];
 
-  const totalSources = chartData?.leadSources?.reduce((acc, curr) => acc + curr.count, 0) || 1;
-  const leadSourcesData = chartData?.leadSources?.map(item => ({
+  const totalSources = localData?.leadSources?.reduce((acc, curr) => acc + curr.count, 0) || 1;
+  const leadSourcesData = localData?.leadSources?.map(item => ({
     name: item._id || 'Unknown',
     percentage: Math.round((item.count / totalSources) * 100),
     color: sourceColors[item._id] || sourceColors['Other']
@@ -115,7 +146,19 @@ export default function LeadAnalytics({ chartData }) {
               key={key}
               className={`metric-tab ${activeMetric === key ? 'active' : ''}`}
               onClick={() => setActiveMetric(key)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
+              {key !== 'all' && (
+                <span 
+                  style={{ 
+                    display: 'inline-block', 
+                    width: '8px', 
+                    height: '8px', 
+                    borderRadius: '50%', 
+                    backgroundColor: metricConfigs[key].color
+                  }} 
+                />
+              )}
               {metricConfigs[key].label}
             </button>
           ))}

@@ -33,23 +33,53 @@ exports.getDashboardStats = async (req, res) => {
 
 exports.getChartData = async (req, res) => {
     try {
+        const { timeRange = 'This Year' } = req.query;
+        let startDate = new Date();
+        let endDate = new Date();
+        
+        const currentYear = new Date().getFullYear();
+        
+        switch (timeRange) {
+            case 'This Week':
+                const firstDay = startDate.getDate() - startDate.getDay();
+                startDate = new Date(startDate.setDate(firstDay));
+                startDate.setHours(0, 0, 0, 0);
+                break;
+            case 'This Month':
+                startDate = new Date(currentYear, startDate.getMonth(), 1);
+                break;
+            case 'Last 6 Months':
+                startDate.setMonth(startDate.getMonth() - 6);
+                break;
+            case 'This Year':
+            default:
+                startDate = new Date(`${currentYear}-01-01`);
+                endDate = new Date(`${currentYear}-12-31`);
+                break;
+        }
+
         const leadSources = await lead.aggregate([
+            { $match: { createdAt: { $gte: startDate, $lte: endDate } } },
             { $group: { _id: "$source", count: { $sum: 1 } } }
         ]);
 
-        const currentYear = new Date().getFullYear();
+        let groupBy = { $month: "$createdAt" };
+        if (timeRange === 'This Week' || timeRange === 'This Month') {
+            groupBy = { $dayOfMonth: "$createdAt" };
+        }
+
         const leadTrend = await lead.aggregate([
             { 
                 $match: { 
                     createdAt: { 
-                        $gte: new Date(`${currentYear}-01-01`), 
-                        $lte: new Date(`${currentYear}-12-31`) 
+                        $gte: startDate, 
+                        $lte: endDate 
                     } 
                 } 
             },
             {
                 $group: {
-                    _id: { $month: "$createdAt" },
+                    _id: groupBy,
                     leads: { $sum: 1 },
                     converted: { $sum: { $cond: [{ $eq: ["$status", "Won"] }, 1, 0] } },
                     pending: { $sum: { $cond: [{ $in: ["$status", ["New", "Contacted"]] }, 1, 0] } },
