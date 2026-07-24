@@ -1,4 +1,5 @@
 import React from "react";
+import { FaUndo } from "react-icons/fa";
 import "./activityTimelineHeader.css";
 
 const ActivityTimelineHeader = ({ onExport, onRefresh }) => {
@@ -10,7 +11,7 @@ const ActivityTimelineHeader = ({ onExport, onRefresh }) => {
       </div>
       <div className="header-actions">
         <button className="btn-secondary" onClick={onExport}>Export Logs</button>
-        <button className="btn-primary" onClick={onRefresh}>Refresh</button>
+        <button className="btn-primary" onClick={onRefresh}><FaUndo style={{ marginRight: '8px' }}/> Refresh</button>
       </div>
     </div>
   );

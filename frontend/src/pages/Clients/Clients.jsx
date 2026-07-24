@@ -8,7 +8,6 @@ import EditClientModal from "../../components/clients/EditClientModal";
 import AddNoteModal from "../../components/clients/AddNoteModal";
 import ScheduleFollowupModal from "../../components/clients/ScheduleFollowupModal";
 import DeleteClientModal from "../../components/clients/DeleteClientModal";
-import AddClientModal from "../../components/clients/AddClientModal";
 import { getClients, getClientStats } from "../../services/clientService";
 import { handleApiError } from "../../utils/errorHandler";
 export function Clients() {
@@ -17,7 +16,6 @@ export function Clients() {
     const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState(null);
 
     // Data State
@@ -96,7 +94,7 @@ export function Clients() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%', minWidth: 0, maxWidth: '100%' }}>
-            <ClientsHeader onAddClient={() => setIsAddClientModalOpen(true)} />
+            <ClientsHeader onRefresh={handleRefresh} />
             <ClientsStatsCards stats={stats} loading={statsLoading} />
             <ClientsFilterBar filters={filters} setFilters={setFilters} />
             <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
@@ -149,12 +147,6 @@ export function Clients() {
                 client={selectedClient} 
                 onSuccess={handleRefresh}
             />
-
-            <AddClientModal
-                isOpen={isAddClientModalOpen}
-                onClose={() => setIsAddClientModalOpen(false)}
-                onSuccess={handleRefresh}
-            />
         </div>
-    )
+    );
 }

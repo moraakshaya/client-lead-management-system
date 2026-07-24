@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Operations.css';
 
 import { 
@@ -9,17 +10,19 @@ import {
   HiUserAdd,
   HiCalendar,
   HiMail,
-  HiChartBar
+  HiChartBar,
+  HiOfficeBuilding
 } from 'react-icons/hi';
 
 const quickActions = [
-  { id: 1, label: 'Add New Lead', icon: <HiUserAdd />, color: 'var(--primary)', desc: 'Manually input a new lead' },
-  { id: 2, label: 'Create Follow-Up', icon: <HiCalendar />, color: 'var(--warning)', desc: 'Schedule a task or meeting' },
-  { id: 3, label: 'Send Email Blast', icon: <HiMail />, color: 'var(--success)', desc: 'Draft an email campaign' },
-  { id: 4, label: 'View Reports', icon: <HiChartBar />, color: '#8b5cf6', desc: 'Detailed analytics and export' },
+  { id: 1, label: 'Add New Lead', icon: <HiUserAdd />, color: 'var(--primary)', desc: 'Manually input a new lead', action: 'addLead' },
+  { id: 2, label: 'Create Follow-Up', icon: <HiCalendar />, color: 'var(--warning)', desc: 'Schedule a call, meeting or reminder.', action: 'addFollowUp' },
+  { id: 3, label: 'View Leads', icon: <HiUser />, color: 'var(--info)', desc: 'View and manage your leads pipeline.', path: '/leads' },
+  { id: 4, label: 'View Clients', icon: <HiOfficeBuilding />, color: 'var(--success)', desc: 'Manage your active client records.', path: '/clients' },
 ];
 
-export default function Operations({ activities }) {
+export default function Operations({ activities, onAddLead, onCreateFollowUp }) {
+  const navigate = useNavigate();
   const timelineActivities = activities?.map((activity, index) => ({
     id: activity._id || index,
     type: activity.action || 'Action',
@@ -36,7 +39,7 @@ export default function Operations({ activities }) {
       <div className="ops-card stat-glass-card timeline-card">
         <div className="ops-card-header">
           <h2 className="ops-card-title">Activity Timeline</h2>
-          <button className="view-all-btn">History</button>
+          <button className="view-all-btn" onClick={() => navigate('/activity-timeline')}>History</button>
         </div>
         
         <div className="timeline-container">
@@ -70,7 +73,19 @@ export default function Operations({ activities }) {
         
         <div className="actions-grid">
           {quickActions.map(action => (
-            <button key={action.id} className="quick-action-btn">
+            <button 
+              key={action.id} 
+              className="quick-action-btn" 
+              onClick={() => {
+                if (action.action === 'addLead' && onAddLead) {
+                  onAddLead();
+                } else if (action.action === 'addFollowUp' && onCreateFollowUp) {
+                  onCreateFollowUp();
+                } else if (action.path) {
+                  navigate(action.path);
+                }
+              }}
+            >
               <div className="action-icon-wrapper" style={{ backgroundColor: `${action.color}15`, color: action.color }}>
                 <span className="action-icon">{action.icon}</span>
               </div>

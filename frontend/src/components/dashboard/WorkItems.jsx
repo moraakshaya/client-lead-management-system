@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './WorkItems.css';
 
 const getStatusColor = (status) => {
@@ -22,6 +23,8 @@ const getPriorityColor = (priority) => {
 };
 
 export default function WorkItems({ recentWork }) {
+  const navigate = useNavigate();
+  
   const recentLeads = recentWork?.recentLeads?.map((lead, i) => ({
     id: lead._id || i,
     name: lead.leadName || lead.companyName || 'Unknown Lead',
@@ -44,7 +47,7 @@ export default function WorkItems({ recentWork }) {
       <div className="work-card stat-glass-card">
         <div className="work-card-header">
           <h2 className="work-card-title">Recent Leads</h2>
-          <button className="view-all-btn">View All</button>
+          <button className="view-all-btn" onClick={() => navigate('/leads')}>View All</button>
         </div>
         <div className="work-list">
           {recentLeads.map(lead => (
@@ -65,7 +68,7 @@ export default function WorkItems({ recentWork }) {
       <div className="work-card stat-glass-card">
         <div className="work-card-header">
           <h2 className="work-card-title">Upcoming Follow-Ups</h2>
-          <button className="view-all-btn">View All</button>
+          <button className="view-all-btn" onClick={() => navigate('/follow-ups')}>View All</button>
         </div>
         <div className="work-list">
           {followUps.map(task => (

@@ -8,6 +8,7 @@ import {
   FaTrashAlt,
   FaSpinner
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import './clientsTable.css';
 
 const mockClients = [
@@ -76,6 +77,8 @@ export default function ClientsTable({
   setFilters,
   loading
 }) {
+  const navigate = useNavigate();
+
   const getInitials = (name) => {
     if (!name) return 'U';
     return name.charAt(0).toUpperCase();
@@ -159,8 +162,13 @@ export default function ClientsTable({
         <td colSpan="9" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
           <div style={{ fontSize: '56px', marginBottom: '20px', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }}>👥</div>
           <h2 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '12px' }}>No Clients Yet</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '16px' }}>Add a client to start managing your customer relationships.</p>
-          <button style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '12px 32px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} onClick={() => document.querySelector('.btn-add-client')?.click()}>+ Add Client</button>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '16px' }}>Convert a qualified lead to create your first client.</p>
+          <button 
+            style={{ backgroundColor: 'var(--primary)', color: '#fff', padding: '12px 32px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)', transition: 'transform 0.2s, box-shadow 0.2s' }} 
+            onClick={() => navigate('/leads')}
+          >
+            Go to Leads
+          </button>
         </td>
       );
     }

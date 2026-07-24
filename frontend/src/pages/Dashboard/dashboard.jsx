@@ -5,6 +5,8 @@ import LeadAnalytics from "../../components/dashboard/LeadAnalytics";
 import WorkItems from "../../components/dashboard/WorkItems";
 import Operations from "../../components/dashboard/Operations";
 import Performance from "../../components/dashboard/Performance";
+import AddLeadModal from "../../components/leads/AddLeadModal";
+import FollowUpsScheduleModal from "../../components/followUps/FollowUpsScheduleModal";
 import { getDashboardStats, getChartData, getRecentWork, getRecentActivities } from "../../services/dashboardService";
 import { handleApiError } from "../../utils/errorHandler";
 
@@ -16,30 +18,34 @@ export function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                setLoading(true);
-                const [statsRes, chartsRes, workRes, activitiesRes] = await Promise.all([
-                    getDashboardStats(),
-                    getChartData(),
-                    getRecentWork(),
-                    getRecentActivities()
-                ]);
-                
-                setStats(statsRes.data);
-                setChartData(chartsRes.data);
-                setRecentWork(workRes.data);
-                setActivities(activitiesRes.data.data || activitiesRes.data);
-                setError(null);
-            } catch (err) {
-                handleApiError(err, 'fetchDashboard');
-                setError("Unable to load dashboard data.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Modal states
+    const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
+    const [isScheduleFollowupModalOpen, setIsScheduleFollowupModalOpen] = useState(false);
 
+    const fetchDashboardData = async () => {
+        try {
+            setLoading(true);
+            const [statsRes, chartsRes, workRes, activitiesRes] = await Promise.all([
+                getDashboardStats(),
+                getChartData(),
+                getRecentWork(),
+                getRecentActivities()
+            ]);
+
+            setStats(statsRes.data);
+            setChartData(chartsRes.data);
+            setRecentWork(workRes.data);
+            setActivities(activitiesRes.data.data || activitiesRes.data);
+            setError(null);
+        } catch (err) {
+            handleApiError(err, 'fetchDashboard');
+            setError("Unable to load dashboard data.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchDashboardData();
     }, []);
 
@@ -65,8 +71,24 @@ export function Dashboard() {
             <StatsCards stats={stats} />
             <LeadAnalytics chartData={chartData} />
             <WorkItems recentWork={recentWork} />
-            <Operations activities={activities} />
+            <Operations
+                activities={activities}
+                onAddLead={() => setIsAddLeadModalOpen(true)}
+                onCreateFollowUp={() => setIsScheduleFollowupModalOpen(true)}
+            />
             <Performance stats={stats} />
+
+            <AddLeadModal
+                isOpen={isAddLeadModalOpen}
+                onClose={() => setIsAddLeadModalOpen(false)}
+                onSuccess={fetchDashboardData}
+            />
+
+            <FollowUpsScheduleModal
+                isOpen={isScheduleFollowupModalOpen}
+                onClose={() => setIsScheduleFollowupModalOpen(false)}
+                onSuccess={fetchDashboardData}
+            />
         </div>
     )
 }

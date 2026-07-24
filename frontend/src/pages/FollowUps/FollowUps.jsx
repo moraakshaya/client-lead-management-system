@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import FollowUpsHeader from '../../components/followUps/FollowUpsHeader';
 import FollowUpsStatsCards from '../../components/followUps/FollowUpsStatsCards';
 import FollowUpsFilterBar from '../../components/followUps/FollowUpsFilterBar';
@@ -23,6 +24,16 @@ export const FollowUps = () => {
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
 
   const [selectedFollowUp, setSelectedFollowUp] = useState(null);
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.openScheduleModal) {
+      setIsScheduleOpen(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // --- NEW STATE FOR REAL DATA ---
   const [stats, setStats] = useState(null);

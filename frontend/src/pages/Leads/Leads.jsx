@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import LeadsHeader from "../../components/leads/LeadsHeader";
 import LeadsStatsCards from "../../components/leads/LeadsStatsCards";
 import LeadsFilterBar from "../../components/leads/LeadsFilterBar";
@@ -22,6 +23,16 @@ export function Leads() {
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (location.state?.openAddModal) {
+            setIsAddLeadModalOpen(true);
+            // Clear the state so it doesn't reopen on refresh
+            window.history.replaceState({}, document.title)
+        }
+    }, [location.state]);
 
     // Data State
     const [leads, setLeads] = useState([]);
