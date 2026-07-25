@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from './components/ScrollToTop';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,8 +11,34 @@ import { FollowUps } from "./pages/FollowUps/FollowUps.jsx";
 import { Notes } from "./pages/Notes/Notes.jsx";
 import { ActivityTimeline } from "./pages/ActivityTimeline/ActivityTimeline.jsx";
 import { Settings } from "./pages/Settings/Settings.jsx";
+import { Login } from "./pages/Login/Login.jsx";
+
+// --- NEW IMPORTS ---
+import { LandingPage } from "./pages/LandingPage/LandingPage.jsx";
+import { Signup } from "./pages/Signup/Signup.jsx";
+import { ForgotPassword } from "./pages/ForgotPassword/ForgotPassword.jsx";
+import { ResetPassword } from "./pages/ResetPassword/ResetPassword.jsx";
 
 import './App.css'
+
+// --- PROTECTED ROUTE COMPONENT ---
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+// --- PUBLIC ROUTE COMPONENT ---
+// If a logged-in user visits the landing page or login page, redirect them to the dashboard!
+const PublicRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+};
 
 function App() {
   return (
@@ -20,8 +46,19 @@ function App() {
       <ScrollToTop />
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Dashboard />} />
+        {/* PUBLIC ROUTES (No Token Required) */}
+        <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+        <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+        <Route path="/reset-password/:token" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+
+        {/* PROTECTED ROUTES (Token Required, Wrapped in MainLayout) */}
+        <Route element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/leads" element={<Leads />} />
           <Route path="/clients" element={<Clients />} />
@@ -35,4 +72,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

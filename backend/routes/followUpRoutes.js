@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
 
 const { createFollowUp, getAllFollowUps, getFollowUpByLead, updateFollowUp, deleteFollowUp, getFollowUpStats } = require('../controllers/followUpController');
+
+router.use(authMiddleware);
 
 //Define Routes
 router.post('/', createFollowUp);

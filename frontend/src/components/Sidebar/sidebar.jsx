@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { getProfile } from '../../services/userService';
+import { logout } from '../../services/authService';
+
 import {
   MdHome,
   MdPeople,
@@ -62,11 +64,16 @@ export default function Sidebar() {
     document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
   };
 
+  // const handleLogout = () => {
+  //   setIsProfileOpen(false);
+  //   alert("Logged out successfully! (Mock)");
+  //   navigate('/');
+  // };
+
   const handleLogout = () => {
-    setIsProfileOpen(false);
-    alert("Logged out successfully! (Mock)");
-    navigate('/');
+    logout();
   };
+
 
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : 'expanded'}`}>

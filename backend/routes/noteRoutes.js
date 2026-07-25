@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
 
 const { createNote, getAllNotes, getNotesById, updateNotes, deleteNotes, getNoteStats } = require('../controllers/noteController');
+
+router.use(authMiddleware);
 
 //Define Routes
 router.post('/', createNote);

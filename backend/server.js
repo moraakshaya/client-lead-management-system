@@ -9,6 +9,8 @@ const notesRoutes = require('./routes/noteRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 
@@ -30,6 +32,8 @@ app.use('/api/notes', notesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+
 
 // Serve uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
