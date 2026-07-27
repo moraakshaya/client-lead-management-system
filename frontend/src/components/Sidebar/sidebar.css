@@ -276,7 +276,26 @@
 }
 
 .collapsed .user-profile {
+  background: transparent !important;
+  padding: 8px 0;
   justify-content: center;
+}
+
+.collapsed .user-profile:hover,
+.collapsed .user-profile.open {
+  background: transparent !important;
+}
+
+.collapsed .user-avatar-placeholder {
+  width: 44px;
+  height: 44px;
+}
+
+.collapsed .profile-dropdown {
+  left: 75px;
+  bottom: 0px;
+  right: auto;
+  min-width: 160px;
 }
 
 .profile-dropdown {

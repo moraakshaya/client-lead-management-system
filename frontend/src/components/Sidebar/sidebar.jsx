@@ -154,7 +154,7 @@ export default function Sidebar() {
           )}
         </div>
 
-        {isProfileOpen && !isCollapsed && (
+        {isProfileOpen && (
           <div className="profile-dropdown">
             <Link to="/settings" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>
               <MdPerson /> Profile

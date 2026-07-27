@@ -18,7 +18,7 @@ export const LandingPage = () => {
     useEffect(() => {
         const theme = document.documentElement.getAttribute('data-theme');
         setIsDarkMode(theme === 'dark');
-        
+
         const handleScroll = () => {
             if (!sectionRef.current) return;
             const rect = sectionRef.current.getBoundingClientRect();
@@ -53,7 +53,7 @@ export const LandingPage = () => {
                 <div className={`nav-container ${isScrolled ? 'scrolled' : ''}`}>
                     <nav className="landing-nav-pill">
                         <div className="nav-logo">
-                            <img src="/logoful.png" alt="LeadFlow Logo" style={{ height: '36px' }} />
+                            <img src={isDarkMode ? "/footer.png" : "/logoful.png"} alt="LeadFlow Logo" style={{ height: '36px' }} />
                         </div>
                         <div className="nav-links">
                             <a href="#home">Home</a>
