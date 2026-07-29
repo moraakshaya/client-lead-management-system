@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     try {
-        const { name, email, password, company, phone } = req.body;
+        const { name, email, password, company, phone, avatar } = req.body;
 
         // 1. Check if the user already exists
         const existingUser = await User.findOne({ email });
@@ -65,6 +65,7 @@ exports.signup = async (req, res) => {
             password: hashedPassword,
             company,
             phone,
+            avatar: avatar || '',
             role: 'Sales Rep' // Default role for new signups
         });
 

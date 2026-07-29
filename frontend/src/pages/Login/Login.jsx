@@ -69,7 +69,8 @@ export const Login = () => {
                     email: 'demo@leadflow.com',
                     password: 'Portfolio@2026!',
                     company: 'Demo Company',
-                    phone: '555-0100'
+                    phone: '555-0100',
+                    avatar: '/uploads/guest-avatar.png'
                 });
                 res = await login('demo@leadflow.com', 'Portfolio@2026!');
             }
