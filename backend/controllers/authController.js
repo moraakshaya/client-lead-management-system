@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
         // We pack the user's ID into the payload and sign it with our secret key.
         // We also set it to expire in 1 day for security.
         const token = jwt.sign(
-            { userId: user._id },
+            { userId: user._id, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '1d' }
         );
@@ -36,54 +36,6 @@ exports.login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role
-            }
-        });
-
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
-
-
-exports.signup = async (req, res) => {
-    try {
-        const { name, email, password, company, phone, avatar } = req.body;
-
-        // 1. Check if the user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: "Email already in use" });
-        }
-
-        // 2. Hash the password before saving it to the database
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 3. Create the new user
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            company,
-            phone,
-            avatar: avatar || '',
-            role: 'Sales Rep' // Default role for new signups
-        });
-
-        // 4. Generate a JWT so they are instantly logged in!
-        const token = jwt.sign(
-            { userId: newUser._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-        );
-
-        res.status(201).json({
-            message: "Account created successfully",
-            token: token,
-            user: {
-                id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                role: newUser.role
             }
         });
 

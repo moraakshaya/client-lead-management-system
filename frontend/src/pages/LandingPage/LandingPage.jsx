@@ -71,7 +71,7 @@ export const LandingPage = () => {
                                     <div className="switch-knob"></div>
                                 </div>
                             </div>
-                            <button className="btn-signup" onClick={() => navigate('/signup')}>Sign Up</button>
+
                         </div>
                     </nav>
                 </div>
@@ -89,10 +89,13 @@ export const LandingPage = () => {
                             From leads to client management and follow-up tracking, LeadFlow<br />keeps your business organized in one platform.
                         </p>
                         <div className="hero-actions-centered">
-                            <button className="btn-primary-large" onClick={() => navigate('/signup')}>Sign Up</button>
+                            <button className="btn-primary-large" onClick={() => navigate('/login')}>Login</button>
                             <button className="btn-demo" onClick={() => navigate('/login')}>
-                                Login
+                                Continue as Guest
                             </button>
+                        </div>
+                        <div style={{ marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                            Need a demo account? Use <strong>admin@crm.com</strong>, <strong>manager@crm.com</strong>, or <strong>executive@crm.com</strong> (Password: admin123)
                         </div>
                     </div>
                     <div className="hero-mockup-centered">

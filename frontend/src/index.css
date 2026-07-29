@@ -383,3 +383,9 @@ td {
   color: var(--text-secondary);
 
 }
+
+/* Hide the default Edge/IE password reveal icon globally */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}

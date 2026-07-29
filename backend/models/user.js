@@ -36,8 +36,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['Admin', 'Manager', 'Sales Rep'],
-        default: 'Sales Rep'
+        enum: ['Admin', 'Sales Manager', 'Sales Executive'],
+        default: 'Sales Executive'
     }
 }, { timestamps: true });
 

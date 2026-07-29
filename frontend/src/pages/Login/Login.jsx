@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { login, signup } from '../../services/authService';
+import { login } from '../../services/authService';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaGoogle, FaFacebook, FaTwitter } from 'react-icons/fa';
 import './Auth.css'; // Shared auth styles
@@ -58,22 +58,7 @@ export const Login = () => {
         setError('');
         setSuccessMsg('Setting up demo account...');
         try {
-            let res;
-            try {
-                // Try logging in with guest credentials
-                res = await login('demo@leadflow.com', 'Portfolio@2026!');
-            } catch (err) {
-                // If it fails, create the guest account and then login
-                await signup({
-                    name: 'Guest User',
-                    email: 'demo@leadflow.com',
-                    password: 'Portfolio@2026!',
-                    company: 'Demo Company',
-                    phone: '555-0100',
-                    avatar: '/uploads/guest-avatar.png'
-                });
-                res = await login('demo@leadflow.com', 'Portfolio@2026!');
-            }
+            const res = await login('admin@crm.com', 'admin123');
             
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -105,7 +90,6 @@ export const Login = () => {
                     
                     <div className="auth-header">
                         <h2>Welcome Back</h2>
-                        <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
                     </div>
 
                     {successMsg && <div style={{ color: '#16a34a', textAlign: 'center', backgroundColor: '#dcfce7', padding: '10px', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem' }}>{successMsg}</div>}

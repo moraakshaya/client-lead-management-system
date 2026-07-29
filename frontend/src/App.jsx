@@ -12,10 +12,9 @@ import { Notes } from "./pages/Notes/Notes.jsx";
 import { ActivityTimeline } from "./pages/ActivityTimeline/ActivityTimeline.jsx";
 import { Settings } from "./pages/Settings/Settings.jsx";
 import { Login } from "./pages/Login/Login.jsx";
-
 // --- NEW IMPORTS ---
+import { Users } from "./pages/Users/Users.jsx";
 import { LandingPage } from "./pages/LandingPage/LandingPage.jsx";
-import { Signup } from "./pages/Signup/Signup.jsx";
 import { ForgotPassword } from "./pages/ForgotPassword/ForgotPassword.jsx";
 import { ResetPassword } from "./pages/ResetPassword/ResetPassword.jsx";
 
@@ -49,7 +48,7 @@ function App() {
         {/* PUBLIC ROUTES (No Token Required) */}
         <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+
         <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
         <Route path="/reset-password/:token" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
@@ -66,6 +65,7 @@ function App() {
           <Route path="/notes" element={<Notes />} />
           <Route path="/activity-timeline" element={<ActivityTimeline />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/users" element={<Users />} />
         </Route>
       </Routes>
     </BrowserRouter>

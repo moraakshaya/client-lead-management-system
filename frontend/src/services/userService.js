@@ -25,3 +25,18 @@ export const updateProfile = (formData) => {
 export const updatePassword = (passwordData) => {
     return api.put('/users/password', passwordData);
 };
+
+// --- ADMIN ENDPOINTS ---
+
+export const updateUser = (id, userData) => {
+    return api.put(`/users/${id}`, userData);
+};
+
+export const deleteUser = (id) => {
+    return api.delete(`/users/${id}`);
+};
+
+export const resetUserPassword = (id, passwordData) => {
+    return api.put(`/users/${id}/reset-password`, passwordData);
+};
+

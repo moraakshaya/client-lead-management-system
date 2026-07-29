@@ -2,17 +2,25 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/upload');
 const authMiddleware = require('../middleware/authMiddleware');
+const requireAdmin = require('../middleware/roleMiddleware');
 
 const { 
     getAllUsers, 
-    createUser, 
+    createUser,
+    updateUser,
+    deleteUser,
+    resetUserPassword,
     getProfile, 
     updateProfile, 
     updatePassword 
 } = require('../controllers/userController');
 
-router.get('/', getAllUsers);
-router.post('/', createUser);
+// Admin Endpoints
+router.get('/', authMiddleware, requireAdmin, getAllUsers);
+router.post('/', authMiddleware, requireAdmin, createUser);
+router.put('/:id', authMiddleware, requireAdmin, updateUser);
+router.delete('/:id', authMiddleware, requireAdmin, deleteUser);
+router.put('/:id/reset-password', authMiddleware, requireAdmin, resetUserPassword);
 
 // Settings Endpoints (Protected)
 router.get('/profile', authMiddleware, getProfile);

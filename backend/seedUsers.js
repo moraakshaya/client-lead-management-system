@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const User = require('./models/user');
+const bcrypt = require('bcrypt');
+const User = require('./models/User');
 
 dotenv.config();
 
@@ -13,12 +14,14 @@ const seedUsers = async () => {
         await User.deleteMany({});
         console.log('Cleared existing users');
 
-        // Create new users
+        const defaultPassword = await bcrypt.hash('admin123', 10);
+
+        // Create new users matching the demo credentials requested
         const users = [
-            { name: 'Alex Johnson', email: 'alex@example.com', role: 'Sales Rep' },
-            { name: 'Sarah Smith', email: 'sarah@example.com', role: 'Manager' },
-            { name: 'Mike Davis', email: 'mike@example.com', role: 'Sales Rep' },
-            { name: 'Praveen', email: 'praveen@example.com', role: 'Admin' }
+            { name: 'System Admin', email: 'admin@crm.com', password: defaultPassword, role: 'Admin' },
+            { name: 'John Manager', email: 'manager@crm.com', password: defaultPassword, role: 'Sales Manager' },
+            { name: 'Alice Executive', email: 'executive@crm.com', password: defaultPassword, role: 'Sales Executive' },
+            { name: 'Demo Guest', email: 'demo@leadflow.com', password: defaultPassword, role: 'Sales Executive' }
         ];
 
         await User.insertMany(users);
@@ -32,3 +35,4 @@ const seedUsers = async () => {
 };
 
 seedUsers();
+

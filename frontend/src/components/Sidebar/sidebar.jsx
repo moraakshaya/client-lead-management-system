@@ -115,6 +115,18 @@ export default function Sidebar() {
               </NavLink>
             </li>
           ))}
+          {user.role === 'Admin' && (
+            <li>
+              <NavLink
+                to="/users"
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                title={isCollapsed ? 'Users' : ""}
+              >
+                <span className="nav-icon"><MdPeople /></span>
+                {!isCollapsed && <span className="nav-label">Users</span>}
+              </NavLink>
+            </li>
+          )}
         </ul>
       </nav>
 
