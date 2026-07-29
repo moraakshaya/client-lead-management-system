@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getProfile, updateProfile } from '../../services/userService';
-import { FaSpinner, FaCamera } from 'react-icons/fa';
+import { FaSpinner, FaCamera, FaUpload, FaTrash } from 'react-icons/fa';
 
 
 export default function ProfileSettings() {
@@ -84,11 +84,65 @@ export default function ProfileSettings() {
     setErrors({ ...errors, [name]: error });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setAvatarFile(file);
       setAvatarPreview(URL.createObjectURL(file));
+      
+      // Auto-upload the image instantly for better UX
+      setIsSaving(true);
+      try {
+        const submitData = new FormData();
+        submitData.append('name', formData.name);
+        submitData.append('email', formData.email);
+        submitData.append('phone', formData.phone);
+        submitData.append('company', formData.company);
+        submitData.append('bio', formData.bio);
+        submitData.append('avatar', file);
+        
+        const { data } = await updateProfile(submitData);
+        showToast('Profile image updated successfully!', 'success');
+        
+        if (data.avatar) {
+          setAvatarPreview(`http://localhost:5000${data.avatar}`);
+        }
+        window.dispatchEvent(new Event('profileUpdated'));
+      } catch (err) {
+        console.error(err);
+        showToast(err.response?.data?.message || 'Error uploading image.', 'error');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
+  const handleDeleteAvatar = async () => {
+    if (!avatarPreview) return;
+    
+    setIsSaving(true);
+    try {
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('phone', formData.phone);
+      submitData.append('company', formData.company);
+      submitData.append('bio', formData.bio);
+      submitData.append('removeAvatar', 'true');
+      
+      const { data } = await updateProfile(submitData);
+      
+      setAvatarFile(null);
+      setAvatarPreview(null);
+      setFormData({ ...formData, avatar: '' });
+      showToast('Profile image removed!', 'success');
+      
+      window.dispatchEvent(new Event('profileUpdated'));
+    } catch (err) {
+      console.error(err);
+      showToast('Error removing image.', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -127,6 +181,9 @@ export default function ProfileSettings() {
       if (data.avatar) {
         setAvatarPreview(`http://localhost:5000${data.avatar}`);
       }
+
+      // Notify other components (like Sidebar) that the profile has changed
+      window.dispatchEvent(new Event('profileUpdated'));
     } catch (err) {
       console.error(err);
       showToast(err.response?.data?.message || 'Error updating profile.', 'error');
@@ -179,6 +236,23 @@ export default function ProfileSettings() {
           <div className="avatar-overlay">
             <FaCamera />
           </div>
+        </div>
+
+        <div className="settings-avatar-actions">
+          <button 
+            className="settings-avatar-btn" 
+            onClick={() => fileInputRef.current.click()}
+          >
+            <FaUpload /> Upload New Image
+          </button>
+          {avatarPreview && (
+            <button 
+              className="settings-avatar-btn delete" 
+              onClick={handleDeleteAvatar}
+            >
+              <FaTrash /> Remove Image
+            </button>
+          )}
         </div>
         
         <input 

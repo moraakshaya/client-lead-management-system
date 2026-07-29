@@ -35,8 +35,9 @@ exports.createUser = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
     try {
-        // Fetch the first user as a mock for logged-in user until JWT is implemented
-        const user = await User.findOne().select('-password');
+        const userId = req.user.userId || req.user.id || req.user._id;
+        // Fetch the currently logged-in user using the ID from the JWT token
+        const user = await User.findById(userId).select('-password');
         if (!user) {
             return res.status(404).json({ message: "No user found." });
         }
@@ -48,8 +49,13 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        // Find the first user
-        const user = await User.findOne();
+        console.log("UPDATE PROFILE TRIGGERED");
+        console.log("req.body:", req.body);
+        console.log("req.file:", req.file);
+        
+        const userId = req.user.userId || req.user.id || req.user._id;
+        // Find the currently logged-in user
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "No user found." });
         }
@@ -68,6 +74,8 @@ exports.updateProfile = async (req, res) => {
         let avatarPath = user.avatar;
         if (req.file) {
             avatarPath = `/uploads/${req.file.filename}`;
+        } else if (req.body.removeAvatar === 'true') {
+            avatarPath = '';
         }
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -86,7 +94,8 @@ exports.updatePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         
-        const user = await User.findOne();
+        const userId = req.user.userId || req.user.id || req.user._id;
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "No user found." });
         }

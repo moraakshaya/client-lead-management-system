@@ -1,0 +1,360 @@
+/* Auth.css - New Card-based Layout with Underline Inputs */
+
+:root {
+  --auth-primary: var(--primary);
+  --auth-primary-hover: var(--primary-hover);
+  --auth-bg-left: var(--primary-light);
+  --auth-text-dark: var(--text-primary);
+  --auth-text-muted: var(--text-secondary);
+  --auth-border: var(--border);
+}
+
+/* Page Container */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%);
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative background blobs for 3D effect */
+.auth-page::before,
+.auth-page::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.auth-page::before {
+  top: -10%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: rgba(167, 139, 250, 0.4);
+}
+
+.auth-page::after {
+  bottom: -10%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: rgba(192, 132, 252, 0.4);
+}
+
+/* Card Container */
+.auth-container {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  
+  /* Glassmorphism 3D effect */
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15), 
+              inset 0 1px 0 rgba(255, 255, 255, 1);
+              
+  padding: 1.5rem; 
+  gap: 2rem;
+  z-index: 1;
+}
+
+/* Left Panel (Inner Card) */
+.auth-left {
+  flex: 1.1;
+  background-color: var(--auth-bg-left); /* Soft primary tint */
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Optional top-left logo for left panel (as seen in reference) */
+.auth-left-logo {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  height: 30px;
+  opacity: 0.8;
+}
+
+.auth-astronaut {
+  max-width: 100%;
+  height: 400px; /* Reduced to fit better in the inner card */
+  object-fit: contain;
+  margin-bottom: 2rem;
+  mix-blend-mode: multiply; /* Blends perfectly into the primary-light background */
+}
+
+.auth-tagline {
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  z-index: 1;
+}
+
+.auth-subline {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  max-width: 85%;
+  line-height: 1.5;
+  z-index: 1;
+}
+
+/* Right Panel (Form) */
+.auth-right {
+  flex: 1;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+}
+
+/* Header Area */
+.auth-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.auth-header h2 {
+  color: var(--auth-text-dark);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: var(--auth-text-muted);
+  font-size: 0.95rem;
+}
+
+.auth-header a {
+  color: var(--auth-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Form Styles */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  position: relative;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  color: #a0aec0; /* Very light text for labels as in reference */
+  font-weight: 500;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.5rem 0;
+  border: none;
+  border-bottom: 2px solid var(--auth-border);
+  background: transparent;
+  font-size: 1rem;
+  color: var(--auth-text-dark);
+  transition: all 0.2s;
+  outline: none;
+}
+
+/* Underline focus effect */
+.auth-input:focus {
+  border-bottom-color: var(--auth-primary);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 8px; /* Adjusted to align with underline input */
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: var(--auth-text-dark);
+}
+
+/* Options */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-top: -0.5rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--auth-text-muted);
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: var(--auth-primary);
+  width: 14px;
+  height: 14px;
+}
+
+.forgot-link {
+  color: var(--auth-text-dark);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Primary Button */
+.auth-btn-primary {
+  background-color: var(--auth-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.auth-btn-primary:hover {
+  background-color: var(--auth-primary-hover);
+}
+
+.auth-btn-secondary {
+  background-color: transparent;
+  color: var(--auth-primary);
+  border: 2px solid var(--auth-primary);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.auth-btn-secondary:hover {
+  background-color: var(--auth-primary);
+  color: white;
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--auth-border);
+}
+
+.auth-divider::before {
+  margin-right: .5em;
+}
+
+.auth-divider::after {
+  margin-left: .5em;
+}
+
+/* Circular Social Buttons */
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.social-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 1px solid var(--auth-border);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+}
+
+.social-icon {
+  font-size: 1.25rem;
+}
+
+/* Error message */
+.auth-error {
+  color: #ef4444; 
+  text-align: center; 
+  background-color: #fef2f2; 
+  padding: 10px; 
+  border-radius: 8px; 
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .auth-page {
+    padding: 1rem;
+  }
+
+  .auth-container {
+    flex-direction: column;
+    padding: 1rem;
+    max-width: 500px;
+  }
+  
+  .auth-left {
+    padding: 2rem 1rem;
+    border-radius: 16px;
+    display: none; /* Hide illustration on small mobile screens */
+  }
+
+  .auth-right {
+    padding: 2rem 1.5rem;
+  }
+}

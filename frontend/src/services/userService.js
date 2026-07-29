@@ -17,11 +17,8 @@ export const getProfile = () => {
 
 // Update user profile (multipart/form-data if image included)
 export const updateProfile = (formData) => {
-    return api.put('/users/profile', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+    // Axios automatically sets the Content-Type with the correct boundary when passing a FormData object
+    return api.put('/users/profile', formData);
 };
 
 // Update user password

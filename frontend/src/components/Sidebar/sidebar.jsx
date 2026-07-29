@@ -52,10 +52,17 @@ export default function Sidebar() {
         console.error("Failed to load user profile:", err);
       }
     };
+    
     fetchProfile();
+    window.addEventListener('profileUpdated', fetchProfile);
+
     // Check initial theme from document
     const theme = document.documentElement.getAttribute('data-theme');
     if (theme === 'dark') setIsDarkMode(true);
+
+    return () => {
+      window.removeEventListener('profileUpdated', fetchProfile);
+    };
   }, []);
 
   const toggleDarkMode = () => {
