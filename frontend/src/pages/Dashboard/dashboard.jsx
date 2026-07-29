@@ -4,7 +4,6 @@ import StatsCards from "../../components/dashboard/StatsCards";
 import LeadAnalytics from "../../components/dashboard/LeadAnalytics";
 import WorkItems from "../../components/dashboard/WorkItems";
 import Operations from "../../components/dashboard/Operations";
-import Performance from "../../components/dashboard/Performance";
 import AddLeadModal from "../../components/leads/AddLeadModal";
 import FollowUpsScheduleModal from "../../components/followUps/FollowUpsScheduleModal";
 import { getDashboardStats, getChartData, getRecentWork, getRecentActivities } from "../../services/dashboardService";
@@ -76,7 +75,6 @@ export function Dashboard() {
                 onAddLead={() => setIsAddLeadModalOpen(true)}
                 onCreateFollowUp={() => setIsScheduleFollowupModalOpen(true)}
             />
-            <Performance stats={stats} />
 
             <AddLeadModal
                 isOpen={isAddLeadModalOpen}

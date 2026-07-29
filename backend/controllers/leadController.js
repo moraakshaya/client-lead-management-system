@@ -1,6 +1,7 @@
 const Lead = require('../models/lead'); // Importing the Lead model to interact with the Lead collection in the MongoDB database
 const Activity = require('../models/activity');
 const User = require('../models/user');
+const FollowUp = require('../models/followUp');
 
 // Controller function to create a new lead
 exports.createLead = async (req, res) => {
@@ -147,18 +148,44 @@ exports.deleteLead = async (req, res) => {
 
 exports.getLeadStats = async (req, res) => {
     try {
-        const totalLeads = await Lead.countDocuments();
-        const newLeads = await Lead.countDocuments({ status: "New" });
-        const qualifiedLeads = await Lead.countDocuments({ status: "Qualified" });
-        const convertedLeads = await Lead.countDocuments({ status: "Won" });
-        const lostLeads = await Lead.countDocuments({ status: "Lost" });
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+        
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        // 1. Total Active Leads (Pipeline Size)
+        const totalActiveLeads = await Lead.countDocuments({ status: { $nin: ['Won', 'Lost'] } });
+
+        // 2. New Leads This Week
+        const newLeadsThisWeek = await Lead.countDocuments({ createdAt: { $gte: oneWeekAgo } });
+
+        // 3. Pending Follow-Ups
+        const pendingFollowUps = await FollowUp.countDocuments({ 
+            followUpDate: { $lte: endOfDay }, 
+            status: "Pending" 
+        });
+
+        // 4. Conversion Rate (Last 30 Days)
+        const leadsCreatedLast30Days = await Lead.countDocuments({ createdAt: { $gte: thirtyDaysAgo } });
+        const leadsConvertedLast30Days = await Lead.countDocuments({ 
+            createdAt: { $gte: thirtyDaysAgo },
+            status: 'Won'
+        });
+        
+        const conversionRate = leadsCreatedLast30Days > 0 
+            ? Math.round((leadsConvertedLast30Days / leadsCreatedLast30Days) * 100) 
+            : 0;
 
         res.status(200).json({
-            totalLeads,
-            newLeads,
-            qualifiedLeads,
-            convertedLeads,
-            lostLeads
+            totalActiveLeads,
+            newLeadsThisWeek,
+            pendingFollowUps,
+            conversionRate
         });
     } catch (err) {
         res.status(500).json({ message: err.message });

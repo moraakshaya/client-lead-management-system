@@ -67,25 +67,17 @@
 .timeline-icon-wrapper {
   width: 44px;
   height: 44px;
-  border-radius: 14px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   z-index: 1;
-  /* Soft Neumorphic Style */
-  box-shadow: 
-    -4px -4px 10px rgba(255, 255, 255, 1),
-    4px 4px 10px rgba(0, 0, 0, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  background: inherit; /* will use inline color with 20% opacity */
+  background: rgba(139, 92, 246, 0.15); /* Light purple */
 }
 
 [data-theme="dark"] .timeline-icon-wrapper {
-  box-shadow: 
-    -4px -4px 10px rgba(255, 255, 255, 0.03),
-    4px 4px 10px rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255, 255, 255, 0.05);
+  background: rgba(139, 92, 246, 0.2);
 }
 
 .timeline-icon {
@@ -93,7 +85,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Use the parent's text color for the SVG */
+  color: var(--primary); /* Purple */
 }
 
 .timeline-icon svg {

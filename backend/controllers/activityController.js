@@ -142,20 +142,18 @@ exports.getActivityStats = async (req, res) => {
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
         // Run all database queries at the same time for max speed
-        const [totalActivities, todayActivities, weeklyActivities, monthlyActivities, systemActivities] = await Promise.all([
+        const [totalActivities, todayActivities, weeklyActivities, keyEvents] = await Promise.all([
             Activity.countDocuments(),
             Activity.countDocuments({ createdAt: { $gte: startOfToday } }),
             Activity.countDocuments({ createdAt: { $gte: startOfWeek } }),
-            Activity.countDocuments({ createdAt: { $gte: startOfMonth } }),
-            Activity.countDocuments({ createdBy: 'System' })
+            Activity.countDocuments({ action: "Lead Converted" })
         ]);
 
         res.status(200).json({
             totalActivities,
             todayActivities,
             weeklyActivities,
-            monthlyActivities,
-            systemActivities
+            keyEvents
         });
     } catch (err) {
         res.status(500).json({

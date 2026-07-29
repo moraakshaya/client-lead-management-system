@@ -23,6 +23,7 @@ const quickActions = [
 
 export default function Operations({ activities, onAddLead, onCreateFollowUp }) {
   const navigate = useNavigate();
+
   const timelineActivities = activities?.map((activity, index) => ({
     id: activity._id || index,
     type: activity.action || 'Action',
@@ -48,7 +49,7 @@ export default function Operations({ activities, onAddLead, onCreateFollowUp }) 
               {/* Vertical line connecting dots */}
               {index !== timelineActivities.length - 1 && <div className="ops-timeline-line"></div>}
               
-              <div className="timeline-icon-wrapper" style={{ backgroundColor: `${activity.color}20`, border: `1px solid ${activity.color}50` }}>
+              <div className="timeline-icon-wrapper">
                 <span className="timeline-icon">{activity.icon}</span>
               </div>
               

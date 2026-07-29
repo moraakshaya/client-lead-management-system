@@ -12,6 +12,8 @@ export const Users = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [showUserModal, setShowUserModal] = useState(false);
     const [showResetModal, setShowResetModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     
     // User Form State
@@ -42,6 +44,8 @@ export const Users = () => {
         newPassword: '',
         confirmNewPassword: ''
     });
+    const [resetErrors, setResetErrors] = useState({});
+    const [resetTouched, setResetTouched] = useState({});
 
     useEffect(() => {
         fetchUsers();
@@ -197,15 +201,21 @@ export const Users = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to deactivate and delete this user?")) {
-            try {
-                await deleteUser(id);
-                toast.success("User deleted successfully");
-                fetchUsers();
-            } catch (err) {
-                toast.error(err.response?.data?.message || "Failed to delete user");
-            }
+    const handleDeleteClick = (user) => {
+        setUserToDelete(user);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!userToDelete) return;
+        try {
+            await deleteUser(userToDelete._id);
+            toast.success("User deleted successfully");
+            setShowDeleteModal(false);
+            setUserToDelete(null);
+            fetchUsers();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to delete user");
         }
     };
 
@@ -216,11 +226,71 @@ export const Users = () => {
             newPassword: '',
             confirmNewPassword: ''
         });
+        setResetErrors({});
+        setResetTouched({});
         setShowResetModal(true);
+    };
+
+    const validateResetField = (name, value, currentData) => {
+        let error = "";
+        if (name === 'newPassword') {
+            if (value.length < 8) {
+                error = "Password must be at least 8 characters.";
+            } else if (!/(?=.*[a-z])/.test(value)) {
+                error = "Password must contain a lowercase letter.";
+            } else if (!/(?=.*[A-Z])/.test(value)) {
+                error = "Password must contain an uppercase letter.";
+            } else if (!/(?=.*\d)/.test(value)) {
+                error = "Password must contain a number.";
+            }
+        }
+        if (name === 'confirmNewPassword') {
+            if (value !== currentData.newPassword) {
+                error = "Passwords do not match.";
+            }
+        }
+        return error;
+    };
+
+    const handleResetChange = (e) => {
+        const { name, value } = e.target;
+        const newData = { ...resetData, [name]: value };
+        setResetData(newData);
+        
+        if (resetTouched[name]) {
+            setResetErrors(prev => ({ ...prev, [name]: validateResetField(name, value, newData) }));
+        }
+        if (name === 'newPassword' && resetTouched.confirmNewPassword) {
+            setResetErrors(prev => ({ ...prev, confirmNewPassword: validateResetField('confirmNewPassword', newData.confirmNewPassword, newData) }));
+        }
+    };
+
+    const handleResetBlur = (e) => {
+        const { name, value } = e.target;
+        setResetTouched(prev => ({ ...prev, [name]: true }));
+        setResetErrors(prev => ({ ...prev, [name]: validateResetField(name, value, resetData) }));
     };
 
     const handleResetSubmit = async (e) => {
         e.preventDefault();
+
+        const newErrors = {};
+        Object.keys(resetData).forEach(key => {
+            if (key === 'newPassword' || key === 'confirmNewPassword') {
+                const err = validateResetField(key, resetData[key], resetData);
+                if (err) newErrors[key] = err;
+            }
+        });
+
+        setResetErrors(newErrors);
+        
+        const allTouched = { newPassword: true, confirmNewPassword: true };
+        setResetTouched(allTouched);
+
+        if (Object.keys(newErrors).length > 0) {
+            return;
+        }
+
         if (resetData.newPassword !== resetData.confirmNewPassword) {
             return toast.error("Passwords do not match");
         }
@@ -285,7 +355,7 @@ export const Users = () => {
                                             <button className="btn-icon" title="Reset Password" onClick={() => handleOpenResetModal(user)}>
                                                 <FiKey />
                                             </button>
-                                            <button className="btn-icon delete" title="Deactivate User" onClick={() => handleDelete(user._id)}>
+                                            <button className="btn-icon delete" title="Deactivate User" onClick={() => handleDeleteClick(user)}>
                                                 <FiTrash2 />
                                             </button>
                                         </div>
@@ -389,26 +459,51 @@ export const Users = () => {
                                 <div className="form-group full-width">
                                     <label>New Password</label>
                                     <div className="password-input-wrapper">
-                                        <input type={showResetPassword ? "text" : "password"} required minLength="6" value={resetData.newPassword} onChange={e => setResetData({...resetData, newPassword: e.target.value})} placeholder="Enter new password" />
+                                        <input type={showResetPassword ? "text" : "password"} name="newPassword" required minLength="8" value={resetData.newPassword} onChange={handleResetChange} onBlur={handleResetBlur} placeholder="Enter new password" className={resetTouched.newPassword && resetErrors.newPassword ? 'input-error' : ''} />
                                         <button type="button" className="password-toggle" onClick={() => setShowResetPassword(!showResetPassword)}>
                                             {showResetPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
                                         </button>
                                     </div>
+                                    {resetTouched.newPassword && resetErrors.newPassword && <span className="error-text">{resetErrors.newPassword}</span>}
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Confirm Password</label>
                                     <div className="password-input-wrapper">
-                                        <input type={showConfirmResetPassword ? "text" : "password"} required value={resetData.confirmNewPassword} onChange={e => setResetData({...resetData, confirmNewPassword: e.target.value})} placeholder="Confirm new password" />
+                                        <input type={showConfirmResetPassword ? "text" : "password"} name="confirmNewPassword" required value={resetData.confirmNewPassword} onChange={handleResetChange} onBlur={handleResetBlur} placeholder="Confirm new password" className={resetTouched.confirmNewPassword && resetErrors.confirmNewPassword ? 'input-error' : ''} />
                                         <button type="button" className="password-toggle" onClick={() => setShowConfirmResetPassword(!showConfirmResetPassword)}>
                                             {showConfirmResetPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
                                         </button>
                                     </div>
+                                    {resetTouched.confirmNewPassword && resetErrors.confirmNewPassword && <span className="error-text">{resetErrors.confirmNewPassword}</span>}
                                 </div>
                                 <div className="modal-footer" style={{ gridColumn: '1 / -1' }}>
                                     <button type="button" className="btn-cancel" onClick={() => setShowResetModal(false)}>Cancel</button>
                                     <button type="submit" className="btn-save">Reset Password</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content small-modal">
+                        <div className="modal-header">
+                            <h2>Delete User</h2>
+                            <button className="close-btn" onClick={() => setShowDeleteModal(false)}>
+                                <MdClose />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
+                                Are you sure you want to deactivate and delete <strong>{userToDelete?.name}</strong>? This action cannot be undone.
+                            </p>
+                            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                <button type="button" className="btn-cancel" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                                <button type="button" className="btn-save" style={{ background: 'var(--danger)', color: '#fff', border: 'none' }} onClick={confirmDelete}>Delete</button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -178,19 +178,24 @@ exports.deleteNotes = async (req, res) => {
 // Get Note Stats
 exports.getNoteStats = async (req, res) => {
     try {
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+
         // Fetch all 4 metrics at the exact same time
-        const [totalNotes, leadNotes, clientNotes, pinnedNotes] = await Promise.all([
+        const [totalNotes, notesToday, pinnedNotes, leadsWithNotesArr] = await Promise.all([
             Notes.countDocuments(),
-            Notes.countDocuments({ relatedToModel: "Lead" }),
-            Notes.countDocuments({ relatedToModel: "Client" }),
-            Notes.countDocuments({ isPinned: true })
+            Notes.countDocuments({ createdAt: { $gte: startOfDay } }),
+            Notes.countDocuments({ isPinned: true }),
+            Notes.distinct('leadId', { relatedToModel: "Lead" })
         ]);
+
+        const leadsWithNotes = leadsWithNotesArr.length;
 
         res.status(200).json({
             totalNotes,
-            leadNotes,
-            clientNotes,
-            pinnedNotes
+            notesToday,
+            pinnedNotes,
+            leadsWithNotes
         });
     } catch (err) {
         res.status(500).json({

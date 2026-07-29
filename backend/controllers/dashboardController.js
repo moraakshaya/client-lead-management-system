@@ -4,32 +4,79 @@ const followUp = require('../models/followUp');
 
 exports.getDashboardStats = async (req, res) => {
     try {
-        const totalLeads = await lead.countDocuments();
-        const totalClients = await client.countDocuments();
-        const hotLeads = await lead.countDocuments({ status: "Qualified" });
-        const pendingFollowUps = await followUp.countDocuments({ status: "Pending" });
-        const completedFollowUps = await followUp.countDocuments({ status: "Completed" });
-        const wonLeads = await lead.countDocuments({ status: "Won" });
-        const lostLeads = await lead.countDocuments({ status: "Lost" });
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+        
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        
+        const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000);
+        const endOfYesterday = new Date(startOfToday.getTime() - 1);
 
-        const totalFollowUps = await followUp.countDocuments();
+        const calcTrend = (current, previous) => {
+            if (previous === 0) return current > 0 ? 100 : 0;
+            return Math.round(((current - previous) / previous) * 100);
+        };
+
+        const getTrendType = (trend) => {
+            if (trend > 0) return 'positive';
+            if (trend < 0) return 'negative';
+            return 'neutral';
+        };
+
+        const formatTrend = (trend) => {
+            if (trend > 0) return `+${trend}%`;
+            if (trend < 0) return `${trend}%`;
+            return '0%';
+        };
+
+        // Total Leads (last 30 days vs previous 30 days)
+        const currentLeads = await lead.countDocuments({ createdAt: { $gte: thirtyDaysAgo, $lte: now } });
+        const previousLeads = await lead.countDocuments({ createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } });
+        const leadsTrend = calcTrend(currentLeads, previousLeads);
+
+        // Total Clients (last 30 days vs previous 30 days)
+        const currentClients = await client.countDocuments({ createdAt: { $gte: thirtyDaysAgo, $lte: now } });
+        const previousClients = await client.countDocuments({ createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } });
+        const clientsTrend = calcTrend(currentClients, previousClients);
+
+        // Converted to Clients (Won Leads in last 30 days vs previous 30 days)
+        const currentConverted = await lead.countDocuments({ status: "Won", updatedAt: { $gte: thirtyDaysAgo, $lte: now } });
+        const previousConverted = await lead.countDocuments({ status: "Won", updatedAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } });
+        const convertedTrend = calcTrend(currentConverted, previousConverted);
+
+        // Followups Today vs Yesterday
+        const currentFollowups = await followUp.countDocuments({ followUpDate: { $gte: startOfToday, $lte: endOfToday } });
+        const previousFollowups = await followUp.countDocuments({ followUpDate: { $gte: startOfYesterday, $lte: endOfYesterday } });
+        const followupsTrend = calcTrend(currentFollowups, previousFollowups);
 
         res.status(200).json({
-            totalLeads,
-            totalClients,
-            hotLeads,
-            totalFollowUps,
-            pendingFollowUps,
-            completedFollowUps,
-            wonLeads,
-            lostLeads
+            leads: { 
+                value: currentLeads, 
+                trend: formatTrend(leadsTrend), 
+                trendType: getTrendType(leadsTrend) 
+            },
+            clients: { 
+                value: currentClients, 
+                trend: formatTrend(clientsTrend), 
+                trendType: getTrendType(clientsTrend) 
+            },
+            converted: { 
+                value: currentConverted, 
+                trend: formatTrend(convertedTrend), 
+                trendType: getTrendType(convertedTrend) 
+            },
+            followups: { 
+                value: currentFollowups, 
+                trend: formatTrend(followupsTrend), 
+                trendType: getTrendType(followupsTrend) 
+            }
         });
     } catch (err) {
-        res.status(500).json({
-            message: err.message,
-        });
+        res.status(500).json({ message: err.message });
     }
-}; 
+};
 
 exports.getChartData = async (req, res) => {
     try {

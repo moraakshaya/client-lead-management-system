@@ -7,7 +7,8 @@ import {
   FaCogs,
   FaArrowUp,
   FaArrowDown,
-  FaMinus
+  FaMinus,
+  FaStar
 } from 'react-icons/fa';
 import '../dashboard/StatsCards.css';
 
@@ -28,49 +29,39 @@ export default function ActivityTimelineStatsCards({ stats, loading }) {
       icon: <FaListUl />,
       color: 'var(--primary)',
       bg: 'rgba(139, 92, 246, 0.15)',
-      trend: '+12%',
+      trend: '+15%',
       trendType: 'positive',
-      description: 'all time'
+      description: 'System Volume'
     },
     {
-      title: "Today's Activities",
+      title: 'Activities Today',
       value: stats?.todayActivities || 0,
       icon: <FaCalendarDay />,
       color: '#3B82F6',
       bg: 'rgba(59, 130, 246, 0.15)',
       trend: '+5',
       trendType: 'positive',
-      description: 'vs yesterday'
+      description: 'Daily Heartbeat'
     },
     {
-      title: 'Weekly Activities',
+      title: 'Activities This Week',
       value: stats?.weeklyActivities || 0,
       icon: <FaCalendarWeek />,
       color: 'var(--success)',
       bg: 'rgba(34, 197, 94, 0.15)',
-      trend: 'Steady',
-      trendType: 'neutral',
-      description: 'this week'
+      trend: '+22%',
+      trendType: 'positive',
+      description: 'Weekly Momentum'
     },
     {
-      title: 'Monthly Activities',
-      value: stats?.monthlyActivities || 0,
-      icon: <FaCalendarAlt />,
+      title: 'Key Events',
+      value: stats?.keyEvents || 0,
+      icon: <FaStar />,
       color: 'var(--warning)',
       bg: 'rgba(245, 158, 11, 0.15)',
-      trend: '-2%',
-      trendType: 'negative',
-      description: 'vs last month'
-    },
-    {
-      title: 'System Activities',
-      value: stats?.systemActivities || 0,
-      icon: <FaCogs />,
-      color: 'var(--text-secondary)',
-      bg: 'rgba(100, 116, 139, 0.15)',
-      trend: '0',
-      trendType: 'neutral',
-      description: 'automated logs'
+      trend: '+2',
+      trendType: 'positive',
+      description: 'High-Value Actions'
     }
   ];
 

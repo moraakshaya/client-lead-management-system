@@ -14,24 +14,24 @@ import '../dashboard/StatsCards.css';
 export default function ClientsStatsCards({ stats, loading }) {
   const statsData = [
     {
-      title: 'Total Clients',
-      value: stats?.totalClients || 0,
-      icon: <FaUsers />,
-      color: 'var(--primary)',
-      bg: 'var(--primary-light)',
-      trend: '+12%',
-      trendType: 'positive',
-      description: 'vs last month'
-    },
-    {
-      title: 'Active Clients',
+      title: 'Total Active Clients',
       value: stats?.activeClients || 0,
       icon: <FaUserCheck />,
       color: 'var(--success)',
       bg: 'var(--success-bg)',
       trend: '+5%',
       trendType: 'positive',
-      description: 'currently active'
+      description: 'Portfolio Size'
+    },
+    {
+      title: 'New Clients',
+      value: stats?.newClients || 0,
+      icon: <FaUserPlus />,
+      color: '#3B82F6',
+      bg: 'rgba(59, 130, 246, 0.15)',
+      trend: '+15%',
+      trendType: 'positive',
+      description: 'Growth this month'
     },
     {
       title: 'VIP Clients',
@@ -41,28 +41,18 @@ export default function ClientsStatsCards({ stats, loading }) {
       bg: 'var(--warning-bg)',
       trend: '+2',
       trendType: 'positive',
-      description: 'this month'
+      description: 'High Value'
     },
     {
-      title: 'New This Month',
-      value: stats?.newClients || 0,
-      icon: <FaUserPlus />,
-      color: '#3B82F6',
-      bg: 'rgba(59, 130, 246, 0.15)',
-      trend: '+15%',
-      trendType: 'positive',
-      description: 'compared to avg'
-    },
-    {
-      title: 'Inactive',
+      title: 'Inactive Clients',
       value: stats?.inactiveClients || 0,
       icon: <FaUserTimes />,
       color: 'var(--danger)',
       bg: 'var(--danger-bg)',
       trend: '-3%',
       trendType: 'negative',
-      description: 'needs attention'
-    },
+      description: 'Churn / At-Risk'
+    }
   ];
 
   if (loading) {

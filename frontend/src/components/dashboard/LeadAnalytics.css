@@ -1,6 +1,6 @@
 .analytics-section {
   display: grid;
-  grid-template-columns: 7fr 3fr;
+  grid-template-columns: 65fr 35fr;
   gap: 24px;
   width: 100%;
 }
@@ -316,3 +316,4 @@
     rgba(0, 0, 0, 0.1) 100%
   );
 }
+

@@ -24,6 +24,14 @@ const Welcome = () => {
     second: '2-digit',
   });
 
+  const getGreeting = () => {
+    const hour = currentDateTime.getHours();
+    if (hour >= 5 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    if (hour >= 17 && hour < 21) return 'Good Evening';
+    return 'Good Night';
+  };
+
   return (
     <div className="welcome-container">
       <div className="welcome-content">
@@ -36,7 +44,7 @@ const Welcome = () => {
 
           <div className="welcome-text-area">
             <h1 className="welcome-greeting">
-              Welcome back, Akshaya <span className="wave-emoji">👋</span>
+              {getGreeting()}, Akshaya <span className="wave-emoji">👋</span>
             </h1>
             <p className="welcome-subtitle">
               Here's what's happening with your business today.

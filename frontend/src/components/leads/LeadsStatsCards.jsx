@@ -1,6 +1,6 @@
 import React from 'react';
-import { 
-  FaUsers, 
+import {
+  FaUsers,
   FaUserPlus,
   FaUserCheck,
   FaHandshake,
@@ -20,55 +20,45 @@ const renderTrendIcon = (type) => {
 export default function LeadsStatsCards({ stats, loading }) {
   const statsData = [
     {
-      title: 'Total Leads',
-      value: stats?.totalLeads || 0,
+      title: 'Total Active Leads',
+      value: stats?.totalActiveLeads || 0,
       icon: <FaUsers />,
       color: 'var(--primary)',
       bg: 'rgba(139, 92, 246, 0.15)',
       trend: '+18%',
       trendType: 'positive',
-      description: 'vs last month'
+      description: 'Pipeline Size'
     },
     {
       title: 'New Leads',
-      value: stats?.newLeads || 0,
+      value: stats?.newLeadsThisWeek || 0,
       icon: <FaUserPlus />,
       color: '#3B82F6',
       bg: 'rgba(59, 130, 246, 0.15)',
       trend: '+12%',
       trendType: 'positive',
-      description: 'this month'
+      description: 'Inflow this week'
     },
     {
-      title: 'Qualified',
-      value: stats?.qualifiedLeads || 0,
-      icon: <FaUserCheck />,
+      title: 'Follow-ups Due',
+      value: stats?.pendingFollowUps || 0,
+      icon: <FaHandshake />,
       color: 'var(--warning)',
       bg: 'rgba(245, 158, 11, 0.15)',
-      trend: '+5%',
-      trendType: 'positive',
-      description: 'awaiting action'
+      trend: '-5%',
+      trendType: 'negative',
+      description: 'Urgency'
     },
     {
-      title: 'Converted',
-      value: stats?.convertedLeads || 0,
-      icon: <FaHandshake />,
+      title: 'Conversion Rate',
+      value: `${stats?.conversionRate || 0}%`,
+      icon: <FaUserCheck />,
       color: 'var(--success)',
       bg: 'rgba(34, 197, 94, 0.15)',
       trend: '+24%',
       trendType: 'positive',
-      description: 'this month'
-    },
-    {
-      title: 'Lost',
-      value: stats?.lostLeads || 0,
-      icon: <FaUserTimes />,
-      color: 'var(--danger)',
-      bg: 'rgba(239, 68, 68, 0.15)',
-      trend: '-2%',
-      trendType: 'negative',
-      description: 'this month'
-    },
+      description: 'Quality (Last 30 days)'
+    }
   ];
 
   if (loading && !stats) {
@@ -85,18 +75,18 @@ export default function LeadsStatsCards({ stats, loading }) {
       <div className="stats-grid">
         {statsData.map((stat, index) => (
           <div key={index} className="stat-glass-card">
-            
+
             <div className="stat-card-header">
-              <div 
+              <div
                 className="stat-icon-wrapper-3d"
-                style={{ 
-                  color: stat.color, 
-                  backgroundColor: stat.bg 
+                style={{
+                  color: stat.color,
+                  backgroundColor: stat.bg
                 }}
               >
                 {stat.icon}
               </div>
-              
+
               <div className={`stat-trend-glass trend-${stat.trendType}`}>
                 <span className="trend-icon">{renderTrendIcon(stat.trendType)}</span>
                 {stat.trend}
@@ -111,7 +101,7 @@ export default function LeadsStatsCards({ stats, loading }) {
             <div className="stat-card-footer">
               <span className="stat-description">{stat.description}</span>
             </div>
-            
+
             {/* 3D Glass Light Reflection */}
             <div className="glass-reflection"></div>
           </div>

@@ -29,27 +29,17 @@ export default function NotesStatsCards({ stats, loading }) {
       bg: 'rgba(139, 92, 246, 0.15)',
       trend: '+12%',
       trendType: 'positive',
-      description: 'vs last month'
+      description: 'Documented interactions'
     },
     {
-      title: 'Lead Notes',
-      value: stats?.leadNotes || 0,
+      title: 'Notes Today',
+      value: stats?.notesToday || 0,
       icon: <FaUserTie />,
       color: '#3B82F6',
       bg: 'rgba(59, 130, 246, 0.15)',
       trend: '+5',
       trendType: 'positive',
-      description: 'this week'
-    },
-    {
-      title: 'Client Notes',
-      value: stats?.clientNotes || 0,
-      icon: <FaUserCheck />,
-      color: 'var(--success)',
-      bg: 'rgba(34, 197, 94, 0.15)',
-      trend: 'Steady',
-      trendType: 'neutral',
-      description: 'this week'
+      description: 'Daily engagement'
     },
     {
       title: 'Pinned Notes',
@@ -59,7 +49,17 @@ export default function NotesStatsCards({ stats, loading }) {
       bg: 'rgba(245, 158, 11, 0.15)',
       trend: '0',
       trendType: 'neutral',
-      description: 'important'
+      description: 'High priority info'
+    },
+    {
+      title: 'Leads with Notes',
+      value: stats?.leadsWithNotes || 0,
+      icon: <FaUserCheck />,
+      color: 'var(--success)',
+      bg: 'rgba(34, 197, 94, 0.15)',
+      trend: '+3',
+      trendType: 'positive',
+      description: 'Documentation coverage'
     }
   ];
 
