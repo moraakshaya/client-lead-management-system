@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { resetPassword } from '../../services/authService';
+import '../Login/Auth.css'; // Shared auth styles
 
 export const ResetPassword = () => {
     const { token } = useParams(); // Grabs the secret token from the URL!
@@ -21,16 +22,48 @@ export const ResetPassword = () => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-            <form onSubmit={handleSubmit} style={{ padding: '40px', backgroundColor: 'white', borderRadius: '16px', width: '350px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Create New Password</h2>
-                {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '15px' }}>{error}</p>}
-                {message && <p style={{ color: 'green', textAlign: 'center', marginBottom: '15px' }}>{message}</p>}
+        <div className="auth-page">
+            <div className="auth-container">
+                
+                {/* Left Side: Inner Card Illustration */}
+                <div className="auth-left">
+                    <img src="/logoful.png" alt="LeadFlow" className="auth-left-logo" />
+                    <img src="/auth-img.png" alt="CRM Dashboard" className="auth-astronaut" />
+                    <h3 className="auth-tagline">Welcome to LeadFlow!</h3>
+                    <p className="auth-subline">We are a community, together helping thousands of businesses grow.</p>
+                </div>
 
-                <input type="password" placeholder="New Password" required minLength="6" onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: '12px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ccc' }} />
+                {/* Right Side: Form */}
+                <div className="auth-right">
+                    <div className="auth-header">
+                        <h2>Create New Password</h2>
+                        <p>Please enter your new secure password.</p>
+                    </div>
 
-                <button type="submit" style={{ width: '100%', padding: '12px', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Save New Password</button>
-            </form>
+                    {error && <div className="auth-error">{error}</div>}
+                    {message && <div style={{ color: '#16a34a', textAlign: 'center', backgroundColor: '#dcfce7', padding: '10px', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.9rem' }}>{message}</div>}
+
+                    <form onSubmit={handleSubmit} className="auth-form">
+                        <div className="form-group">
+                            <label>New Password</label>
+                            <input
+                                type="password"
+                                className="auth-input"
+                                placeholder="Enter new password"
+                                required
+                                minLength="6"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                            />
+                        </div>
+
+                        <button type="submit" className="auth-btn-primary">
+                            Save New Password
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
         </div>
     );
 };
