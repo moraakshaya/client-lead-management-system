@@ -1,0 +1,47 @@
+.follow-ups-calendar-container .rbc-calendar {
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+.follow-ups-calendar-container .rbc-header {
+  padding: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.follow-ups-calendar-container .rbc-month-view {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--surface-color);
+}
+
+.follow-ups-calendar-container .rbc-off-range-bg {
+  background-color: var(--background-color);
+}
+
+.follow-ups-calendar-container .rbc-today {
+  background-color: var(--primary-light);
+}
+
+.follow-ups-calendar-container .rbc-event {
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.follow-ups-calendar-container .rbc-toolbar button {
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.follow-ups-calendar-container .rbc-toolbar button:active,
+.follow-ups-calendar-container .rbc-toolbar button.rbc-active,
+.follow-ups-calendar-container .rbc-toolbar button.rbc-active:hover {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+}
+
+.follow-ups-calendar-container .rbc-toolbar button:hover {
+  background-color: var(--hover-bg);
+}

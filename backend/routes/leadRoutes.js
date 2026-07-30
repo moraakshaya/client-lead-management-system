@@ -2,11 +2,12 @@ const express = require('express'); // Importing the Express framework to create
 const router = express.Router(); // Creating a new router object to define routes for the Lead resource
 const authMiddleware = require('../middleware/authMiddleware');
 
-const { createLead, getAllLeads, getLeadStats, getLeadById, updateLead, deleteLead, getFilterOptions } = require('../controllers/leadController'); // Importing the LeadController to handle requests related to leads
+const { createLead, getAllLeads, getLeadStats, getLeadById, updateLead, deleteLead, getFilterOptions, importLeads } = require('../controllers/leadController'); // Importing the LeadController to handle requests related to leads
 
 router.use(authMiddleware);
 
 // Define routes for the Lead resource and associate them with the corresponding controller functions
+router.post('/import', importLeads); // Route for bulk importing leads
 router.post('/', createLead); // Route to create a new lead, handled by the createLead controller function
 router.get('/', getAllLeads); // Route to retrieve all leads, handled by the getAllLeads controller function
 router.get('/stats', getLeadStats); // Route to get lead statistics

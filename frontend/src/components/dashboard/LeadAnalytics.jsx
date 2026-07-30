@@ -71,14 +71,46 @@ export default function LeadAnalytics({ chartData }) {
     }
   }, [filter]);
 
-  // Map backend trend to recharts data
-  const data = localData?.leadTrend?.map(item => ({
-    name: monthNames[item._id - 1] || item._id,
-    leads: item.leads,
-    converted: item.converted,
-    pending: item.pending,
-    lost: item.lost
-  })) || [];
+  // Map backend trend to recharts data with padding for missing dates so the line chart draws lines
+  const data = React.useMemo(() => {
+    const trendData = localData?.leadTrend || [];
+    const trendMap = {};
+    trendData.forEach(item => {
+      trendMap[item._id] = item; // _id is month (1-12) or day of month
+    });
+
+    if (filter === 'This Year') {
+      return Array.from({ length: 12 }, (_, i) => {
+        const item = trendMap[i + 1] || {};
+        return { name: monthNames[i], leads: item.leads || 0, converted: item.converted || 0, pending: item.pending || 0, lost: item.lost || 0 };
+      });
+    } else if (filter === 'Last 6 Months') {
+      const currentMonth = new Date().getMonth();
+      return Array.from({ length: 6 }, (_, i) => {
+        let m = currentMonth - 5 + i;
+        if (m < 0) m += 12;
+        const dbMonth = m + 1;
+        const item = trendMap[dbMonth] || {};
+        return { name: monthNames[m], leads: item.leads || 0, converted: item.converted || 0, pending: item.pending || 0, lost: item.lost || 0 };
+      });
+    } else if (filter === 'This Month') {
+      const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+      return Array.from({ length: daysInMonth }, (_, i) => {
+        const dbDay = i + 1;
+        const item = trendMap[dbDay] || {};
+        return { name: `${dbDay}`, leads: item.leads || 0, converted: item.converted || 0, pending: item.pending || 0, lost: item.lost || 0 };
+      });
+    } else if (filter === 'This Week') {
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        const first = d.getDate() - d.getDay();
+        const currentDay = new Date(d.setDate(first + i)).getDate();
+        const item = trendMap[currentDay] || {};
+        return { name: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i], leads: item.leads || 0, converted: item.converted || 0, pending: item.pending || 0, lost: item.lost || 0 };
+      });
+    }
+    return [];
+  }, [localData, filter]);
 
   const totalSources = localData?.leadSources?.reduce((acc, curr) => acc + curr.count, 0) || 1;
   const leadSourcesData = localData?.leadSources?.map(item => ({

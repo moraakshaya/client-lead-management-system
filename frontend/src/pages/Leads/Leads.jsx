@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import LeadsHeader from "../../components/leads/LeadsHeader";
 import LeadsStatsCards from "../../components/leads/LeadsStatsCards";
 import LeadsFilterBar from "../../components/leads/LeadsFilterBar";
@@ -11,6 +12,7 @@ import DeleteLeadModal from "../../components/leads/DeleteLeadModal";
 import AddNoteModal from "../../components/clients/AddNoteModal";
 import ScheduleFollowupModal from "../../components/clients/ScheduleFollowupModal";
 import ConvertToClientModal from "../../components/leads/ConvertToClientModal";
+import ImportLeadModal from "../../components/leads/ImportLeadModal";
 import { getLeads, getLeadStats, getLeadFilterOptions } from "../../services/leadService";
 import { handleApiError } from "../../utils/errorHandler";
 
@@ -22,6 +24,7 @@ export function Leads() {
     const [isAddNoteModalOpen, setIsAddNoteModalOpen] = useState(false);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
@@ -104,9 +107,71 @@ export function Leads() {
         setIsConvertModalOpen(true);
     };
 
+    const handleExport = async () => {
+        try {
+            toast.info("Preparing export...");
+            // Fetch all leads matching current filters by passing a massive limit
+            const response = await getLeads({ page: 1, limit: 10000, ...filters });
+            const leadsToExport = response.data.leads || [];
+
+            if (leadsToExport.length === 0) {
+                toast.warning("No leads found to export.");
+                return;
+            }
+
+            // Define CSV headers
+            const headers = ['Lead Name', 'Company Name', 'Email', 'Phone', 'Status', 'Priority', 'Source', 'Address', 'Created Date'];
+            
+            // Flatten data and map to rows
+            const rows = leadsToExport.map(lead => {
+                const escapeCsv = (str) => {
+                    if (!str) return '""';
+                    return `"${String(str).replace(/"/g, '""')}"`;
+                };
+
+                return [
+                    escapeCsv(lead.leadName),
+                    escapeCsv(lead.companyName),
+                    escapeCsv(lead.email),
+                    escapeCsv(lead.phone),
+                    escapeCsv(lead.status),
+                    escapeCsv(lead.priority),
+                    escapeCsv(lead.source),
+                    escapeCsv(lead.address),
+                    escapeCsv(new Date(lead.createdAt).toLocaleDateString())
+                ];
+            });
+
+            // Combine headers and rows
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            // Create Blob and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            toast.success("Leads exported successfully!");
+        } catch (error) {
+            console.error("Export error:", error);
+            toast.error("Failed to export leads.");
+        }
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%', minWidth: 0, maxWidth: '100%' }}>
-            <LeadsHeader onAddLead={() => setIsAddLeadModalOpen(true)} />
+            <LeadsHeader 
+                onAddLead={() => setIsAddLeadModalOpen(true)} 
+                onExport={handleExport} 
+                onImport={() => setIsImportModalOpen(true)} 
+            />
             <LeadsStatsCards stats={stats} loading={loading} />
             <LeadsFilterBar 
                 filters={filters} 
@@ -175,6 +240,12 @@ export function Leads() {
                 isOpen={isConvertModalOpen} 
                 onClose={() => setIsConvertModalOpen(false)} 
                 lead={selectedLead} 
+                onSuccess={handleRefresh}
+            />
+
+            <ImportLeadModal 
+                isOpen={isImportModalOpen} 
+                onClose={() => setIsImportModalOpen(false)} 
                 onSuccess={handleRefresh}
             />
         </div>

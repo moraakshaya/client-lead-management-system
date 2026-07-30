@@ -39,3 +39,8 @@ export const deleteLead = (id) => {
 export const convertLeadToClient = (id) => {
     return api.post(`/clients/convert/${id}`);
 };
+
+// Import leads in bulk
+export const importLeads = (leadsArray) => {
+    return api.post('/leads/import', { leads: leadsArray });
+};

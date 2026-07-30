@@ -120,8 +120,9 @@
   max-width: 440px;
 }
 
-.section-title {
-  font-size: 15px;
+.modal-section .section-title {
+  font-size: 15px !important;
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
   color: var(--text-primary, #0f172a);
   margin: 0 0 20px 0;

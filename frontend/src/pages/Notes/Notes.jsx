@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import NotesHeader from '../../components/notes/NotesHeader';
 import NotesStatsCards from '../../components/notes/NotesStatsCards';
 import NotesFilterBar from '../../components/notes/NotesFilterBar';
@@ -68,11 +69,67 @@ export const Notes = () => {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      toast.info("Preparing export...");
+      const response = await getNotes({ page: 1, limit: 10000, ...filters });
+      const notesToExport = response.data.data || [];
+
+      if (notesToExport.length === 0) {
+        toast.warning("No notes found to export.");
+        return;
+      }
+
+      // Define CSV headers
+      const headers = ['Date', 'Title', 'Content', 'Related To', 'Entity Name', 'Pinned'];
+
+      // Flatten data and map to rows
+      const rows = notesToExport.map(note => {
+        const escapeCsv = (str) => {
+          if (!str) return '""';
+          return `"${String(str).replace(/"/g, '""')}"`;
+        };
+        
+        const date = new Date(note.createdAt).toLocaleDateString();
+        
+        return [
+          escapeCsv(date),
+          escapeCsv(note.title),
+          escapeCsv(note.notes),
+          escapeCsv(note.relatedToModel),
+          escapeCsv(note.leadId?.leadName || 'Unknown'),
+          escapeCsv(note.isPinned ? 'Yes' : 'No')
+        ];
+      });
+
+      // Combine headers and rows
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+
+      // Create Blob and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `notes_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Notes exported successfully!");
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.error("Failed to export notes.");
+    }
+  };
+
   return (
     <div className="notes-container">
       <NotesHeader
         onAddNote={() => handleAction('add', null)}
-        onExport={() => console.log('Exporting Notes')}
+        onExport={handleExport}
       />
 
       <NotesStatsCards stats={stats} loading={loading} />

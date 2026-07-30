@@ -21,31 +21,56 @@
 }
 
 .users-table-container {
-    background: var(--bg-card);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px var(--border-color);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .users-table {
     width: 100%;
-    border-collapse: collapse;
-}
-
-.users-table th,
-.users-table td {
-    padding: 1rem 1.5rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .users-table th {
-    background: var(--bg-secondary);
+    background-color: var(--background);
     color: var(--text-secondary);
-    font-weight: 500;
+    font-family: "Inter", "Roboto", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.users-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text-primary);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.users-table tr:last-child td {
+    border-bottom: none;
+}
+
+.users-table tbody tr {
+    transition: var(--transition);
+}
+
+.users-table tbody tr:hover {
+    background-color: var(--secondary-light);
 }
 
 .user-name-cell {
@@ -60,7 +85,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: var(--primary-color);
+    background: var(--primary);
     color: white;
     display: flex;
     align-items: center;
@@ -111,7 +136,7 @@
 
 .btn-icon:hover {
     background: var(--bg-secondary);
-    color: var(--primary-color);
+    color: var(--primary);
 }
 
 .btn-icon.delete:hover {

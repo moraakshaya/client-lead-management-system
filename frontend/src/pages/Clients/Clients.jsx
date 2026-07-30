@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from 'react-toastify';
 import ClientsHeader from "../../components/clients/ClientsHeader";
 import ClientsStatsCards from "../../components/clients/ClientsStatsCards";
 import ClientsFilterBar from "../../components/clients/ClientsFilterBar";
@@ -92,9 +93,63 @@ export function Clients() {
         setIsDeleteModalOpen(true);
     };
 
+    const handleExport = async () => {
+        try {
+            toast.info("Preparing export...");
+            const response = await getClients({ page: 1, limit: 10000, ...filters });
+            const clientsToExport = response.data.clients || [];
+
+            if (clientsToExport.length === 0) {
+                toast.warning("No clients found to export.");
+                return;
+            }
+
+            // Define CSV headers
+            const headers = ['Client Name', 'Company Name', 'Email', 'Phone', 'Status', 'Priority'];
+
+            // Flatten data and map to rows
+            const rows = clientsToExport.map(client => {
+                const escapeCsv = (str) => {
+                    if (!str) return '""';
+                    return `"${String(str).replace(/"/g, '""')}"`;
+                };
+                
+                return [
+                    escapeCsv(client.clientName),
+                    escapeCsv(client.companyName),
+                    escapeCsv(client.email),
+                    escapeCsv(client.phone),
+                    escapeCsv(client.status),
+                    escapeCsv(client.priority)
+                ];
+            });
+
+            // Combine headers and rows
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+
+            // Create Blob and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `clients_export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            toast.success("Clients exported successfully!");
+        } catch (error) {
+            console.error("Export error:", error);
+            toast.error("Failed to export clients.");
+        }
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', width: '100%', minWidth: 0, maxWidth: '100%' }}>
-            <ClientsHeader onRefresh={handleRefresh} />
+            <ClientsHeader onRefresh={handleRefresh} onExport={handleExport} />
             <ClientsStatsCards stats={stats} loading={statsLoading} />
             <ClientsFilterBar filters={filters} setFilters={setFilters} />
             <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>

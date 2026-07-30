@@ -87,6 +87,7 @@ export default function ProfileSettings() {
   const handleFileChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      e.target.value = ''; // Reset input so the same file can be selected again
       setAvatarFile(file);
       setAvatarPreview(URL.createObjectURL(file));
       

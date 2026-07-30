@@ -4,6 +4,7 @@ import FollowUpsHeader from '../../components/followUps/FollowUpsHeader';
 import FollowUpsStatsCards from '../../components/followUps/FollowUpsStatsCards';
 import FollowUpsFilterBar from '../../components/followUps/FollowUpsFilterBar';
 import FollowUpsTable from '../../components/followUps/FollowUpsTable';
+import FollowUpsCalendar from '../../components/followUps/FollowUpsCalendar';
 import FollowUpsViewModal from '../../components/followUps/FollowUpsViewModal';
 import FollowUpsEditModal from '../../components/followUps/FollowUpsEditModal';
 import FollowUpsMarkCompletedModal from '../../components/followUps/FollowUpsMarkCompletedModal';
@@ -22,6 +23,7 @@ export const FollowUps = () => {
   const [isAddNoteOpen, setIsAddNoteOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'calendar'
 
   const [selectedFollowUp, setSelectedFollowUp] = useState(null);
   
@@ -83,7 +85,11 @@ export const FollowUps = () => {
 
   return (
     <div className="follow-ups-container">
-      <FollowUpsHeader onSchedule={() => setIsScheduleOpen(true)} />
+      <FollowUpsHeader 
+        onSchedule={() => setIsScheduleOpen(true)} 
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
 
       {/* We are now passing the real stats data down to the cards! */}
       <FollowUpsStatsCards stats={stats} loading={loading} />
@@ -91,15 +97,22 @@ export const FollowUps = () => {
       <FollowUpsFilterBar filters={filters} setFilters={setFilters} filterOptions={filterOptions} />
       <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', minWidth: 0 }}>
 
-        {/* We are now passing real table data down to the table! */}
-        <FollowUpsTable
-          followUps={followUps}
-          loading={loading}
-          pagination={pagination}
-          onAction={handleAction}
-          filters={filters}
-          setFilters={setFilters}
-        />
+        {/* Render Table or Calendar based on viewMode */}
+        {viewMode === 'list' ? (
+          <FollowUpsTable
+            followUps={followUps}
+            loading={loading}
+            pagination={pagination}
+            onAction={handleAction}
+            filters={filters}
+            setFilters={setFilters}
+          />
+        ) : (
+          <FollowUpsCalendar 
+            followUps={followUps}
+            onAction={handleAction}
+          />
+        )}
 
       </div>
 

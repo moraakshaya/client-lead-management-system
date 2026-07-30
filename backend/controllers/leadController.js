@@ -212,3 +212,38 @@ exports.getFilterOptions = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+// Controller function to import leads in bulk
+exports.importLeads = async (req, res) => {
+    try {
+        const { leads } = req.body;
+        
+        if (!leads || !Array.isArray(leads) || leads.length === 0) {
+            return res.status(400).json({ message: "No leads data provided." });
+        }
+
+        // Insert all leads in one operation
+        const insertedLeads = await Lead.insertMany(leads);
+
+        // Create a single activity log for the bulk import
+        await Activity.create({
+            action: "Lead Created", // Map to existing known action type or use Bulk Import
+            description: `Bulk imported ${insertedLeads.length} leads`,
+        });
+
+        res.status(201).json({
+            message: `Successfully imported ${insertedLeads.length} leads.`,
+            count: insertedLeads.length
+        });
+    } catch (err) {
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ message: `Validation Error: ${err.message}` });
+        }
+        if (err.name === 'BulkWriteError' || err.code === 11000) {
+            return res.status(400).json({ message: `Duplicate data found. Please check for existing emails or phones.` });
+        }
+        res.status(500).json({
+            message: err.message,
+        });
+    }
+};
