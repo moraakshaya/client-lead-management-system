@@ -7,6 +7,7 @@ import {
   FaFire,
   FaClock,
   FaCheckCircle,
+  FaChartLine,
   FaArrowUp,
   FaArrowDown,
   FaMinus
@@ -20,12 +21,16 @@ const renderTrendIcon = (type) => {
 };
 
 export default function StatsCards({ stats }) {
-  
+  const leadsCount = stats?.leads?.value || 0;
+  const clientsCount = stats?.clients?.value || 0;
+  const conversionRate = leadsCount > 0 
+    ? `${((clientsCount / leadsCount) * 100).toFixed(1)}%` 
+    : '0.0%';
 
   const baseStatsData = [
     {
       title: 'Total Leads',
-      value: stats?.leads?.value || 0,
+      value: leadsCount,
       icon: <FaUsers />,
       color: 'var(--primary)',
       bg: 'rgba(139, 92, 246, 0.15)',
@@ -35,22 +40,12 @@ export default function StatsCards({ stats }) {
     },
     {
       title: 'Total Clients',
-      value: stats?.clients?.value || 0,
+      value: clientsCount,
       icon: <FaHandshake />,
       color: 'var(--success)',
       bg: 'rgba(34, 197, 94, 0.15)',
       trend: stats?.clients?.trend || '0%',
       trendType: stats?.clients?.trendType || 'neutral',
-      description: 'from last month'
-    },
-    {
-      title: 'Converted to Clients',
-      value: stats?.converted?.value || 0,
-      icon: <FaCheckCircle />,
-      color: '#10B981',
-      bg: 'rgba(16, 185, 129, 0.15)',
-      trend: stats?.converted?.trend || '0%',
-      trendType: stats?.converted?.trendType || 'neutral',
       description: 'from last month'
     },
     {
@@ -62,6 +57,16 @@ export default function StatsCards({ stats }) {
       trend: stats?.followups?.trend || '0%',
       trendType: stats?.followups?.trendType || 'neutral',
       description: 'from yesterday'
+    },
+    {
+      title: 'Lead Conversion Rate',
+      value: conversionRate,
+      icon: <FaChartLine />,
+      color: '#10B981',
+      bg: 'rgba(16, 185, 129, 0.15)',
+      trend: stats?.converted?.trend || '0%',
+      trendType: stats?.converted?.trendType || 'positive',
+      description: 'of total leads converted'
     }
   ];
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   MdSearch, 
   MdOutlineNotifications,
@@ -22,13 +22,20 @@ const routeDetails = {
 
 export default function Navbar({ toggleMobileSidebar, isMobileSidebarOpen }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentRoute = routeDetails[location.pathname] || { title: 'Dashboard' };
   const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
 
   return (
     <header className="top-navbar">
       <div className="navbar-section page-header">
-        <img src="/logoful.png" alt="LeadFlow" className="mobile-nav-logo" />
+        <img 
+          src="/logoful.png" 
+          alt="LeadFlow" 
+          className="mobile-nav-logo" 
+          onClick={() => navigate('/dashboard')}
+          style={{ cursor: 'pointer' }}
+        />
         <h1 className="page-title">{currentRoute.title}</h1>
       </div>
 

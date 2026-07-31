@@ -44,10 +44,11 @@
   z-index: 1;
   /* Above the blobs */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   margin-top: 24px;
   margin-bottom: 32px;
+  min-width: 0;
 }
 
 /* TRUE 3D GLASSMORPHISM CARD */
@@ -58,11 +59,12 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  min-width: 0;
 
   /* Delicate white borders to simulate glass edge */
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -215,13 +217,16 @@
 
 .stat-value {
   font-family: "Inter", "Roboto", sans-serif;
-  font-size: 44px;
+  font-size: clamp(28px, 3vw, 44px);
   font-weight: 800;
   color: var(--text-primary);
   line-height: 1;
   margin-top: 4px;
   /* Very subtle text shadow for 3D depth */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 [data-theme="dark"] .stat-value {

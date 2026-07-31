@@ -81,7 +81,7 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
   return (
     <aside className={`sidebar ${effectiveIsCollapsed ? 'collapsed' : 'expanded'} ${isMobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
-        <Link to="/" className="logo-container" onClick={() => setIsMobileOpen(false)}>
+        <Link to="/dashboard" className="logo-container" onClick={() => setIsMobileOpen(false)}>
           {effectiveIsCollapsed ? (
             <img src="/1.png" alt="LeadClient" className="logo-icon" />
           ) : (

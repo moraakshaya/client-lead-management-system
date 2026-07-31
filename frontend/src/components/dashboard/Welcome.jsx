@@ -3,6 +3,21 @@ import './Welcome.css';
 
 const Welcome = () => {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser && parsedUser.name) {
+          setUserName(parsedUser.name);
+        }
+      }
+    } catch (error) {
+      console.error('Error reading user from localStorage:', error);
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -44,7 +59,7 @@ const Welcome = () => {
 
           <div className="welcome-text-area">
             <h1 className="welcome-greeting">
-              {getGreeting()}, Akshaya <span className="wave-emoji">👋</span>
+              {getGreeting()}{userName ? `, ${userName}` : ''} <span className="wave-emoji">👋</span>
             </h1>
             <p className="welcome-subtitle">
               Here's what's happening with your business today.

@@ -172,44 +172,9 @@ export default function LeadAnalytics({ chartData }) {
           </div>
         </div>
 
-        <div className="analytics-tabs">
-          {Object.keys(metricConfigs).map(key => {
-            const value = key === 'all' ? null : 
-                          key === 'leads' ? totalLeads : 
-                          key === 'pending' ? pendingLeads : 
-                          key === 'converted' ? convertedLeads : 
-                          key === 'lost' ? lostLeads : null;
-                          
-            return (
-              <button
-                key={key}
-                className={`metric-tab ${activeMetric === key ? 'active' : ''}`}
-                onClick={() => setActiveMetric(key)}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                {key !== 'all' && (
-                  <span 
-                    style={{ 
-                      display: 'inline-block', 
-                      width: '8px', 
-                      height: '8px', 
-                      borderRadius: '50%', 
-                      backgroundColor: metricConfigs[key].color
-                    }} 
-                  />
-                )}
-                <span>{metricConfigs[key].label}</span>
-                {value !== null && (
-                  <span style={{ fontWeight: 700, marginLeft: '4px' }}>{value}</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
         <div className="analytics-chart-container">
-          <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={data} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={340}>
+            <LineChart data={data} margin={{ top: 25, right: 20, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="currentColor" className="chart-grid" />
               <XAxis
                 dataKey="name"
@@ -260,23 +225,39 @@ export default function LeadAnalytics({ chartData }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="analytics-metrics-grid">
-          <div className="metric-item">
-            <span className="metric-label">Total Leads</span>
-            <span className="metric-value">{totalLeads}</span>
-          </div>
-          <div className="metric-item">
-            <span className="metric-label">Pending</span>
-            <span className="metric-value">{pendingLeads}</span>
-          </div>
-          <div className="metric-item">
-            <span className="metric-label">Converted</span>
-            <span className="metric-value">{convertedLeads}</span>
-          </div>
-          <div className="metric-item">
-            <span className="metric-label">Lost</span>
-            <span className="metric-value">{lostLeads}</span>
-          </div>
+        <div className="analytics-tabs">
+          {Object.keys(metricConfigs).map(key => {
+            const value = key === 'all' ? null : 
+                          key === 'leads' ? totalLeads : 
+                          key === 'pending' ? pendingLeads : 
+                          key === 'converted' ? convertedLeads : 
+                          key === 'lost' ? lostLeads : null;
+                          
+            return (
+              <button
+                key={key}
+                className={`metric-tab ${activeMetric === key ? 'active' : ''}`}
+                onClick={() => setActiveMetric(key)}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                {key !== 'all' && (
+                  <span 
+                    style={{ 
+                      display: 'inline-block', 
+                      width: '8px', 
+                      height: '8px', 
+                      borderRadius: '50%', 
+                      backgroundColor: metricConfigs[key].color
+                    }} 
+                  />
+                )}
+                <span>{metricConfigs[key].label}</span>
+                {value !== null && (
+                  <span style={{ fontWeight: 700, marginLeft: '4px' }}>{value}</span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
