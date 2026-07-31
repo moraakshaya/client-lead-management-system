@@ -24,6 +24,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap;
   z-index: 10;
 }
 
@@ -315,5 +317,23 @@
     rgba(255, 255, 255, 0) 50%,
     rgba(0, 0, 0, 0.1) 100%
   );
+}
+
+/* --- Mobile Responsiveness for Metrics --- */
+@media (max-width: 768px) {
+  .analytics-title {
+    font-size: 20px; /* Smaller title on mobile */
+  }
+  
+  .analytics-filter-btn {
+    min-width: auto; /* Remove large min-width */
+    padding: 6px 12px; /* Smaller padding */
+    font-size: 12px; /* Smaller text */
+    gap: 8px; /* Less gap between text and arrow */
+  }
+
+  .analytics-metrics-grid {
+    display: none; /* Hide grid entirely on mobile, numbers are in tabs */
+  }
 }
 

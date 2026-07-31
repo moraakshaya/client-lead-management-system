@@ -173,27 +173,38 @@ export default function LeadAnalytics({ chartData }) {
         </div>
 
         <div className="analytics-tabs">
-          {Object.keys(metricConfigs).map(key => (
-            <button
-              key={key}
-              className={`metric-tab ${activeMetric === key ? 'active' : ''}`}
-              onClick={() => setActiveMetric(key)}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              {key !== 'all' && (
-                <span 
-                  style={{ 
-                    display: 'inline-block', 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%', 
-                    backgroundColor: metricConfigs[key].color
-                  }} 
-                />
-              )}
-              {metricConfigs[key].label}
-            </button>
-          ))}
+          {Object.keys(metricConfigs).map(key => {
+            const value = key === 'all' ? null : 
+                          key === 'leads' ? totalLeads : 
+                          key === 'pending' ? pendingLeads : 
+                          key === 'converted' ? convertedLeads : 
+                          key === 'lost' ? lostLeads : null;
+                          
+            return (
+              <button
+                key={key}
+                className={`metric-tab ${activeMetric === key ? 'active' : ''}`}
+                onClick={() => setActiveMetric(key)}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                {key !== 'all' && (
+                  <span 
+                    style={{ 
+                      display: 'inline-block', 
+                      width: '8px', 
+                      height: '8px', 
+                      borderRadius: '50%', 
+                      backgroundColor: metricConfigs[key].color
+                    }} 
+                  />
+                )}
+                <span>{metricConfigs[key].label}</span>
+                {value !== null && (
+                  <span style={{ fontWeight: 700, marginLeft: '4px' }}>{value}</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <div className="analytics-chart-container">

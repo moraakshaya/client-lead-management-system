@@ -140,3 +140,54 @@
   background-color: #4f46e5;
   box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.3);
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+    padding: 20px 16px !important;
+    gap: 16px;
+  }
+
+  .edit-modal-footer {
+    padding: 16px;
+    justify-content: center;
+  }
+}
+
+/* Delete Modal Specific Styles */
+.delete-info-container {
+  width: fit-content;
+  margin: 0 auto 24px auto;
+  text-align: left;
+}
+
+.delete-info-grid {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  font-size: 15px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .delete-info-container {
+    width: 100%;
+  }
+
+  .delete-info-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .delete-info-grid > span:nth-child(odd) {
+    text-align: center !important;
+    margin-top: 12px;
+  }
+
+  .delete-info-grid > span:nth-child(even) {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}

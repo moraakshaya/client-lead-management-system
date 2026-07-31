@@ -1,15 +1,31 @@
-.timeline-header {
+.activity-timeline-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.timeline-header .header-titles .page-title {
+.activity-timeline-page-header .header-titles .page-title {
   margin-bottom: 4px;
 }
 
-.timeline-header .header-actions {
+.activity-timeline-page-header .header-actions {
   display: flex;
   gap: 16px;
   align-items: center;
+}
+
+/* --- Mobile Responsive Header --- */
+@media (max-width: 900px) {
+  .activity-timeline-page-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .activity-timeline-page-header .header-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }

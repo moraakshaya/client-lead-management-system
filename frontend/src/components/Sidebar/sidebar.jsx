@@ -31,7 +31,7 @@ const navigationItems = [
   { label: 'Settings', icon: <MdSettings />, path: '/settings' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -71,22 +71,18 @@ export default function Sidebar() {
     document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
   };
 
-  // const handleLogout = () => {
-  //   setIsProfileOpen(false);
-  //   alert("Logged out successfully! (Mock)");
-  //   navigate('/');
-  // };
-
   const handleLogout = () => {
     logout();
   };
 
+  // On mobile, the drawer should always be expanded regardless of desktop toggle state
+  const effectiveIsCollapsed = isMobileOpen ? false : isCollapsed;
 
   return (
-    <aside className={`sidebar ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+    <aside className={`sidebar ${effectiveIsCollapsed ? 'collapsed' : 'expanded'} ${isMobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
-        <Link to="/" className="logo-container">
-          {isCollapsed ? (
+        <Link to="/" className="logo-container" onClick={() => setIsMobileOpen(false)}>
+          {effectiveIsCollapsed ? (
             <img src="/1.png" alt="LeadClient" className="logo-icon" />
           ) : (
             <img src="/logoful.png" alt="LeadClient Management" className="logo-full" />
@@ -98,7 +94,7 @@ export default function Sidebar() {
         onClick={() => setIsCollapsed(!isCollapsed)}
         aria-label="Toggle Sidebar"
       >
-        {isCollapsed ? <MdChevronRight /> : <MdChevronLeft />}
+        {effectiveIsCollapsed ? <MdChevronRight /> : <MdChevronLeft />}
       </button>
 
       <nav className="sidebar-nav">
@@ -108,10 +104,11 @@ export default function Sidebar() {
               <NavLink
                 to={item.path}
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                title={isCollapsed ? item.label : ""}
+                title={effectiveIsCollapsed ? item.label : ""}
+                onClick={() => setIsMobileOpen(false)}
               >
                 <span className="nav-icon">{item.icon}</span>
-                {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                {!effectiveIsCollapsed && <span className="nav-label">{item.label}</span>}
               </NavLink>
             </li>
           ))}
@@ -120,10 +117,11 @@ export default function Sidebar() {
               <NavLink
                 to="/users"
                 className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                title={isCollapsed ? 'Users' : ""}
+                title={effectiveIsCollapsed ? 'Users' : ""}
+                onClick={() => setIsMobileOpen(false)}
               >
                 <span className="nav-icon"><MdPeople /></span>
-                {!isCollapsed && <span className="nav-label">Users</span>}
+                {!effectiveIsCollapsed && <span className="nav-label">Users</span>}
               </NavLink>
             </li>
           )}
@@ -133,10 +131,10 @@ export default function Sidebar() {
       <div className="sidebar-utilities">
         <ul>
           <li>
-            <button className="nav-link utility-btn" onClick={toggleDarkMode} title={isCollapsed ? (isDarkMode ? "Light Mode" : "Dark Mode") : ""}>
+            <button className="nav-link utility-btn" onClick={toggleDarkMode} title={effectiveIsCollapsed ? (isDarkMode ? "Light Mode" : "Dark Mode") : ""}>
               <span className="nav-icon"><MdOutlineDarkMode /></span>
-              {!isCollapsed && <span className="nav-label">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>}
-              {!isCollapsed && (
+              {!effectiveIsCollapsed && <span className="nav-label">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>}
+              {!effectiveIsCollapsed && (
                 <div className={`theme-switch ${isDarkMode ? 'dark' : ''}`}>
                   <div className="switch-knob"></div>
                 </div>
@@ -160,13 +158,13 @@ export default function Sidebar() {
               </div>
             )}
           </div>
-          {!isCollapsed && (
+          {!effectiveIsCollapsed && (
             <div className="user-info">
               <span className="user-name">{user.name}</span>
               <span className="user-role">{user.role}</span>
             </div>
           )}
-          {!isCollapsed && (
+          {!effectiveIsCollapsed && (
             <span className="dropdown-icon">
               {isProfileOpen ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
             </span>

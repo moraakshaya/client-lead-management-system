@@ -177,3 +177,20 @@
   color: var(--text-muted);
   padding: 0 4px;
 }
+
+
+/* --- Mobile Responsive Table Elements --- */
+@media (max-width: 900px) {
+  .table-pagination {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .pagination-controls {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}

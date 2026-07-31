@@ -25,7 +25,8 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -185,4 +186,45 @@ input[type="password"]::-ms-clear {
     margin-top: -1rem;
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .users-page {
+        padding: 1rem;
+    }
+    
+    .users-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 12px;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .users-header > div {
+        display: contents;
+    }
+    
+    .users-header h1 {
+        grid-column: 1 / -1;
+        white-space: nowrap;
+        margin-bottom: 0;
+        font-size: 1.5rem;
+    }
+    
+    .users-subtitle {
+        grid-column: 1;
+        grid-row: 2;
+        margin: 0;
+        font-size: 0.85rem;
+    }
+    
+    .users-header .btn-primary {
+        grid-column: 2;
+        grid-row: 2;
+        white-space: nowrap;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
 }

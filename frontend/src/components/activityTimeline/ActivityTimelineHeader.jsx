@@ -4,7 +4,7 @@ import "./activityTimelineHeader.css";
 
 const ActivityTimelineHeader = ({ onExport, onRefresh }) => {
   return (
-    <div className="timeline-header">
+    <div className="activity-timeline-page-header">
       <div className="header-titles">
         <h1 className="page-title">Activity Timeline</h1>
         <p className="text-muted">Track every action happening in your CRM</p>

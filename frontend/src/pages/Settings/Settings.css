@@ -444,3 +444,36 @@
   background: var(--surface, #1f2937);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
+
+/* Mobile Responsive Styles for Settings */
+@media (max-width: 768px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+
+  .settings-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    padding: 12px 0;
+  }
+
+  .settings-sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 16px;
+    gap: 8px;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .settings-sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .settings-nav-item {
+    width: auto;
+    white-space: nowrap;
+    padding: 10px 16px;
+  }
+}

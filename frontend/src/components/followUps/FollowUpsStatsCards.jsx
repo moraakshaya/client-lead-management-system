@@ -1,4 +1,5 @@
 import React from 'react';
+import { useInfiniteCarousel } from '../../hooks/useInfiniteCarousel';
 import {
   FaCalendar,
   FaCalendarDay,
@@ -65,14 +66,17 @@ export default function FollowUpsStatsCards({ stats, loading }) {
     }
   ];
 
+  const { scrollRef, paginationRef, handleScroll, scrollToCard } = useInfiniteCarousel(statsData.length);
+  const carouselData = [...statsData, ...statsData, ...statsData];
+
   return (
     <div className="stats-container">
       <div className="glass-blob glass-blob-1"></div>
       <div className="glass-blob glass-blob-2"></div>
       <div className="glass-blob glass-blob-3"></div>
 
-      <div className="stats-grid">
-        {statsData.map((stat, index) => (
+      <div className="stats-grid" ref={scrollRef} onScroll={handleScroll}>
+        {carouselData.map((stat, index) => (
           <div key={index} className="stat-glass-card">
 
             <div className="stat-card-header">
@@ -106,6 +110,17 @@ export default function FollowUpsStatsCards({ stats, loading }) {
 
             <div className="glass-reflection"></div>
           </div>
+        ))}
+      </div>
+
+      <div className="stats-pagination" ref={paginationRef}>
+        {statsData.map((_, index) => (
+          <button 
+            key={index} 
+            className={`pagination-dot ${index === 0 ? 'active' : ''}`}
+            onClick={() => scrollToCard(index)}
+            aria-label={`Go to stat card ${index + 1}`}
+          />
         ))}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useInfiniteCarousel } from '../../hooks/useInfiniteCarousel';
 import {
   FaUsers,
   FaHandshake,
@@ -19,7 +20,9 @@ const renderTrendIcon = (type) => {
 };
 
 export default function StatsCards({ stats }) {
-  const statsData = [
+  
+
+  const baseStatsData = [
     {
       title: 'Total Leads',
       value: stats?.leads?.value || 0,
@@ -62,17 +65,18 @@ export default function StatsCards({ stats }) {
     }
   ];
 
+  const { scrollRef, paginationRef, handleScroll, scrollToCard } = useInfiniteCarousel(baseStatsData.length);
+  const statsData = [...baseStatsData, ...baseStatsData, ...baseStatsData];
+
   return (
     <div className="stats-container">
-      {/* Background glowing orbs to make the glassmorphism visible */}
       <div className="glass-blob glass-blob-1"></div>
       <div className="glass-blob glass-blob-2"></div>
       <div className="glass-blob glass-blob-3"></div>
 
-      <div className="stats-grid">
+      <div className="stats-grid" ref={scrollRef} onScroll={handleScroll}>
         {statsData.map((stat, index) => (
           <div key={index} className="stat-glass-card">
-
             <div className="stat-card-header">
               <div
                 className="stat-icon-wrapper-3d"
@@ -83,7 +87,6 @@ export default function StatsCards({ stats }) {
               >
                 {stat.icon}
               </div>
-
               <div className={`stat-trend-glass trend-${stat.trendType}`}>
                 <span className="trend-icon">{renderTrendIcon(stat.trendType)}</span>
                 {stat.trend}
@@ -99,9 +102,19 @@ export default function StatsCards({ stats }) {
               <span className="stat-description">{stat.description}</span>
             </div>
 
-            {/* 3D Glass Light Reflection */}
             <div className="glass-reflection"></div>
           </div>
+        ))}
+      </div>
+
+      <div className="stats-pagination" ref={paginationRef}>
+        {baseStatsData.map((_, index) => (
+          <button 
+            key={index} 
+            className={`pagination-dot ${index === 0 ? 'active' : ''}`}
+            onClick={() => scrollToCard(index)}
+            aria-label={`Go to stat card ${index + 1}`}
+          />
         ))}
       </div>
     </div>

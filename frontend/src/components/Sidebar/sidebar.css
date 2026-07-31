@@ -375,3 +375,23 @@
 .sidebar-nav:hover::-webkit-scrollbar-thumb {
   background: var(--text-muted);
 }
+
+/* --- Mobile Responsive Sidebar --- */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    z-index: 1000;
+  }
+  
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .collapse-edge-btn {
+    display: none !important;
+  }
+}

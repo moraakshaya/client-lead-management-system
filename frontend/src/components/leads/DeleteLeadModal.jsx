@@ -56,8 +56,8 @@ export default function DeleteLeadModal({ isOpen, onClose, lead, onSuccess }) {
               Are you sure you want to delete this lead?
             </p>
 
-            <div style={{ width: 'fit-content', margin: '0 auto 24px auto', textAlign: 'left' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', gap: '12px', fontSize: '15px', alignItems: 'center' }}>
+            <div className="delete-info-container">
+              <div className="delete-info-grid">
                 <span style={{ color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Lead Name :</span>
                 <span style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{lead.leadName || '-'}</span>
 

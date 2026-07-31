@@ -110,23 +110,23 @@ export default function ActivityTimelineList({ data, loading, onAction, onRefres
                   <div className="timeline-card-header">
                     <div className="timeline-header-left">
                       <h3 className="timeline-title">{item.title}</h3>
-                      <span style={{ color: 'var(--text-secondary)', fontSize: '13px', marginLeft: '8px' }}>By {item.createdBy || 'System'}</span>
+                      <span className="timeline-author">By {item.createdBy || 'System'}</span>
                     </div>
+                    
                     <div className="timeline-header-right">
                       <span className="timeline-time">{item.itemDate} &bull; {item.time}</span>
-                      
-                      <div className="table-actions-dropdown" style={{ marginLeft: '12px' }}>
-                        <button className="action-menu-btn"><FaEllipsisV /></button>
-                        <div className="dropdown-menu">
-                          <button className="dropdown-item view-item" onClick={() => onAction && onAction('view', item)}>
-                            <FaEye /> View Details
-                          </button>
-                          <button className="dropdown-item" style={{ color: 'var(--text-secondary)' }} onClick={() => onAction && onAction('copy', item)}>
-                            <FaCopy /> Copy Activity
-                          </button>
-                        </div>
-                      </div>
+                    </div>
 
+                    <div className="table-actions-dropdown timeline-actions">
+                      <button className="action-menu-btn"><FaEllipsisV /></button>
+                      <div className="dropdown-menu">
+                        <button className="dropdown-item view-item" onClick={() => onAction && onAction('view', item)}>
+                          <FaEye /> View Details
+                        </button>
+                        <button className="dropdown-item" style={{ color: 'var(--text-secondary)' }} onClick={() => onAction && onAction('copy', item)}>
+                          <FaCopy /> Copy Activity
+                        </button>
+                      </div>
                     </div>
                   </div>
                   

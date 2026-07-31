@@ -159,3 +159,74 @@
   color: var(--text-primary);
   font-size: 24px;
 }
+
+/* --- Mobile Responsive Navbar --- */
+.mobile-nav-logo {
+  display: none;
+  height: 32px;
+  width: auto;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-left: 12px;
+  padding: 0;
+}
+
+@media (max-width: 900px) {
+  .top-navbar .page-title {
+    display: none; /* Hide page title in navbar on mobile, but keep it in page headers! */
+  }
+
+  .mobile-nav-logo {
+    display: block;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .top-navbar {
+    padding: 16px 20px;
+  }
+  
+  .search-box {
+    display: none;
+  }
+  
+  .new-lead-btn .plus-icon {
+    display: none;
+  }
+  
+  .new-lead-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-title {
+    font-size: 18px;
+  }
+  
+  .utilities {
+    gap: 16px;
+  }
+  
+  .nav-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .new-lead-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}

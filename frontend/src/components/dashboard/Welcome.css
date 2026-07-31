@@ -83,13 +83,11 @@
   font-weight: 700;
   margin: 0 0 0.5rem 0;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
 }
 
 .wave-emoji {
   display: inline-block;
+  margin-left: 0.25rem;
   animation: wave-animation 2.5s infinite;
   transform-origin: 70% 70%;
 }
@@ -150,16 +148,40 @@
 }
 
 @media (max-width: 900px) {
+  .welcome-container {
+    padding: 0;
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+  
   .welcome-message-box {
     flex-direction: column;
     align-items: flex-start;
-    gap: 2rem;
-    padding: 2rem;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem;
+    border-radius: 0;
+  }
+  
+  .welcome-greeting {
+    font-size: 2rem;
+  }
+  
+  .wave-emoji {
+    display: none;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem;
   }
   
   .datetime-widget {
     text-align: left;
     width: 100%;
     align-items: flex-start;
+    padding: 1.25rem;
+  }
+  
+  .time-display {
+    font-size: 1.8rem;
   }
 }

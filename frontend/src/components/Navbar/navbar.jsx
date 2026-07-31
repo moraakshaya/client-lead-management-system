@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   MdSearch, 
-  MdOutlineNotifications
+  MdOutlineNotifications,
+  MdMenu,
+  MdClose
 } from 'react-icons/md';
 import AddLeadModal from '../leads/AddLeadModal';
 import './navbar.css';
@@ -18,15 +20,15 @@ const routeDetails = {
   '/profile': { title: 'Profile' },
 };
 
-export default function Navbar() {
+export default function Navbar({ toggleMobileSidebar, isMobileSidebarOpen }) {
   const location = useLocation();
   const currentRoute = routeDetails[location.pathname] || { title: 'Dashboard' };
   const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
 
   return (
     <header className="top-navbar">
-      {/* 1st Section: Page Title */}
       <div className="navbar-section page-header">
+        <img src="/logoful.png" alt="LeadFlow" className="mobile-nav-logo" />
         <h1 className="page-title">{currentRoute.title}</h1>
       </div>
 
@@ -50,6 +52,10 @@ export default function Navbar() {
 
         <button className="btn-primary new-lead-btn" onClick={() => setIsAddLeadModalOpen(true)}>
           <span className="plus-icon">+</span> New Lead
+        </button>
+
+        <button className="mobile-menu-btn" onClick={toggleMobileSidebar} aria-label="Toggle Menu">
+          {isMobileSidebarOpen ? <MdClose /> : <MdMenu />}
         </button>
 
         <div className="nav-profile">

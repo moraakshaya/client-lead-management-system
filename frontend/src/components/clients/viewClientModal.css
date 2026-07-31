@@ -312,3 +312,11 @@
   background-color: var(--secondary-light, #f1f5f9);
   border-color: #94a3b8;
 }
+
+/* Mobile responsive styles for modal padding */
+@media (max-width: 768px) {
+  .modal-content {
+    margin: 16px !important;
+    /* Equal margin on all sides */
+  }
+}

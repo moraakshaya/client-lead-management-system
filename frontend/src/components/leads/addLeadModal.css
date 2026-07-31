@@ -179,3 +179,10 @@
 .btn-save:hover {
   background-color: var(--primary-hover);
 }
+
+/* Mobile responsive styles for modal padding */
+@media (max-width: 768px) {
+  .modal-body {
+    padding: 16px !important; /* Equal padding on all sides */
+  }
+}

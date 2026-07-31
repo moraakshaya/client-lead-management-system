@@ -65,7 +65,7 @@ export function Dashboard() {
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div className="dashboard-page" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             <Welcome />
             <StatsCards stats={stats} />
             <LeadAnalytics chartData={chartData} />
