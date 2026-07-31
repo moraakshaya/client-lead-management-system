@@ -4,7 +4,7 @@ import {
     FiUsers, FiTarget, FiCalendar, FiFileText,
     FiTrendingUp, FiClock, FiCheckCircle, FiShield,
     FiZap, FiSmartphone, FiUserPlus, FiHeart,
-    FiBarChart2, FiList
+    FiBarChart2, FiList, FiMenu, FiX
 } from 'react-icons/fi';
 import './LandingPage.css';
 
@@ -13,7 +13,94 @@ export const LandingPage = () => {
     const [activeCard, setActiveCard] = useState(0);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeValueCard, setActiveValueCard] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(true);
+    const [activeBentoCard, setActiveBentoCard] = useState(0);
+    const [isBentoTransitioning, setIsBentoTransitioning] = useState(true);
     const sectionRef = useRef(null);
+    const whySliderRef = useRef(null);
+    const touchStartXRef = useRef(0);
+    const [activeWhyCard, setActiveWhyCard] = useState(0);
+    const [isWhyTransitioning, setIsWhyTransitioning] = useState(true);
+
+    useEffect(() => {
+        if (activeWhyCard === 4) {
+            const timer = setTimeout(() => {
+                setIsWhyTransitioning(false);
+                setActiveWhyCard(0);
+            }, 500);
+            return () => clearTimeout(timer);
+        } else if (!isWhyTransitioning) {
+            const timer = setTimeout(() => {
+                setIsWhyTransitioning(true);
+            }, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [activeWhyCard, isWhyTransitioning]);
+
+    const handleWhyTouchStart = (e) => {
+        touchStartXRef.current = e.touches[0].clientX;
+    };
+
+    const handleWhyTouchEnd = (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartXRef.current - touchEndX;
+        if (diff > 40) {
+            setIsWhyTransitioning(true);
+            setActiveWhyCard(prev => prev + 1);
+        } else if (diff < -40) {
+            setIsWhyTransitioning(true);
+            setActiveWhyCard(prev => (prev > 0 ? prev - 1 : 3));
+        }
+    };
+
+    const previewStepsData = [
+        {
+            n: 1,
+            title: 'Dashboard Overview',
+            desc: "Get a bird's-eye view of your entire business performance, revenue, and active tasks.",
+            label: 'Dashboard',
+            color: '#6366f1',
+            bgColor: '#eef2ff',
+            icon: <FiBarChart2 />,
+            lines: ['Total Revenue', 'Active Leads', 'Conversions'],
+            values: ['$48,290', '142', '89%']
+        },
+        {
+            n: 2,
+            title: 'Lead Management',
+            desc: 'Track new prospects and seamlessly monitor their journey through your sales pipeline.',
+            label: 'Leads',
+            color: '#0ea5e9',
+            bgColor: '#f0f9ff',
+            icon: <FiUserPlus />,
+            lines: ['New Today', 'In Pipeline', 'Hot Leads'],
+            values: ['12', '58', '9']
+        },
+        {
+            n: 3,
+            title: 'Client Records',
+            desc: 'Maintain detailed histories and notes for every client interaction in one place.',
+            label: 'Clients',
+            color: '#10b981',
+            bgColor: '#f0fdf4',
+            icon: <FiUsers />,
+            lines: ['Total Clients', 'Active', 'New This Month'],
+            values: ['320', '284', '22']
+        },
+        {
+            n: 4,
+            title: 'Follow-up Scheduler',
+            desc: 'Never miss a meeting with automated scheduling and priority reminders.',
+            label: 'Follow-ups',
+            color: '#f59e0b',
+            bgColor: '#fffbeb',
+            icon: <FiCalendar />,
+            lines: ['Due Today', 'This Week', 'Completed'],
+            values: ['5', '23', '18']
+        }
+    ];
 
     useEffect(() => {
         const theme = document.documentElement.getAttribute('data-theme');
@@ -23,12 +110,9 @@ export const LandingPage = () => {
             if (!sectionRef.current) return;
             const rect = sectionRef.current.getBoundingClientRect();
             const sectionHeight = sectionRef.current.offsetHeight;
-            // Amount scrolled past the top of the section
             const scrolled = Math.max(0, -rect.top);
-            // Scrollable range = total section height minus one viewport
             const scrollRange = sectionHeight - window.innerHeight;
             const progress = Math.min(1, scrolled / scrollRange);
-            // Map 0–1 progress across 4 cards (each gets 25% of scroll range)
             const index = Math.min(3, Math.floor(progress * 4));
             setActiveCard(index);
         };
@@ -44,6 +128,56 @@ export const LandingPage = () => {
             window.removeEventListener('scroll', handleNavScroll);
         };
     }, []);
+
+    useEffect(() => {
+        // Auto-play for the "How It Works" slider on mobile
+        const interval = setInterval(() => {
+            if (window.innerWidth <= 768) {
+                setActiveValueCard((prev) => prev + 1);
+            }
+        }, 3500); // 3.5 seconds
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        if (activeValueCard === 3) {
+            const timer = setTimeout(() => {
+                setIsTransitioning(false);
+                setActiveValueCard(0);
+            }, 500);
+            return () => clearTimeout(timer);
+        } else if (!isTransitioning) {
+            const timer = setTimeout(() => {
+                setIsTransitioning(true);
+            }, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [activeValueCard, isTransitioning]);
+
+    useEffect(() => {
+        // Auto-play for the "Bento Features" slider on mobile
+        const interval = setInterval(() => {
+            if (window.innerWidth <= 768) {
+                setActiveBentoCard((prev) => prev + 1);
+            }
+        }, 3500);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        if (activeBentoCard === 5) { // 5 real cards (indexes 0-4), cloned card is at 5
+            const timer = setTimeout(() => {
+                setIsBentoTransitioning(false);
+                setActiveBentoCard(0);
+            }, 500);
+            return () => clearTimeout(timer);
+        } else if (!isBentoTransitioning) {
+            const timer = setTimeout(() => {
+                setIsBentoTransitioning(true);
+            }, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [activeBentoCard, isBentoTransitioning]);
 
     return (
         <div className="landing-container">
@@ -71,7 +205,19 @@ export const LandingPage = () => {
                                     <div className="switch-knob"></div>
                                 </div>
                             </div>
+                            <div className="mobile-menu-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                                {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                            </div>
+                        </div>
 
+                        {/* Mobile Sidebar Dropdown */}
+                        <div className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+                            <div className="mobile-sidebar-links">
+                                <a href="#home" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
+                                <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>Features</a>
+                                <a href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)}>How It Works</a>
+                                <a href="#why-choose" onClick={() => setIsMobileMenuOpen(false)}>Why Choose CRM</a>
+                            </div>
                         </div>
                     </nav>
                 </div>
@@ -152,22 +298,49 @@ export const LandingPage = () => {
                             keeps your entire pipeline organized in one powerful platform.
                         </p>
                     </div>
-                    <div className="value-cards-grid">
-                        <div className="value-card">
-                            <div className="value-icon icon-blue"><FiTrendingUp /></div>
-                            <h3>Stable Growth</h3>
-                            <p>Track your conversions and monitor steady growth in your sales pipeline effortlessly.</p>
+                    <div className="value-cards-slider-wrapper">
+                        <div 
+                            className="value-cards-grid" 
+                            style={{ 
+                                '--active-card': activeValueCard,
+                                transition: isTransitioning ? 'transform 0.5s ease' : 'none'
+                            }}
+                        >
+                            <div className="value-card">
+                                <div className="value-icon icon-blue"><FiTrendingUp /></div>
+                                <h3>Stable Growth</h3>
+                                <p>Track your conversions and monitor steady growth in your sales pipeline effortlessly.</p>
+                            </div>
+                            <div className="value-card">
+                                <div className="value-icon icon-pink"><FiShield /></div>
+                                <h3>Secure Data</h3>
+                                <p>Your client data and business metrics are protected with enterprise-grade security.</p>
+                            </div>
+                            <div className="value-card">
+                                <div className="value-icon icon-green"><FiUsers /></div>
+                                <h3>Easy Communication</h3>
+                                <p>Maintain clear, consistent follow-ups and build stronger relationships with clients.</p>
+                            </div>
+                            {/* Cloned Card 0 for seamless infinite loop */}
+                            <div className="value-card value-card-clone">
+                                <div className="value-icon icon-blue"><FiTrendingUp /></div>
+                                <h3>Stable Growth</h3>
+                                <p>Track your conversions and monitor steady growth in your sales pipeline effortlessly.</p>
+                            </div>
                         </div>
-                        <div className="value-card">
-                            <div className="value-icon icon-pink"><FiShield /></div>
-                            <h3>Secure Data</h3>
-                            <p>Your client data and business metrics are protected with enterprise-grade security.</p>
-                        </div>
-                        <div className="value-card">
-                            <div className="value-icon icon-green"><FiUsers /></div>
-                            <h3>Easy Communication</h3>
-                            <p>Maintain clear, consistent follow-ups and build stronger relationships with clients.</p>
-                        </div>
+                    </div>
+                    {/* Pagination dots (only visible on mobile) */}
+                    <div className="value-slider-dots">
+                        {[0, 1, 2].map(idx => (
+                            <span 
+                                key={idx} 
+                                className={`slider-dot ${(activeValueCard % 3) === idx ? 'active' : ''}`} 
+                                onClick={() => {
+                                    setIsTransitioning(true);
+                                    setActiveValueCard(idx);
+                                }}
+                            ></span>
+                        ))}
                     </div>
                 </section>
 
@@ -177,7 +350,7 @@ export const LandingPage = () => {
                         <h2>Everything You Need.<br />Nothing You Don't.</h2>
                         <p>Comprehensive client lead management designed with simplicity and security in mind.</p>
                     </div>
-                    <div className="bento-grid">
+                    <div className="bento-grid desktop-only">
                         {/* Column 1 */}
                         <div className="bento-col">
                             <div className="bento-card">
@@ -237,6 +410,97 @@ export const LandingPage = () => {
                                 <h4>Activity Timeline</h4>
                                 <p>Track every important action across your CRM.</p>
                             </div>
+                        </div>
+                    </div>
+                    
+                    {/* MOBILE LAYOUT (Slider + Big Card) */}
+                    <div className="bento-mobile-layout mobile-only">
+                        {/* Big Purple Card Above Slider */}
+                        <div className="bento-card bento-large-purple">
+                            <div className="bento-app-mockup">
+                                <div className="bento-app-header">
+                                    <div className="bento-app-avatar"></div>
+                                    <div className="bento-app-bell"></div>
+                                </div>
+                                <h5>Upcoming Meeting</h5>
+                                <h3>Follow-up Call</h3>
+                                <div className="bento-app-schedule">
+                                    <div className="schedule-item">
+                                        <div className="schedule-time">10:00 AM</div>
+                                        <div className="schedule-details">
+                                            <strong>Luca Changretta</strong>
+                                            <span>Premium Prospect</span>
+                                        </div>
+                                    </div>
+                                    <div className="schedule-item">
+                                        <div className="schedule-time">02:30 PM</div>
+                                        <div className="schedule-details">
+                                            <strong>Product Demo</strong>
+                                            <span>Acme Corp</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bento-mobile-slider-wrapper">
+                            <div 
+                                className="bento-mobile-slider" 
+                                style={{ 
+                                    '--active-card': activeBentoCard,
+                                    transition: isBentoTransitioning ? 'transform 0.5s ease' : 'none'
+                                }}
+                            >
+                                {/* Card 0 */}
+                                <div className="bento-card">
+                                    <div className="bento-icon"><FiTarget /></div>
+                                    <h4>Lead Management</h4>
+                                    <p>Store, organize and track leads from first contact to conversion.</p>
+                                </div>
+                                {/* Card 1 */}
+                                <div className="bento-card">
+                                    <div className="bento-icon"><FiFileText /></div>
+                                    <h4>Notes</h4>
+                                    <p>Attach notes to leads and clients for better collaboration.</p>
+                                </div>
+                                {/* Card 2 */}
+                                <div className="bento-card">
+                                    <div className="bento-icon"><FiShield /></div>
+                                    <h4>Secure &amp; Encrypted</h4>
+                                    <p>Enterprise-grade data security with end-to-end encryption and privacy controls.</p>
+                                </div>
+                                {/* Card 3 */}
+                                <div className="bento-card">
+                                    <div className="bento-icon"><FiUsers /></div>
+                                    <h4>Client Management</h4>
+                                    <p>Maintain complete client records with contact history.</p>
+                                </div>
+                                {/* Card 4 */}
+                                <div className="bento-card">
+                                    <div className="bento-icon"><FiClock /></div>
+                                    <h4>Activity Timeline</h4>
+                                    <p>Track every important action across your CRM.</p>
+                                </div>
+                                {/* Card 5 (Clone of Card 0) */}
+                                <div className="bento-card bento-card-clone">
+                                    <div className="bento-icon"><FiTarget /></div>
+                                    <h4>Lead Management</h4>
+                                    <p>Store, organize and track leads from first contact to conversion.</p>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Pagination dots */}
+                        <div className="bento-slider-dots">
+                            {[0, 1, 2, 3, 4].map(idx => (
+                                <span 
+                                    key={idx} 
+                                    className={`slider-dot ${(activeBentoCard % 5) === idx ? 'active' : ''}`} 
+                                    onClick={() => {
+                                        setIsBentoTransitioning(true);
+                                        setActiveBentoCard(idx);
+                                    }}
+                                ></span>
+                            ))}
                         </div>
                     </div>
                 </section>
@@ -335,41 +599,8 @@ export const LandingPage = () => {
 
                     <div className="preview-content">
                         {/* Stacked Cards Left */}
-                        <div className="preview-left-stack">
-                            {[
-                                {
-                                    label: 'Dashboard',
-                                    color: '#6366f1',
-                                    bgColor: '#eef2ff',
-                                    icon: <FiBarChart2 />,
-                                    lines: ['Total Revenue', 'Active Leads', 'Conversions'],
-                                    values: ['$48,290', '142', '89%']
-                                },
-                                {
-                                    label: 'Leads',
-                                    color: '#0ea5e9',
-                                    bgColor: '#f0f9ff',
-                                    icon: <FiUserPlus />,
-                                    lines: ['New Today', 'In Pipeline', 'Hot Leads'],
-                                    values: ['12', '58', '9']
-                                },
-                                {
-                                    label: 'Clients',
-                                    color: '#10b981',
-                                    bgColor: '#f0fdf4',
-                                    icon: <FiUsers />,
-                                    lines: ['Total Clients', 'Active', 'New This Month'],
-                                    values: ['320', '284', '22']
-                                },
-                                {
-                                    label: 'Follow-ups',
-                                    color: '#f59e0b',
-                                    bgColor: '#fffbeb',
-                                    icon: <FiCalendar />,
-                                    lines: ['Due Today', 'This Week', 'Completed'],
-                                    values: ['5', '23', '18']
-                                }
-                            ].map((card, i) => {
+                        <div className="preview-left-stack desktop-only">
+                            {previewStepsData.map((card, i) => {
                                 const isActive = i === activeCard;
                                 const isPast = i < activeCard;
                                 const isFuture = i > activeCard;
@@ -414,17 +645,48 @@ export const LandingPage = () => {
 
                         {/* Right Steps */}
                         <div className="preview-right-list">
-                            {[
-                                { n: 1, title: 'Dashboard Overview', desc: "Get a bird's-eye view of your entire business performance, revenue, and active tasks." },
-                                { n: 2, title: 'Lead Management', desc: 'Track new prospects and seamlessly monitor their journey through your sales pipeline.' },
-                                { n: 3, title: 'Client Records', desc: 'Maintain detailed histories and notes for every client interaction in one place.' },
-                                { n: 4, title: 'Follow-up Scheduler', desc: 'Never miss a meeting with automated scheduling and priority reminders.' },
-                            ].map(({ n, title, desc }) => (
-                                <div key={n} className={`preview-step ${n - 1 === activeCard ? 'active-step' : ''}`}>
-                                    <div className="step-number">{n}</div>
+                            {previewStepsData.map((step, i) => (
+                                <div key={step.n} className={`preview-step ${step.n - 1 === activeCard ? 'active-step' : ''}`}>
+                                    <div className="step-number">{step.n}</div>
                                     <div className="step-text">
-                                        <h3>{title}</h3>
-                                        <p>{desc}</p>
+                                        <h3>{step.title}</h3>
+                                        <p>{step.desc}</p>
+                                        
+                                        {/* Mobile inline card render */}
+                                        <div className="mobile-step-card mobile-only" style={{
+                                            display: step.n - 1 === activeCard ? 'block' : 'none',
+                                            height: step.n - 1 === activeCard ? 'auto' : 0,
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div
+                                                className="stack-card inline-mobile-card"
+                                                style={{
+                                                    position: 'relative',
+                                                    transform: 'none',
+                                                    borderTop: `4px solid ${step.color}`,
+                                                    marginTop: '1rem'
+                                                }}
+                                            >
+                                                <div className="stack-card-header" style={{ background: step.bgColor }}>
+                                                    <span className="stack-card-icon" style={{ color: step.color }}>{step.icon}</span>
+                                                    <span className="stack-card-label" style={{ color: step.color }}>{step.label}</span>
+                                                    <div className="stack-dots">
+                                                        <span></span><span></span><span></span>
+                                                    </div>
+                                                </div>
+                                                <div className="stack-card-body">
+                                                    {step.lines.map((line, j) => (
+                                                        <div className="stack-card-row" key={j}>
+                                                            <span className="stack-row-label">{line}</span>
+                                                            <span className="stack-row-value" style={{ color: step.color }}>{step.values[j]}</span>
+                                                        </div>
+                                                    ))}
+                                                    <div className="stack-card-bar" style={{ background: `${step.color}22` }}>
+                                                        <div className="stack-card-bar-fill" style={{ width: `${60 + i * 10}%`, background: step.color }}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -438,7 +700,7 @@ export const LandingPage = () => {
                 <div className="why-choose-header">
                     <h2>Why Choose This CRM</h2>
                 </div>
-                <div className="why-choose-grid">
+                <div className="why-choose-grid desktop-only">
                     <div className="why-card">
                         <div className="why-visual">
                             <div className="visual-inner">
@@ -532,6 +794,156 @@ export const LandingPage = () => {
                             <h3>Secure Authentication</h3>
                             <p>Protect your sensitive business data with robust, enterprise-grade security.</p>
                         </div>
+                    </div>
+                </div>
+
+                {/* Mobile Slider Layout */}
+                <div className="why-choose-mobile-layout mobile-only">
+                    <div className="why-mobile-slider-wrapper">
+                        <div 
+                            className="why-mobile-slider" 
+                            style={{
+                                '--active-card': activeWhyCard,
+                                transition: isWhyTransitioning ? 'transform 0.5s ease' : 'none'
+                            }}
+                            onTouchStart={handleWhyTouchStart}
+                            onTouchEnd={handleWhyTouchEnd}
+                        >
+                            {/* Card 0 */}
+                            <div className="why-card why-mobile-card">
+                                <div className="why-visual">
+                                    <div className="visual-inner">
+                                        <div className="visual-header">
+                                            <span className="visual-title">Total user this month</span>
+                                            <span className="visual-link">Learn More</span>
+                                        </div>
+                                        <div className="visual-stats">
+                                            <div className="v-stat"><span>Active Users</span><strong>12.4k</strong></div>
+                                            <div className="v-stat"><span>New Users</span><strong>75%</strong></div>
+                                            <div className="v-stat"><span>Retention</span><strong>70.2k</strong></div>
+                                        </div>
+                                        <div className="visual-chart-line"></div>
+                                    </div>
+                                </div>
+                                <div className="why-content">
+                                    <h3>Modern UI</h3>
+                                    <p>Gain a deep understanding of how users interact with your products.</p>
+                                </div>
+                            </div>
+
+                            {/* Card 1 */}
+                            <div className="why-card why-mobile-card">
+                                <div className="why-visual">
+                                    <div className="visual-inner gauge-layout">
+                                        <div className="visual-header">
+                                            <span className="visual-title">Analytics</span>
+                                        </div>
+                                        <div className="gauge-container">
+                                            <div className="gauge-arc"></div>
+                                            <strong className="gauge-value">80%</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="why-content">
+                                    <h3>Responsive Design</h3>
+                                    <p>Monitor key performance indicators (KPIs) such as retention rates.</p>
+                                </div>
+                            </div>
+
+                            {/* Card 2 */}
+                            <div className="why-card why-mobile-card">
+                                <div className="why-visual">
+                                    <div className="visual-inner kpi-layout">
+                                        <div className="visual-header">
+                                            <span className="visual-title">KPI</span>
+                                        </div>
+                                        <div className="kpi-group">
+                                            <span className="kpi-label">Total Profit</span>
+                                            <div className="kpi-row">
+                                                <strong>$873.4k</strong>
+                                                <span className="badge-up">+15%</span>
+                                            </div>
+                                        </div>
+                                        <div className="kpi-group">
+                                            <span className="kpi-label">Total Expense</span>
+                                            <div className="kpi-row">
+                                                <strong>124,970</strong>
+                                                <span className="badge-up">+7%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="why-content">
+                                    <h3>Fast Performance</h3>
+                                    <p>Test new features and variations with data-driven experiments.</p>
+                                </div>
+                            </div>
+
+                            {/* Card 3 */}
+                            <div className="why-card why-mobile-card">
+                                <div className="why-visual">
+                                    <div className="visual-inner kpi-layout">
+                                        <div className="visual-header">
+                                            <span className="visual-title">Security</span>
+                                        </div>
+                                        <div className="kpi-group">
+                                            <span className="kpi-label">Authentication</span>
+                                            <div className="kpi-row">
+                                                <strong>End-to-End</strong>
+                                                <span className="badge-up" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>Safe</span>
+                                            </div>
+                                        </div>
+                                        <div className="kpi-group">
+                                            <span className="kpi-label">Uptime</span>
+                                            <div className="kpi-row">
+                                                <strong>99.9%</strong>
+                                                <span className="badge-up" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>Live</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="why-content">
+                                    <h3>Secure Authentication</h3>
+                                    <p>Protect your sensitive business data with robust, enterprise-grade security.</p>
+                                </div>
+                            </div>
+
+                            {/* Card 4 (Clone of Card 0 for smooth continuous loop) */}
+                            <div className="why-card why-mobile-card">
+                                <div className="why-visual">
+                                    <div className="visual-inner">
+                                        <div className="visual-header">
+                                            <span className="visual-title">Total user this month</span>
+                                            <span className="visual-link">Learn More</span>
+                                        </div>
+                                        <div className="visual-stats">
+                                            <div className="v-stat"><span>Active Users</span><strong>12.4k</strong></div>
+                                            <div className="v-stat"><span>New Users</span><strong>75%</strong></div>
+                                            <div className="v-stat"><span>Retention</span><strong>70.2k</strong></div>
+                                        </div>
+                                        <div className="visual-chart-line"></div>
+                                    </div>
+                                </div>
+                                <div className="why-content">
+                                    <h3>Modern UI</h3>
+                                    <p>Gain a deep understanding of how users interact with your products.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Pagination Dots */}
+                    <div className="why-slider-dots">
+                        {[0, 1, 2, 3].map((idx) => (
+                            <span
+                                key={idx}
+                                className={`slider-dot ${(activeWhyCard % 4) === idx ? 'active' : ''}`}
+                                onClick={() => {
+                                    setIsWhyTransitioning(true);
+                                    setActiveWhyCard(idx);
+                                }}
+                            ></span>
+                        ))}
                     </div>
                 </div>
             </section>
