@@ -299,9 +299,9 @@ export const LandingPage = () => {
                         </p>
                     </div>
                     <div className="value-cards-slider-wrapper">
-                        <div 
-                            className="value-cards-grid" 
-                            style={{ 
+                        <div
+                            className="value-cards-grid"
+                            style={{
                                 '--active-card': activeValueCard,
                                 transition: isTransitioning ? 'transform 0.5s ease' : 'none'
                             }}
@@ -332,9 +332,9 @@ export const LandingPage = () => {
                     {/* Pagination dots (only visible on mobile) */}
                     <div className="value-slider-dots">
                         {[0, 1, 2].map(idx => (
-                            <span 
-                                key={idx} 
-                                className={`slider-dot ${(activeValueCard % 3) === idx ? 'active' : ''}`} 
+                            <span
+                                key={idx}
+                                className={`slider-dot ${(activeValueCard % 3) === idx ? 'active' : ''}`}
                                 onClick={() => {
                                     setIsTransitioning(true);
                                     setActiveValueCard(idx);
@@ -412,7 +412,7 @@ export const LandingPage = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* MOBILE LAYOUT (Slider + Big Card) */}
                     <div className="bento-mobile-layout mobile-only">
                         {/* Big Purple Card Above Slider */}
@@ -444,9 +444,9 @@ export const LandingPage = () => {
                         </div>
 
                         <div className="bento-mobile-slider-wrapper">
-                            <div 
-                                className="bento-mobile-slider" 
-                                style={{ 
+                            <div
+                                className="bento-mobile-slider"
+                                style={{
                                     '--active-card': activeBentoCard,
                                     transition: isBentoTransitioning ? 'transform 0.5s ease' : 'none'
                                 }}
@@ -492,9 +492,9 @@ export const LandingPage = () => {
                         {/* Pagination dots */}
                         <div className="bento-slider-dots">
                             {[0, 1, 2, 3, 4].map(idx => (
-                                <span 
-                                    key={idx} 
-                                    className={`slider-dot ${(activeBentoCard % 5) === idx ? 'active' : ''}`} 
+                                <span
+                                    key={idx}
+                                    className={`slider-dot ${(activeBentoCard % 5) === idx ? 'active' : ''}`}
                                     onClick={() => {
                                         setIsBentoTransitioning(true);
                                         setActiveBentoCard(idx);
@@ -651,7 +651,7 @@ export const LandingPage = () => {
                                     <div className="step-text">
                                         <h3>{step.title}</h3>
                                         <p>{step.desc}</p>
-                                        
+
                                         {/* Mobile inline card render */}
                                         <div className="mobile-step-card mobile-only" style={{
                                             display: step.n - 1 === activeCard ? 'block' : 'none',
@@ -800,8 +800,8 @@ export const LandingPage = () => {
                 {/* Mobile Slider Layout */}
                 <div className="why-choose-mobile-layout mobile-only">
                     <div className="why-mobile-slider-wrapper">
-                        <div 
-                            className="why-mobile-slider" 
+                        <div
+                            className="why-mobile-slider"
                             style={{
                                 '--active-card': activeWhyCard,
                                 transition: isWhyTransitioning ? 'transform 0.5s ease' : 'none'

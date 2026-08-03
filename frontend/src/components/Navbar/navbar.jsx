@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { 
-  MdSearch, 
+import {
+  MdSearch,
   MdOutlineNotifications,
   MdMenu,
   MdClose
@@ -29,10 +29,10 @@ export default function Navbar({ toggleMobileSidebar, isMobileSidebarOpen }) {
   return (
     <header className="top-navbar">
       <div className="navbar-section page-header">
-        <img 
-          src="/logoful.png" 
-          alt="LeadFlow" 
-          className="mobile-nav-logo" 
+        <img
+          src="/logoful.png"
+          alt="LeadFlow"
+          className="mobile-nav-logo"
           onClick={() => navigate('/dashboard')}
           style={{ cursor: 'pointer' }}
         />
@@ -43,9 +43,9 @@ export default function Navbar({ toggleMobileSidebar, isMobileSidebarOpen }) {
       <div className="navbar-section utilities">
         <div className="search-box" style={{ position: 'relative' }}>
           <MdSearch className="nav-search-icon" style={{ position: 'static', margin: '0 8px 0 0', display: 'inline-block' }} />
-          <input 
-            type="text" 
-            placeholder="Search anything..." 
+          <input
+            type="text"
+            placeholder="Search anything..."
             className="search-input"
           />
         </div>
@@ -54,7 +54,7 @@ export default function Navbar({ toggleMobileSidebar, isMobileSidebarOpen }) {
           <button className="icon-btn" title="Notifications">
             <MdOutlineNotifications />
           </button>
-          <span className="nav-badge">3</span>
+          <span className="nav-badge">12</span>
         </div>
 
         <button className="btn-primary new-lead-btn" onClick={() => setIsAddLeadModalOpen(true)}>
@@ -66,18 +66,19 @@ export default function Navbar({ toggleMobileSidebar, isMobileSidebarOpen }) {
         </button>
 
         <div className="nav-profile">
-          <img 
-            src="/avatar-placeholder.png" 
-            alt="User" 
+          <img
+            src="/avatar-placeholder.png"
+            alt="User"
             className="nav-avatar"
-            onError={(e) => { e.target.style.display = 'none'; }} 
+            onError={(e) => { e.target.style.display = 'none'; }}
+
           />
         </div>
       </div>
 
-      <AddLeadModal 
-        isOpen={isAddLeadModalOpen} 
-        onClose={() => setIsAddLeadModalOpen(false)} 
+      <AddLeadModal
+        isOpen={isAddLeadModalOpen}
+        onClose={() => setIsAddLeadModalOpen(false)}
       />
     </header>
   );
