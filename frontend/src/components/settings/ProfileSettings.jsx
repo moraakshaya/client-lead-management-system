@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getProfile, updateProfile } from '../../services/userService';
 import { FaSpinner, FaCamera, FaUpload, FaTrash } from 'react-icons/fa';
+import { BASE_URL } from '../../api/axios';
 
 
 export default function ProfileSettings() {
@@ -39,7 +40,7 @@ export default function ProfileSettings() {
         avatar: data.avatar || ''
       });
       if (data.avatar) {
-        setAvatarPreview(`http://localhost:5000${data.avatar}`);
+        setAvatarPreview(`${BASE_URL}${data.avatar}`);
       }
     } catch (err) {
       console.error(err);
@@ -106,7 +107,7 @@ export default function ProfileSettings() {
         showToast('Profile image updated successfully!', 'success');
         
         if (data.avatar) {
-          setAvatarPreview(`http://localhost:5000${data.avatar}`);
+          setAvatarPreview(`${BASE_URL}${data.avatar}`);
         }
         window.dispatchEvent(new Event('profileUpdated'));
       } catch (err) {
@@ -180,7 +181,7 @@ export default function ProfileSettings() {
       
       // Update preview with new server url
       if (data.avatar) {
-        setAvatarPreview(`http://localhost:5000${data.avatar}`);
+        setAvatarPreview(`${BASE_URL}${data.avatar}`);
       }
 
       // Notify other components (like Sidebar) that the profile has changed

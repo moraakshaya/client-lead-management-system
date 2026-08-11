@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { getProfile } from '../../services/userService';
 import { logout } from '../../services/authService';
+import { BASE_URL } from '../../api/axios';
 
 import {
   MdHome,
@@ -46,7 +47,7 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
         setUser({
           name: data.name || 'User',
           role: data.role || 'Role',
-          avatar: data.avatar ? `http://localhost:5000${data.avatar}` : null
+          avatar: data.avatar ? `${BASE_URL}${data.avatar}` : null
         });
       } catch (err) {
         console.error("Failed to load user profile:", err);

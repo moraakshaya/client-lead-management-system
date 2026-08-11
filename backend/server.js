@@ -48,11 +48,15 @@ app.get("/", (req, res) => {
 
 
 // Connect to MongoDB using Mongoose
-mongoose.connect(process.env.MONGO_URL) // Connecting to the MongoDB database using the connection string stored in the MONGO_URL environment variable
-    .then(() => console.log('connected to MongoDB')) // Log a success message if the connection is successful
-    .catch((err) => console.log(err)); // Log any errors that occur during the connection attempt
-
-app.listen(PORT, () => { // Starting the server and listening on port 5000
-    console.log(`server is running on port ${PORT}`); // Log a message to the console indicating that the server is running
-});
+mongoose.connect(process.env.MONGO_URL)
+    .then(() => {
+        console.log('Connected to MongoDB');
+        
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('MongoDB connection failed:', err);
+    });
 
