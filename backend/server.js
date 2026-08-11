@@ -38,7 +38,13 @@ app.use('/api/auth', authRoutes);
 // Serve uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
+// Health check
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        message: "CRM Backend API is running",
+    });
+});
 
 
 // Connect to MongoDB using Mongoose
