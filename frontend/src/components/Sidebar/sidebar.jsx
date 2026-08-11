@@ -52,7 +52,7 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
         console.error("Failed to load user profile:", err);
       }
     };
-    
+
     fetchProfile();
     window.addEventListener('profileUpdated', fetchProfile);
 
@@ -185,4 +185,35 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }) {
       </div>
     </aside>
   );
+
+  {
+    <>
+      <section>
+        <Sidebar>
+          <header><strong>Home Identifier</strong></header>
+          <nav>
+            <item>
+              <ul><li>Identifier spacialising in organizations.</li>
+                <li>Scenario of the application.</li>
+                <li>Capatilizing sector of all in one portion</li>
+                <li>The applications concludes all the activities related to the management of leads and clients from an organization and its related activities.</li>
+                <li>It include one portion of semi automatic lead generation</li>
+              </ul>
+            </item>
+          </nav>
+        </Sidebar>
+
+        <section>
+          <div>
+            <h1>Occasion of using this Application</h1>
+            <ul>
+              <li>clone A @member assimble prime - A @ → 216.198.79.1</li>
+              <li>clone of crm type softtware</li>
+              <li>git fetch latest/changes -  abcbc58cadc522ba.vercel-dns-017.com  "coverting workspace members to main prime members" </li>
+            </ul>
+          </div>
+        </section>
+      </section>
+    </>
+  }
 }
